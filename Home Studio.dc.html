@@ -10,8 +10,8 @@
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css">
-<script src="home-studio.lib.js?v=20260922j"></script>
-<link rel="stylesheet" href="home-studio.css?v=20260922j">
+<script src="home-studio.lib.js?v=20260922k"></script>
+<link rel="stylesheet" href="home-studio.css?v=20260922k">
 </helmet>
 
 <div class="app {{ viewClass }}">
@@ -1590,7 +1590,7 @@ class Component extends DCLogic {
       edit: (e) => { e.stopPropagation(); this.editProjectById(pj.id); }, archive: (e) => { e.stopPropagation(); this.toggleArchive(pj.id); }, del: (e) => { e.stopPropagation(); this.openDeleteProject(pj.id); },
       archiveLabel: pj.archived ? "Make active" : "Archive",
       title: pj.example ? pj.name : pj.name, desc: pj.brief || "", sizesText: "", badge: pj.example ? "Example project" : "",
-      hasTags: tags.length > 0, tags, hasMetas: true, metas, open, keys, isDraft: false
+      hasTags: tags.length > 0, tags, hasMetas: true, metas, open, keys, isDraft: false, apprChip: ""
     };
     if (!latest) return Object.assign({ hasArt: false, noArt: true, thumbUrl: "", isHeading: false, artWrapClass: "art", artBoxStyle: { aspectRatio: "16 / 10" }, cardStyle: {} }, chrome);
     const b = this.boardVals(latest, "card", chrome);

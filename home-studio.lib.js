@@ -199,7 +199,7 @@ function fmtDate(iso) { if (!iso) return ""; const d = new Date(iso + (iso.lengt
 function fmtWhen(t) { return new Date(t).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); }
 function isoDay(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
 function fmtShort(iso) { if (!iso) return ""; const d = new Date(iso + "T12:00:00"); return isNaN(d) ? iso : d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }); }
-function initials(name) { return String(name || "").split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("") || "P"; }
+function initials(name) { const words = String(name || "").split(/[\s·]+/).filter(w => /^[A-Za-z]/.test(w)); return words.slice(0, 2).map(w => w[0].toUpperCase()).join("") || "P"; }
 function newProject(name, brief, due) { return { id: uid("p"), name: name || "Untitled project", brief: brief || "", due: due || "", archived: false, createdAt: Date.now(), updatedAt: Date.now() }; }
 
 /* Example workspace content: six active and three archived projects, each with a few designs.
