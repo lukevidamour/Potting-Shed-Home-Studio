@@ -10,8 +10,8 @@
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css">
-<script src="home-studio.lib.js?v=20260922e"></script>
-<link rel="stylesheet" href="home-studio.css?v=20260922e">
+<script src="home-studio.lib.js?v=20260922f"></script>
+<link rel="stylesheet" href="home-studio.css?v=20260922f">
 </helmet>
 
 <div class="app {{ viewClass }}">
@@ -59,7 +59,6 @@
           <button onClick="{{ goProjects }}" aria-current="{{ projectsCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Projects<span class="cnt">{{ projectCount }}</span></button>
           <button onClick="{{ goDesigns }}" aria-current="{{ designsCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>All designs<span class="cnt">{{ designCount }}</span></button>
           <button onClick="{{ goCalendar }}" aria-current="{{ calendarCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18M8 3v4M16 3v4M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>Calendar<span class="cnt">{{ scheduledCount }}</span></button>
-          <button onClick="{{ goLibrary }}" aria-current="{{ libraryCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="m4 16 5-5 4 4 3-3 4 4"/><circle cx="15.5" cy="9.5" r="1.5"/></svg>Asset library<span class="cnt">{{ libraryCount }}</span></button>
         </nav>
         <nav class="sidegrp" aria-label="Support">
           <div class="lbl">Support</div>
@@ -377,27 +376,6 @@
           </div>
         </div>
       </sc-if>
-
-      <!-- Asset library -->
-      <sc-if value="{{ isLibrary }}">
-        <div class="page">
-          <div class="pagehead">
-            <div><div class="eyebrow">TEKEX workspace</div><h1 class="welcome" style="font-size:40px;line-height:44px">Asset library</h1><p class="lede">Approved brand imagery plus anything you've uploaded. Pick from here when you add an image to a design.</p></div>
-            <label class="btn primary lg filebtn">Upload an image<input type="file" accept="image/png,image/jpeg,image/webp" onChange="{{ libPageFile }}" aria-label="Upload an image to your library" /></label>
-          </div>
-          <sc-if value="{{ uploadError }}"><div class="alert err" role="alert" style="margin-top:16px"><span>{{ uploadError }}</span><button class="link" onClick="{{ clearUploadError }}">Dismiss</button></div></sc-if>
-          <h3 class="section" style="margin:32px 0 12px">Brand library <span class="meta" style="font-weight:400">· TEKEX photography, plus a few stock frames from Unsplash</span></h3>
-          <div class="libpage">
-            <sc-for list="{{ brandLibAll }}" as="im"><div class="lib-card"><span class="th" style="{{ im.thStyle }}" role="img" aria-label="{{ im.name }}"></span><span class="nm">{{ im.name }}</span></div></sc-for>
-          </div>
-          <h3 class="section" style="margin:32px 0 12px">Your uploads <span class="meta" style="font-weight:400">· {{ uploadCount }} in this browser</span></h3>
-          <sc-if value="{{ !uploadCount }}"><div class="empty">Nothing uploaded yet. PNG, JPG or WebP up to {{ maxMb }} MB.</div></sc-if>
-          <div class="libpage">
-            <sc-for list="{{ uploadsAll }}" as="im"><div class="lib-card"><span class="th" style="{{ im.thStyle }}" role="img" aria-label="{{ im.name }}"></span><span class="nm">{{ im.name }}</span><button class="btn sm quiet" onClick="{{ im.remove }}">Remove</button></div></sc-for>
-          </div>
-        </div>
-      </sc-if>
-
       <!-- Size step -->
       <sc-if value="{{ isSize }}">
         <div class="step">
