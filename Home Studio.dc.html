@@ -1547,7 +1547,6 @@ class Component extends DCLogic {
     const tags = Array.from(new Set(designs.map(d => TPL[d.tpl].name)));
     const formats = Array.from(new Set(designs.map(d => SIZES[d.size].label)));
     const metas = [{ icon: ICON.layers, text: designs.length + (designs.length === 1 ? " design" : " designs") }];
-    if (formats.length) metas.push({ icon: ICON.format, text: formats.join(" · ") });
     metas.push({ icon: ICON.clock, text: "Edited " + fmtWhen(pj.updatedAt) });
     const open = () => this.openProject(pj.id);
     const keys = (e) => { if (e.target !== e.currentTarget) return; if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } };
