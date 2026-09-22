@@ -16,6 +16,7 @@ const SIZE_ORDER = ["square", "portrait", "story", "landscape", "linkedin"];
 /* TEKEX brand configuration — values carried over from the existing prototype. */
 const BRAND = {
   workspace: "TEKEX",
+  studioEmail: "luke@pottingshed.com",   // where "Ask Potting Shed" messages go
   themes: [
     { name: "Mint & magenta",  ground: "rgb(129,255,231)", accent: "rgb(248,36,255)" },
     { name: "Lime & violet",   ground: "rgb(208,255,191)", accent: "rgb(120,36,255)" },

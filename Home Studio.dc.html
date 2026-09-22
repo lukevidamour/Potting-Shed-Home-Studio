@@ -10,8 +10,8 @@
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css">
-<script src="home-studio.lib.js?v=20260922c"></script>
-<link rel="stylesheet" href="home-studio.css?v=20260922c">
+<script src="home-studio.lib.js?v=20260922d"></script>
+<link rel="stylesheet" href="home-studio.css?v=20260922d">
 </helmet>
 
 <div class="app {{ viewClass }}">
@@ -64,6 +64,7 @@
         <nav class="sidegrp" aria-label="Support">
           <div class="lbl">Support</div>
           <button onClick="{{ openHelp }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/><path d="M12 17h.01"/></svg>How it works</button>
+          <button onClick="{{ openAsk }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>Ask Potting Shed</button>
         </nav>
         <div class="sidefoot"><b>Saved in this browser</b>Projects and designs stay on this device. Downloads are full-size PNG or JPG.</div>
       </aside>
@@ -833,6 +834,22 @@
     </div>
   </sc-if>
 
+  <sc-if value="{{ askOpen }}">
+    <div class="scrim" data-chrome="1" onClick="{{ scrimClose }}">
+      <div class="dialog" style="width:520px" role="dialog" aria-modal="true" aria-labelledby="ask-title" onClick="{{ stop }}" onKeyDown="{{ dialogKeys }}">
+        <div class="dhead"><div><h2 id="ask-title">Ask Potting Shed</h2><p>A new template, a layout you can't get, a brand question or something that's not working. We'll pick it up by email.</p></div><button class="btn icon" onClick="{{ closeAsk }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        <div class="field"><label for="ask-topic">What's it about?</label>
+          <select class="input" id="ask-topic" value="{{ ask.topic }}" onChange="{{ setAskTopic }}">
+            <sc-for list="{{ askTopics }}" as="t"><option value="{{ t }}">{{ t }}</option></sc-for>
+          </select>
+        </div>
+        <div class="field"><label for="ask-body">Your message</label><textarea class="input" id="ask-body" style="min-height:140px" value="{{ ask.body }}" onChange="{{ setAskBody }}" placeholder="Tell us what you're trying to make and where you got stuck."></textarea></div>
+        <sc-if value="{{ askContext }}"><div class="hint">We'll include a note that you were working on <b>{{ askContext }}</b> so we can find it quickly.</div></sc-if>
+        <div class="dactions"><button class="btn" onClick="{{ closeAsk }}">Cancel</button><a class="btn primary" href="{{ askHref }}" onClick="{{ askSent }}">Send by email</a></div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ helpOpen }}">
     <div class="scrim" data-chrome="1" onClick="{{ scrimClose }}">
       <div class="dialog" style="width:520px" role="dialog" aria-modal="true" aria-labelledby="hp-title" onClick="{{ stop }}" onKeyDown="{{ dialogKeys }}">
@@ -842,7 +859,7 @@
           <li>Add other sizes from the same design; the copy stays in sync while each size keeps its own image crops.</li>
           <li>Review, then download a PNG or JPG at full size.</li>
         </ol>
-        <p class="meta" style="margin:0">Designs are saved in this browser only. Need a new template or layout? Ask Potting Shed.</p>
+        <p class="meta" style="margin:0">Designs are saved in this browser only. Need a new template or layout? Use <b>Ask Potting Shed</b> in the sidebar.</p>
         <div class="dactions"><button class="btn primary" onClick="{{ closeHelp }}">Got it</button></div>
       </div>
     </div>
@@ -868,7 +885,7 @@ class Component extends DCLogic {
     drafts: [], uploads: [], projects: [],
     projectId: null, pill: "active", menuId: null, projDialog: null, deleteKind: "design", syncSizes: true,
     thumbs: {},
-    calMonth: isoDay(new Date()).slice(0, 7), dragOverDay: null, trayOver: false, draggingId: null, sched: null, captionTab: null, projMenuOpen: false, sortKey: "newest", layout: "grid", flashField: null, q: "", copied: false, movedId: null, avatarMissing: false, announce: "",
+    calMonth: isoDay(new Date()).slice(0, 7), dragOverDay: null, trayOver: false, draggingId: null, sched: null, captionTab: null, projMenuOpen: false, sortKey: "newest", layout: "grid", flashField: null, q: "", copied: false, movedId: null, avatarMissing: false, announce: "", askOpen: false, ask: { topic: "A new template or layout", body: "" },
     pendingTpl: "speaker", pendingSize: "square",
     design: null,                 // the open design (editor)
     tab: "content",
@@ -1021,6 +1038,22 @@ class Component extends DCLogic {
     this.openDesign(sib, false);
   }
 
+  /* ---------- Ask Potting Shed: prefilled email to the studio ---------- */
+  openAsk = () => { this._askReturn = document.activeElement; this.setState({ askOpen: true, menuId: null }); this.focusDialog(); };
+  closeAsk = () => { this.setState({ askOpen: false }); if (this._askReturn && this._askReturn.focus) this._askReturn.focus(); };
+  askContextText() {
+    const s = this.state; const d = s.design; const pj = d ? s.projects.find(x => x.id === d.projectId) : this.currentProject();
+    if (s.view === "editor" && d) return d.title + (pj ? " in " + pj.name : "") + " (" + TPL[d.tpl].name + ", " + SIZES[d.size].label + ")";
+    if (s.view === "project" && pj) return pj.name;
+    return "";
+  }
+  askHref() {
+    const a = this.state.ask; const ctx = this.askContextText();
+    const subject = "Home Studio · " + BRAND.workspace + " · " + a.topic;
+    const body = (a.body.trim() ? a.body.trim() + "\n\n" : "") + (ctx ? "Working on: " + ctx + "\n" : "") + "Sent from Home Studio";
+    return "mailto:" + BRAND.studioEmail + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  }
+
   /* ---------- keep Tab inside an open dialog ---------- */
   trapTab = (e) => {
     if (e.key !== "Tab") return;
@@ -1144,6 +1177,7 @@ class Component extends DCLogic {
     if (s.renameOpen) return this.closeRename();
     if (s.deleteOpen) return this.closeDelete();
     if (s.helpOpen) return this.closeHelp();
+    if (s.askOpen) return this.closeAsk();
     if (s.reviewOpen) return this.closeReview();
   }
 
@@ -1630,6 +1664,11 @@ class Component extends DCLogic {
       projectsCurrent: (view === "projects" || view === "project" || view === "templates" || view === "size") ? "page" : "false",
       designsCurrent: view === "designs" ? "page" : "false", libraryCurrent: view === "library" ? "page" : "false",
       projectCount: s.projects.length, designCount: s.drafts.length, libraryCount: BRAND.library.length + s.uploads.length,
+      askOpen: s.askOpen, ask: s.ask, openAsk: this.openAsk, closeAsk: this.closeAsk,
+      askTopics: ["A new template or layout", "A change to my artwork", "Brand or colour question", "Something isn't working", "Something else"],
+      setAskTopic: (e) => this.setState(st => ({ ask: Object.assign({}, st.ask, { topic: e.target.value }) })), setAskBody: (e) => this.setState(st => ({ ask: Object.assign({}, st.ask, { body: e.target.value }) })),
+      askContext: this.askContextText(), askHref: this.askHref(),
+      askSent: () => { this.showToast("Opening your email app with the message ready to send."); setTimeout(() => this.setState({ askOpen: false, ask: { topic: this.state.ask.topic, body: "" } }), 400); },
       avatarMissing: s.avatarMissing, avatarFailed: () => this.setState({ avatarMissing: true }), announce: s.announce,
       goProjects: this.goProjects, goDesigns: this.goDesigns, goLibrary: this.goLibrary, goProject: this.goProject, goTemplates: this.goTemplates,
       openHelp: () => { this._helpReturn = document.activeElement; this.setState({ helpOpen: true }); this.focusDialog(); }, closeHelp: () => { this.setState({ helpOpen: false }); if (this._helpReturn && this._helpReturn.focus) this._helpReturn.focus(); }, helpOpen: s.helpOpen,
