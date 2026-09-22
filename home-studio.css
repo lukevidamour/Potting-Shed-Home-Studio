@@ -494,3 +494,35 @@ details.sect.more .moreb{display:flex;flex-direction:column;gap:12px;padding-top
 .side{gap:16px}
 
 .weekcard .wsizes{font-size:12px;line-height:16px;color:var(--hs-muted);padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
+
+/* ---------- approval ---------- */
+.status.pending{background:var(--hs-brand-soft);color:var(--hs-focus)}
+.status.warn{background:var(--hs-warning-soft);color:var(--hs-warning)}
+.apprcard{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border:1px solid var(--hs-rule);border-radius:12px;background:var(--hs-surface-soft)}
+.apprcard .apprtop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+details.guardian{border:1px dashed var(--hs-control-border);border-radius:12px;padding:12px 14px}
+details.guardian>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+details.guardian>summary::-webkit-details-marker{display:none}
+.psect .btn svg{width:18px;height:18px}
+
+/* ---------- publish panel, minimal ---------- */
+.dbody.pub{gap:18px;padding:20px 24px}
+.pubhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.pubrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.publabel{font-size:14px;line-height:20px;font-weight:500}
+.pubctl{display:flex;align-items:center;gap:6px}
+.pubctl .input{height:40px;width:170px}
+.pubblock{display:flex;flex-direction:column;gap:10px;padding-top:16px;border-top:1px solid var(--hs-rule)}
+.pchips.small .pchip{height:30px;padding:0 10px;font-size:12px}
+.modetabs{display:flex;align-items:center;gap:2px;border-bottom:1px solid var(--hs-rule)}
+.modetabs .tab{height:36px;margin-right:12px;font-size:13px;line-height:18px}
+.modetabs .tab.small{margin-right:8px;color:var(--hs-muted)}
+.modetabs .tab.small[aria-selected="true"]{color:var(--hs-ink)}
+.modetabs .spacer{flex:1}
+.dbody.pub .caption-box{max-height:180px;font-size:13px;line-height:18px}
+.dbody.pub .checks{gap:6px}
+.dbody.pub .ck{font-size:13px;line-height:18px}
+.pubrow.appr{padding-top:4px}
+.dfoot .btn.primary .dims{font-weight:400;color:rgb(255 255 255 / 72%);font-size:13px}
+.dfoot .btn.primary{justify-content:space-between}
+details.guardian{padding:10px 12px}

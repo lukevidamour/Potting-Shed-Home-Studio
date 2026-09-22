@@ -10,8 +10,8 @@
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css">
-<script src="home-studio.lib.js?v=20260922g"></script>
-<link rel="stylesheet" href="home-studio.css?v=20260922g">
+<script src="home-studio.lib.js?v=20260922i"></script>
+<link rel="stylesheet" href="home-studio.css?v=20260922i">
 </helmet>
 
 <div class="app {{ viewClass }}">
@@ -607,7 +607,7 @@
               </div>
 
               <sc-if value="{{ a.isCard }}">
-                <div class="cap"><span class="ttl">{{ a.title }}</span><sc-if value="{{ a.desc }}"><span class="desc">{{ a.desc }}</span></sc-if><sc-if value="{{ a.sizesText }}"><span class="sizes">{{ a.sizesText }}</span></sc-if></div>
+                <div class="cap"><span class="ttl">{{ a.title }}<sc-if value="{{ a.apprChip }}"> <span class="status {{ a.apprChipClass }}" style="vertical-align:middle;margin-left:6px">{{ a.apprChip }}</span></sc-if></span><sc-if value="{{ a.desc }}"><span class="desc">{{ a.desc }}</span></sc-if><sc-if value="{{ a.sizesText }}"><span class="sizes">{{ a.sizesText }}</span></sc-if></div>
                 <sc-if value="{{ a.hasTags }}"><div class="tags"><sc-for list="{{ a.tags }}" as="tg"><span class="tag">{{ tg }}</span></sc-for></div></sc-if>
                 <sc-if value="{{ a.hasMetas }}"><div class="metas"><sc-for list="{{ a.metas }}" as="m"><div><svg viewBox="0 0 24 24" aria-hidden="true"><path sc-camel-d="{{ m.icon }}"/></svg><span>{{ m.text }}</span></div></sc-for></div></sc-if>
                 <sc-if value="{{ a.isDraft }}">
@@ -629,74 +629,64 @@
     <!-- ================= REVIEW DRAWER ================= -->
     <sc-if value="{{ reviewOpen }}">
       <aside class="drawer" data-chrome="1" role="dialog" aria-modal="false" aria-labelledby="rv-title">
-        <div class="dbody">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
-            <div><div class="eyebrow">{{ tplName }} · {{ sizeLabel }}</div><h2 class="screen" id="rv-title" style="font-size:26px;line-height:32px;margin-top:4px">Publish</h2><p class="lede" style="margin-top:4px;font-size:14px">Give it a date, grab the post copy, then download.</p></div>
+        <div class="dbody pub">
+          <div class="pubhead">
+            <div><div class="eyebrow">{{ tplName }} · {{ sizeLabel }}</div><h2 class="screen" id="rv-title" style="font-size:26px;line-height:32px;margin-top:2px">Publish</h2></div>
             <button class="btn icon" onClick="{{ closeReview }}" aria-label="Close publish panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
 
-          <section class="psect" aria-labelledby="pb-sched"><div class="eyebrow" id="pb-sched">Schedule</div>
-            <div class="field"><label for="f-sched">Scheduled date<span class="opt">Optional</span></label>
-              <div style="display:flex;gap:8px;align-items:center"><input class="input" id="f-sched" type="date" sc-camel-value="{{ scheduledAt }}" onChange="{{ setScheduled }}" style="max-width:220px" /><sc-if value="{{ scheduledAt }}"><button class="link" onClick="{{ clearScheduled }}">Clear</button></sc-if></div>
-              <div class="meta">{{ scheduledHint }}</div>
-            </div>
-          </section>
+          <div class="pubrow">
+            <label class="publabel" for="f-sched">Scheduled date</label>
+            <div class="pubctl"><input class="input" id="f-sched" type="date" sc-camel-value="{{ scheduledAt }}" onChange="{{ setScheduled }}" /><sc-if value="{{ scheduledAt }}"><button class="btn icon" onClick="{{ clearScheduled }}" aria-label="Clear date"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></sc-if></div>
+          </div>
 
-          <section class="psect" aria-labelledby="pb-post"><div class="eyebrow" id="pb-post">Post copy</div>
-            <div class="field"><div class="lab">Where is this going?<span class="opt">Pick one or more</span></div>
-              <div class="pchips" role="group" aria-label="Platforms">
-                <sc-for list="{{ platformChips }}" as="pc"><button class="pchip" aria-pressed="{{ pc.on }}" onClick="{{ pc.toggle }}"><sc-if value="{{ pc.on }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></sc-if>{{ pc.name }}</button></sc-for>
-              </div>
+          <div class="pubblock">
+            <div class="pubrow"><span class="publabel">Post copy</span>
+              <div class="pchips small" role="group" aria-label="Platforms"><sc-for list="{{ platformChips }}" as="pc"><button class="pchip" aria-pressed="{{ pc.on }}" onClick="{{ pc.toggle }}">{{ pc.name }}</button></sc-for></div>
             </div>
-            <sc-if value="{{ !hasPlatforms }}"><div class="hint">Choose where this post is going and we'll draft the copy to go with it.</div></sc-if>
             <sc-if value="{{ hasPlatforms }}">
-              <div class="seg" role="radiogroup" aria-label="How the post copy is written">
-                <button class="opt" role="radio" aria-checked="{{ captionAuto }}" onClick="{{ pickAuto }}"><b>Draft it for me</b><small>Built from the details above. Edit any time.</small></button>
-                <button class="opt" role="radio" aria-checked="{{ !captionAuto }}" onClick="{{ pickManual }}"><b>I'll write it</b><small>Your own copy, one version per platform.</small></button>
+              <div class="modetabs" role="tablist" aria-label="How the post copy is written">
+                <button class="tab" role="tab" aria-selected="{{ captionAuto }}" onClick="{{ pickAuto }}">Draft it for me</button>
+                <button class="tab" role="tab" aria-selected="{{ !captionAuto }}" onClick="{{ pickManual }}">I'll write it</button>
+                <sc-if value="{{ multiPlatform }}"><span class="spacer"></span><sc-for list="{{ captionTabs }}" as="ct"><button class="tab small" role="tab" aria-selected="{{ ct.on }}" onClick="{{ ct.pick }}">{{ ct.name }}</button></sc-for></sc-if>
               </div>
-              <sc-if value="{{ multiPlatform }}">
-                <div class="ptabs" role="tablist" aria-label="Platform copy"><sc-for list="{{ captionTabs }}" as="ct"><button class="tab" role="tab" aria-selected="{{ ct.on }}" onClick="{{ ct.pick }}">{{ ct.name }}</button></sc-for></div>
-              </sc-if>
-              <sc-if value="{{ captionAuto }}">
-                <div class="caption-box {{ captionEmptyClass }}" aria-live="polite">{{ captionDisplay }}</div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap">
-                  <button class="btn sm" onClick="{{ shuffleCaption }}">Try another</button>
-                  <button class="btn sm" onClick="{{ editCaption }}">Edit this draft</button>
-                  <button class="btn sm primary {{ copiedClass }}" onClick="{{ copyCaption }}">{{ copyLabel }}</button>
-                </div>
-              </sc-if>
-              <sc-if value="{{ !captionAuto }}">
-                <div class="field"><label for="f-caption">{{ captionLabel }}</label><textarea class="input" id="f-caption" style="min-height:160px" value="{{ captionText }}" onChange="{{ setCaptionText }}" placeholder="Write the post that goes with this image."></textarea></div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" onClick="{{ draftIntoManual }}">Start from a draft</button><button class="btn sm primary {{ copiedClass }}" onClick="{{ copyCaption }}">{{ copyLabel }}</button></div>
-              </sc-if>
-              <div class="meta {{ captionOverClass }}">{{ captionCount }}</div>
+              <sc-if value="{{ captionAuto }}"><div class="caption-box {{ captionEmptyClass }}" aria-live="polite">{{ captionDisplay }}</div></sc-if>
+              <sc-if value="{{ !captionAuto }}"><textarea class="input" id="f-caption" style="min-height:140px" value="{{ captionText }}" onChange="{{ setCaptionText }}" placeholder="Write the post that goes with this image." aria-label="{{ captionLabel }}"></textarea></sc-if>
+              <div class="pubrow"><span class="meta {{ captionOverClass }}">{{ captionCount }}</span><div style="display:flex;gap:8px"><sc-if value="{{ captionAuto }}"><button class="btn sm quiet" onClick="{{ shuffleCaption }}">Try another</button></sc-if><button class="btn sm {{ copiedClass }}" onClick="{{ copyCaption }}">{{ copyLabel }}</button></div></div>
             </sc-if>
-          </section>
+          </div>
 
-          <section class="psect" aria-labelledby="pb-chk"><div class="eyebrow" id="pb-chk">Checks</div>
+          <div class="pubblock">
+            <span class="publabel">Checks</span>
             <div class="checks">
               <sc-for list="{{ checks }}" as="ck"><div class="ck"><span class="cdot" style="{{ ck.dot }}"></span><span>{{ ck.label }}</span></div></sc-for>
             </div>
-          </section>
-
-          <section class="psect" aria-labelledby="pb-file"><div class="eyebrow" id="pb-file">Download</div>
-            <div class="field"><div class="lab">File type</div>
-              <div class="seg" role="radiogroup" aria-label="File type">
-                <button class="opt" role="radio" aria-checked="{{ isPng }}" onClick="{{ pickPng }}"><b>PNG</b><small>Crisp text and graphics. Recommended.</small></button>
-                <button class="opt" role="radio" aria-checked="{{ isJpg }}" onClick="{{ pickJpg }}"><b>JPG</b><small>Smaller file for photographic designs.</small></button>
-              </div>
+            <div class="pubrow appr">
+              <sc-if value="{{ apprNone }}"><span class="meta">Approval is optional.</span><button class="btn sm quiet" onClick="{{ submitApproval }}">Send to Potting Shed</button></sc-if>
+              <sc-if value="{{ !apprNone }}"><span class="status {{ apprClass }}">{{ apprLabel }}</span><span class="meta" style="flex:1 1 auto">{{ apprWhen }}</span><sc-if value="{{ apprSubmitted }}"><button class="btn sm quiet" onClick="{{ withdrawApproval }}">Withdraw</button></sc-if><sc-if value="{{ apprResubmit }}"><button class="btn sm quiet" onClick="{{ submitApproval }}">Resubmit</button></sc-if></sc-if>
             </div>
-            <div class="field"><label for="fname">File name</label><input class="input" id="fname" value="{{ fileName }}" onChange="{{ setFileName }}" /></div>
-            <div class="meta">{{ sizeDims }} px · exact export size, independent of zoom</div>
-          </section>
+            <sc-if value="{{ apprGuardianNote }}"><p class="meta" style="margin:0">Guardian: “{{ apprGuardianNote }}”</p></sc-if>
+            <sc-if value="{{ apprSubmitted }}">
+              <details class="guardian"><summary><span class="meta">Guardian actions · Potting Shed</span></summary>
+                <div class="field" style="margin-top:10px"><textarea class="input" id="guard-note" style="min-height:64px" value="{{ guardNote }}" onChange="{{ setGuardNote }}" placeholder="Feedback (needed to request changes)" aria-label="Guardian feedback"></textarea></div>
+                <div style="display:flex;gap:8px"><button class="btn primary sm" onClick="{{ approveDesign }}">Approve</button><button class="btn sm" onClick="{{ requestChanges }}" disabled="{{ !guardNote }}">Request changes</button></div>
+              </details>
+            </sc-if>
+          </div>
+
+          <div class="pubblock">
+            <div class="pubrow"><span class="publabel">File</span>
+              <div class="modetabs" role="radiogroup" aria-label="File type" style="border:none;padding:0"><button class="tab small" role="radio" aria-checked="{{ isPng }}" aria-selected="{{ isPng }}" onClick="{{ pickPng }}">PNG</button><button class="tab small" role="radio" aria-checked="{{ isJpg }}" aria-selected="{{ isJpg }}" onClick="{{ pickJpg }}">JPG</button></div>
+            </div>
+            <input class="input" id="fname" value="{{ fileName }}" onChange="{{ setFileName }}" aria-label="File name" />
+          </div>
         </div>
         <div class="dfoot">
           <sc-if value="{{ blocked }}"><div class="alert warn" style="margin-bottom:6px"><span>{{ blockedMsg }}</span></div></sc-if>
           <sc-if value="{{ exportError }}"><div class="alert err" role="alert" style="margin-bottom:6px"><span>We couldn't prepare your image. Your design is still here. {{ exportError }}</span></div></sc-if>
-          <sc-if value="{{ exportDone }}"><div class="alert ok done" role="status" style="margin-bottom:6px"><svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>Your download has started. {{ exportDoneDetail }}</span></div></sc-if>
-          <button class="btn primary lg" onClick="{{ download }}" disabled="{{ downloadDisabled }}" aria-busy="{{ exporting }}">{{ downloadLabel }}</button>
-          <button class="btn" onClick="{{ closeReview }}">Back to editing</button>
-          <sc-if value="{{ exportDone }}"><div style="display:flex;gap:10px;justify-content:center;margin-top:4px"><button class="link" onClick="{{ openSizeDialog }}">Make another size</button><button class="link" onClick="{{ backToProject }}">Back to the project</button></div></sc-if>
+          <sc-if value="{{ exportDone }}"><div class="alert ok done" role="status" style="margin-bottom:6px"><svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>Download started · {{ exportDoneDetail }}</span></div></sc-if>
+          <button class="btn primary lg" onClick="{{ download }}" disabled="{{ downloadDisabled }}" aria-busy="{{ exporting }}"><span>{{ downloadLabel }}</span><span class="dims">{{ sizeDims }} px</span></button>
+          <sc-if value="{{ exportDone }}"><div style="display:flex;gap:10px;justify-content:center;margin-top:4px"><button class="link" onClick="{{ openSizeDialog }}">Add another size</button><button class="link" onClick="{{ backToProject }}">Back to the project</button></div></sc-if>
         </div>
       </aside>
     </sc-if>
@@ -863,7 +853,7 @@ class Component extends DCLogic {
     drafts: [], uploads: [], projects: [],
     projectId: null, pill: "active", menuId: null, projDialog: null, deleteKind: "design", syncSizes: true,
     thumbs: {},
-    calMonth: isoDay(new Date()).slice(0, 7), dragOverDay: null, trayOver: false, draggingId: null, sched: null, captionTab: null, projMenuOpen: false, sortKey: "newest", layout: "grid", flashField: null, q: "", copied: false, movedId: null, avatarMissing: false, announce: "", askOpen: false, ask: { topic: "A new template or layout", body: "" },
+    calMonth: isoDay(new Date()).slice(0, 7), dragOverDay: null, trayOver: false, draggingId: null, sched: null, captionTab: null, projMenuOpen: false, sortKey: "newest", layout: "grid", flashField: null, q: "", copied: false, movedId: null, avatarMissing: false, announce: "", askOpen: false, ask: { topic: "A new template or layout", body: "" }, apprDraftNote: "", guardNote: "",
     pendingTpl: "speaker", pendingSize: "square",
     design: null,                 // the open design (editor)
     tab: "content",
@@ -1016,6 +1006,27 @@ class Component extends DCLogic {
     this.openDesign(sib, false);
   }
 
+  /* ---------- optional brand-guardian approval ---------- */
+  appr(d) { return (d && d.approval) || { status: "none" }; }
+  apprLabel(d) { const a = this.appr(d); return { submitted: "With Potting Shed", approved: "Approved", changes: "Changes requested", changed: "Edited since approval" }[a.status] || ""; }
+  apprClass(d) { const a = this.appr(d); return { submitted: "pending", approved: "", changes: "warn", changed: "archived" }[a.status] || "archived"; }
+  setApproval(patch) { const d = this.state.design; const approval = Object.assign({}, this.appr(d), patch); const design = Object.assign({}, d, { approval }); this.setState(s => ({ design, drafts: s.drafts.map(x => x.id === d.id ? design : x) })); this.scheduleSave(); }
+  submitApproval = () => {
+    const d = this.state.design; const now = new Date();
+    const ref = "TKX-" + now.toISOString().slice(2, 10).replace(/-/g, "") + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+    const note = (this.state.apprDraftNote || "").trim();
+    this.setApproval({ status: "submitted", ref, at: now.toISOString(), note, guardianNote: "" });
+    const pj = this.state.projects.find(x => x.id === d.projectId);
+    const subject = "Approval request · " + BRAND.workspace + " · " + d.title + " · " + ref;
+    const body = "Please review: " + d.title + (pj ? " (" + pj.name + ")" : "") + "\n" + TPL[d.tpl].name + " · " + SIZES[d.size].label + (d.scheduledAt ? " · going out " + fmtShort(d.scheduledAt) : "") + "\nReference " + ref + (note ? "\n\n" + note : "") + "\n\nSent from Home Studio";
+    window.open("mailto:" + BRAND.studioEmail + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body), "_self");
+    this.setState({ apprDraftNote: "" });
+    this.showToast("Sent to Potting Shed · " + ref + ". Your email app has the request ready.");
+  };
+  withdrawApproval = () => { this.setApproval({ status: "none", guardianNote: "" }); this.showToast("Withdrawn. Keep editing and resubmit when ready."); };
+  approveDesign = () => { this.setApproval({ status: "approved", decidedAt: new Date().toISOString(), guardianNote: (this.state.guardNote || "").trim() }); this.setState({ guardNote: "" }); this.showToast("Approved by Potting Shed."); };
+  requestChanges = () => { const n = (this.state.guardNote || "").trim(); if (!n) return; this.setApproval({ status: "changes", decidedAt: new Date().toISOString(), guardianNote: n }); this.setState({ guardNote: "" }); this.showToast("Changes requested. The note is in the Publish panel."); };
+
   /* ---------- Ask Potting Shed: prefilled email to the studio ---------- */
   openAsk = () => { this._askReturn = document.activeElement; this.setState({ askOpen: true, menuId: null }); this.focusDialog(); };
   closeAsk = () => { this.setState({ askOpen: false }); if (this._askReturn && this._askReturn.focus) this._askReturn.focus(); };
@@ -1127,6 +1138,7 @@ class Component extends DCLogic {
     this._lastGroup = groupKey || null; this._lastCommit = now;
     const next = Object.assign({}, d, patch);
     const shared = Object.keys(patch).some(k => k !== "title");
+    if (shared && next.approval && next.approval.status === "approved") next.approval = Object.assign({}, next.approval, { status: "changed" });
     this.setState(s => {
       const out = { design: next, past: grouped ? s.past : s.past.concat([d]).slice(-60), future: [] };
       if (shared && s.syncSizes && next.familyId) out.drafts = s.drafts.map(x => x.familyId === next.familyId && x.id !== next.id ? this.syncSibling(x, next) : x);
@@ -1505,6 +1517,7 @@ class Component extends DCLogic {
       thumbStyle: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" },
       thumbFailed: () => this.dropThumb(d.id),
       isProject: false, hasTags: false, hasMetas: false, canvasClick: isEdit ? this.canvasClick : null,
+      apprChip: isEdit ? "" : this.apprLabel(d), apprChipClass: this.apprClass(d),
       cardStyle: isEdit ? {} : { background: "color-mix(in srgb, " + th.ground + " 9%, #FFFFFF)" },
       isCard: !isEdit, canvasFlag: isEdit ? "1" : "0",
       wrapClass: isEdit ? "stage-item" : "card",
@@ -1757,6 +1770,7 @@ class Component extends DCLogic {
     const soft = slots.filter(sl => { const im = d.images[sl.id]; if (!im) return false; const b = this.slotBox(sl.id); return this.softAt(im, b.w, b.h, im.zoom); });
     if (soft.length) checks.push({ level: "warn", label: "May look soft: " + soft.map(x => x.label).join(", ") });
     checks.push({ level: ratio >= 4.5 ? "pass" : "warn", label: th.name + " · " + ratio.toFixed(1) + ":1 contrast" });
+    const ap = this.appr(d); if (ap.status !== "none") checks.push({ level: ap.status === "approved" ? "pass" : "warn", label: "Approval: " + this.apprLabel(d).toLowerCase() });
     const dotColor = (l) => l === "pass" ? "var(--hs-success)" : l === "warn" ? "var(--hs-warning)" : "var(--hs-error)";
     const fieldErr = (k) => missing.indexOf(k) >= 0 ? (LABELS[k] ? "Add a " + LABELS[k].toLowerCase() + " to continue." : "This is needed.") : (over.indexOf(k) >= 0 ? "This is too long for this layout. Shorten it or choose another size." : "");
 
@@ -1773,6 +1787,12 @@ class Component extends DCLogic {
       newProjectFromEditor: this.newProjectFromEditor, unassignProject: () => this.assignProject(null),
       tplName: tplDef.name, sizeLabel: S.label, sizeDims: S.dims, themeName: th.name,
       templateTiles: TEMPLATES.map(t => ({ name: t.name, on: d.tpl === t.key, pick: () => this.switchTemplate(t.key) })),
+      apprNone: this.appr(d).status === "none", apprSubmitted: this.appr(d).status === "submitted", apprResubmit: ["changes", "changed"].indexOf(this.appr(d).status) >= 0,
+      apprLabel: this.apprLabel(d), apprClass: this.apprClass(d), apprNote: this.appr(d).note || "", apprGuardianNote: this.appr(d).guardianNote || "",
+      apprWhen: (() => { const a = this.appr(d); if (a.status === "submitted") return "Sent " + fmtWhen(new Date(a.at).getTime()) + " · " + a.ref; if (a.decidedAt) return fmtWhen(new Date(a.decidedAt).getTime()) + " · " + a.ref; return a.ref || ""; })(),
+      apprDraftNote: s.apprDraftNote, setApprDraftNote: (e) => this.setState({ apprDraftNote: e.target.value }),
+      guardNote: s.guardNote, setGuardNote: (e) => this.setState({ guardNote: e.target.value }),
+      submitApproval: this.submitApproval, withdrawApproval: this.withdrawApproval, approveDesign: this.approveDesign, requestChanges: this.requestChanges,
       scheduledAt: d.scheduledAt || "", setScheduled: (e) => this.setSchedule(d.id, e.target.value), clearScheduled: () => this.setSchedule(d.id, ""),
       platformChips: PLATFORMS.map(pl => ({ name: pl.name, on: d.platforms.indexOf(pl.key) >= 0, toggle: () => this.togglePlatform(pl.key) })),
       hasPlatforms: d.platforms.length > 0, multiPlatform: d.platforms.length > 1,
