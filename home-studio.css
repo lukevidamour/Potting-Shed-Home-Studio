@@ -455,9 +455,10 @@ details.sect.more .moreb{display:flex;flex-direction:column;gap:12px;padding-top
 .weekstrip{display:flex;gap:14px;overflow-x:auto;padding:4px 4px 12px;margin:0 -4px;scroll-snap-type:x proximity}
 .weekstrip::-webkit-scrollbar{height:6px}
 .weekstrip::-webkit-scrollbar-thumb{background:var(--hs-rule);border-radius:3px}
-.weekcard{flex:0 0 236px;scroll-snap-align:start;display:flex;flex-direction:column;gap:4px;padding:8px 8px 10px;border-radius:14px;border:1px solid var(--hs-rule);background:var(--hs-surface);text-align:left;cursor:pointer;transition:transform var(--hs-tp),box-shadow var(--hs-tp),border-color var(--hs-t)}
+.weekcard{flex:0 0 236px;width:236px;max-width:236px;min-width:0;scroll-snap-align:start;display:flex;flex-direction:column;gap:4px;padding:8px 8px 10px;border-radius:14px;border:1px solid var(--hs-rule);background:var(--hs-surface);text-align:left;cursor:pointer;transition:transform var(--hs-tp),box-shadow var(--hs-tp),border-color var(--hs-t)}
 .weekcard:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgb(23 23 23 / 8%);border-color:var(--hs-control-border)}
-.weekcard .wart{display:block;aspect-ratio:16/10;border-radius:8px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.weekcard .wart{display:flex;width:100%;aspect-ratio:16/10;border-radius:8px;overflow:hidden;position:relative;align-items:center;justify-content:center;min-width:0}
+.weekcard>span{min-width:0}
 .weekcard .wart img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .weekcard .wart b{font-size:28px;font-weight:600;letter-spacing:-.02em}
 .weekcard .wday{margin-top:6px;font-size:12px;line-height:16px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--hs-muted);padding:0 4px}
@@ -491,3 +492,5 @@ details.sect.more .moreb{display:flex;flex-direction:column;gap:12px;padding-top
 .userchip span:not(.avatar){font-size:13px;line-height:18px;color:var(--hs-muted)}
 .wschip{padding:10px 12px}
 .side{gap:16px}
+
+.weekcard .wsizes{font-size:12px;line-height:16px;color:var(--hs-muted);padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}

@@ -35,6 +35,31 @@ const BRAND = {
   ],
   barLabels: ["SPEAKERS", "EVENT", "PARTNERS", "TALKS", "COMMUNITY"],
   library: [
+    /* TEKEX photography from the Health Innovation site */
+    { id: "tk-andrew-mcneill", name: "Andrew McNeill — speaker portrait", src: "assets/photos/andrew-mcneill.webp" },
+    { id: "tk-jeff-macleod", name: "Jeff MacLeod — speaker portrait", src: "assets/photos/jeff-macleod.webp" },
+    { id: "tk-nic-rose", name: "Nic Rose — speaker portrait", src: "assets/photos/nic-rose.webp" },
+    { id: "tk-niraj-singh", name: "Dr Niraj Singh — speaker portrait", src: "assets/photos/niraj-singh.webp" },
+    { id: "tk-guy-thompson", name: "Guy Thompson — speaker portrait", src: "assets/photos/guy-thompson.webp" },
+    { id: "tk-ian-rhodes", name: "Ian Rhodes — speaker portrait", src: "assets/photos/ian-rhodes.webp" },
+    { id: "tk-gabe-drogon", name: "Gabe Drogon — speaker portrait", src: "assets/photos/gabe-drogon.webp" },
+    { id: "tk-peter-o-brady", name: "Peter O'Brady — speaker portrait", src: "assets/photos/peter-o-brady.webp" },
+    { id: "tk-claire-trant", name: "Claire Trant — speaker portrait", src: "assets/photos/claire-trant.webp" },
+    { id: "tk-lisa-mccabe", name: "Lisa McCabe — speaker portrait", src: "assets/photos/lisa-mccabe.webp" },
+    { id: "tk-hannah-mellor", name: "Hannah Mellor — speaker portrait", src: "assets/photos/hannah-mellor.webp" },
+    { id: "tk-jake-schofield", name: "Jake Schofield — speaker portrait", src: "assets/photos/jake-schofield.webp" },
+    { id: "tk-oliver-le-brun", name: "Oliver Le Brun — speaker portrait", src: "assets/photos/oliver-le-brun.webp" },
+    { id: "tk-austin-gibbs", name: "Austin Gibbs — speaker portrait", src: "assets/photos/austin-gibbs.webp" },
+    { id: "tk-dr-omar", name: "Dr Omar — speaker portrait", src: "assets/photos/dr-omar.webp" },
+    { id: "tk-event-photo-bw", name: "Event — audience, black and white", src: "assets/photos/event-photo-bw.webp" },
+    { id: "tk-audience-photo-bw", name: "Audience — black and white", src: "assets/photos/audience-photo-bw.webp" },
+    { id: "tk-hero-loop-poster", name: "Health Innovation hero still", src: "assets/photos/hero-loop-poster.jpg" },
+    { id: "tk-overview-4-5-poster", name: "Overview still — portrait", src: "assets/photos/overview-4-5-poster.jpg" },
+    { id: "tk-closing-loop-poster", name: "Closing still", src: "assets/photos/closing-loop-poster.jpg" },
+    { id: "tk-reasons-1", name: "Venue — detail 1", src: "assets/photos/reasons-1.jpg" },
+    { id: "tk-reasons-2", name: "Venue — detail 2", src: "assets/photos/reasons-2.jpg" },
+    { id: "tk-reasons-3", name: "Venue — detail 3", src: "assets/photos/reasons-3.jpg" },
+    { id: "tk-reasons-4", name: "Venue — detail 4", src: "assets/photos/reasons-4.jpg" },
     { id: "lib-al-mitchell", name: "Al Mitchell — speaker portrait", src: "assets/speaker-al-mitchell.jpg", w: 675, h: 900 },
     /* Example stock imagery (Unsplash, served with CORS so it exports). Replace with approved TEKEX photography. */
     { id: "u1", name: "Team around a table",     src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600&q=80", stock: true },
@@ -203,7 +228,7 @@ function seedExamples(existing) {
   pj = P("TEKEX #36 · Speaker campaign", "Social assets for the September speaker event. One card per speaker, plus the event announcement.", 6);
   fam = uid("f");
   add(pj, [
-    D(pj, "trio", "square", "Wellness sessions · Square", { theme: 4, sched: "2026-09-24", images: { "trio-1": img("u4", 50, 30), "trio-2": img("u7", 50, 30), "trio-3": img("u6", 50, 30) } }),
+    D(pj, "trio", "square", "Wellness sessions · Square", { theme: 4, sched: "2026-09-24", images: { "trio-1": img("tk-nic-rose", 50, 30), "trio-2": img("tk-niraj-singh", 50, 30), "trio-3": img("tk-lisa-mccabe", 50, 30) } }),
     D(pj, "event", "portrait", "Event announcement · Portrait", { theme: 1, age: 1, sched: "2026-09-23", images: { "event-image": img("u1") } }),
     D(pj, "speaker", "square", "Richard Tavernor · Square", { age: 2, family: fam, sched: "2026-09-29", images: { "speaker-photo": img("u5", 50, 30) } }),
     D(pj, "speaker", "linkedin", "Richard Tavernor · LinkedIn post", { age: 2, family: fam, sched: "2026-09-29", images: { "speaker-photo": img("u5", 50, 30) } })
@@ -213,8 +238,8 @@ function seedExamples(existing) {
   fam = uid("f");
   add(pj, [
     D(pj, "listing", "portrait", "Keynote line-up · Portrait", { theme: 2, sched: "2026-10-02", copy: { eyebrow: "Health Innovation Summit · Day one", headline: "Meet the keynote speakers", body: "Clinicians, founders and investors on where health tech goes next.", date: "Thu 8 Oct", startTime: "9am", endTime: "5pm", venue: "BDO/C5 Hub, St Helier", barLabel: "TALKS" }, images: { "listing-hero": img("u3") }, speakers: [{ name: "Dr Niraj Singh", role: "Founder", company: "Ketamine Therapies" }, { name: "Lisa McCabe", role: "CEO", company: "The Wellbeing Co" }, { name: "Nic Rose", role: "Director", company: "iO-CO" }, { name: "Priya Nair", role: "CTO", company: "C5 Alliance" }] }),
-    D(pj, "speaker", "portrait", "Dr Niraj Singh · Portrait", { theme: 5, age: 1, family: fam, sched: "2026-10-05", copy: { eventNumber: "37", name: "Dr Niraj Singh", role: "Founder,", company: "Ketamine Therapies", date: "Thu 8 Oct", startTime: "9am", endTime: "5pm", venue: "BDO/C5 Hub, St Helier", barLabel: "TALKS" }, images: { "speaker-photo": img("u7", 50, 25) } }),
-    D(pj, "speaker", "story", "Dr Niraj Singh · Story", { theme: 5, age: 1, family: fam, sched: "2026-10-06", copy: { eventNumber: "37", name: "Dr Niraj Singh", role: "Founder,", company: "Ketamine Therapies", date: "Thu 8 Oct", startTime: "9am", endTime: "5pm", venue: "BDO/C5 Hub, St Helier", barLabel: "TALKS" }, images: { "speaker-photo": img("u7", 50, 25) } }),
+    D(pj, "speaker", "portrait", "Dr Niraj Singh · Portrait", { theme: 5, age: 1, family: fam, sched: "2026-10-05", copy: { eventNumber: "37", name: "Dr Niraj Singh", role: "Founder,", company: "Ketamine Therapies", date: "Thu 8 Oct", startTime: "9am", endTime: "5pm", venue: "BDO/C5 Hub, St Helier", barLabel: "TALKS" }, images: { "speaker-photo": img("tk-niraj-singh", 50, 25) } }),
+    D(pj, "speaker", "story", "Dr Niraj Singh · Story", { theme: 5, age: 1, family: fam, sched: "2026-10-06", copy: { eventNumber: "37", name: "Dr Niraj Singh", role: "Founder,", company: "Ketamine Therapies", date: "Thu 8 Oct", startTime: "9am", endTime: "5pm", venue: "BDO/C5 Hub, St Helier", barLabel: "TALKS" }, images: { "speaker-photo": img("tk-niraj-singh", 50, 25) } }),
     D(pj, "partners", "square", "Summit sponsors · Square", { theme: 3, age: 2, copy: { headline: "With thanks to our partners", barLabel: "PARTNERS" } })
   ]);
   // 3 — active
@@ -252,7 +277,7 @@ function seedExamples(existing) {
   pj = P("TEKEX #35 · Summer social", "June rooftop social. Announcement and the two speaker cards that went out on the day.", 100, true);
   add(pj, [
     D(pj, "event", "square", "Summer social · Square", { theme: 0, sched: "2026-06-10", copy: { headline: "Summer social", body: "Rooftop drinks with the TEKEX community. Bring a founder who hasn't been before.", date: "Thu 18 Jun", startTime: "6pm", endTime: "9pm", venue: "The Rooftop, St Helier", barLabel: "COMMUNITY" }, images: { "event-image": img("u2") } }),
-    D(pj, "speaker", "square", "Lisa McCabe · Square", { theme: 5, age: 1, sched: "2026-06-15", copy: { eventNumber: "35", name: "Lisa McCabe", role: "CEO,", company: "The Wellbeing Co", date: "Thu 18 Jun", startTime: "6pm", endTime: "9pm", venue: "The Rooftop, St Helier" }, images: { "speaker-photo": img("u6", 50, 30) } })
+    D(pj, "speaker", "square", "Lisa McCabe · Square", { theme: 5, age: 1, sched: "2026-06-15", copy: { eventNumber: "35", name: "Lisa McCabe", role: "CEO,", company: "The Wellbeing Co", date: "Thu 18 Jun", startTime: "6pm", endTime: "9pm", venue: "The Rooftop, St Helier" }, images: { "speaker-photo": img("tk-lisa-mccabe", 50, 30) } })
   ]);
   // 8 — archived
   pj = P("2040 Accelerator pitch night", "Pitch night for the 2040 Accelerator cohort. Brand announcement and the cohort listing.", 130, true);

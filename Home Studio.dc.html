@@ -241,10 +241,11 @@
               <div class="weekstrip">
                 <sc-for list="{{ weekItems }}" as="wi">
                   <button class="weekcard" onClick="{{ wi.open }}" aria-label="{{ wi.aria }}">
-                    <span class="wart" style="{{ wi.artStyle }}"><sc-if value="{{ wi.thumb }}"><img sc-camel-src="{{ wi.thumb }}" alt="" /></sc-if><sc-if value="{{ !wi.thumb }}"><b>Aa</b></sc-if></span>
+                    <span class="wart" style="{{ wi.artStyle }}"><sc-if value="{{ wi.thumb }}"><img sc-camel-src="{{ wi.thumb }}" alt="" onError="{{ wi.thumbFailed }}" /></sc-if><sc-if value="{{ !wi.thumb }}"><b>Aa</b></sc-if></span>
                     <span class="wday">{{ wi.day }}</span>
                     <span class="wttl">{{ wi.title }}</span>
                     <span class="wsub">{{ wi.sub }}</span>
+                    <span class="wsizes">{{ wi.sizes }}</span>
                   </button>
                 </sc-for>
               </div>
@@ -352,7 +353,7 @@
                     <span class="dnum">{{ c.day }}</span>
                     <sc-for list="{{ c.items }}" as="it">
                       <div class="chip {{ it.cls }}" draggable="true" tabIndex="0" role="button" aria-label="{{ it.aria }}" title="{{ it.aria }}" onDragStart="{{ it.dragStart }}" onDragEnd="{{ it.dragEnd }}" onClick="{{ it.pick }}" onKeyDown="{{ it.keys }}">
-                        <sc-if value="{{ it.thumb }}"><img sc-camel-src="{{ it.thumb }}" alt="" /></sc-if>
+                        <sc-if value="{{ it.thumb }}"><img sc-camel-src="{{ it.thumb }}" alt="" onError="{{ it.thumbFailed }}" /></sc-if>
                         <sc-if value="{{ !it.thumb }}"><span class="swatch" style="{{ it.swatch }}">Aa</span></sc-if>
                         <span class="cttl">{{ it.title }}</span>
                       </div>
@@ -366,7 +367,7 @@
               <sc-if value="{{ !unscheduledCount }}"><p class="meta" style="margin:0">Everything has a date. Drop artwork here to take it off the calendar.</p></sc-if>
               <sc-for list="{{ unscheduled }}" as="it">
                 <div class="chip {{ it.cls }}" draggable="true" tabIndex="0" role="button" aria-label="{{ it.aria }}" title="{{ it.aria }}" onDragStart="{{ it.dragStart }}" onDragEnd="{{ it.dragEnd }}" onClick="{{ it.pick }}" onKeyDown="{{ it.keys }}">
-                  <sc-if value="{{ it.thumb }}"><img sc-camel-src="{{ it.thumb }}" alt="" /></sc-if>
+                  <sc-if value="{{ it.thumb }}"><img sc-camel-src="{{ it.thumb }}" alt="" onError="{{ it.thumbFailed }}" /></sc-if>
                   <sc-if value="{{ !it.thumb }}"><span class="swatch" style="{{ it.swatch }}">Aa</span></sc-if>
                   <span class="ctext"><span class="cttl">{{ it.title }}</span><span class="csub">{{ it.sub }}</span></span>
                 </div>
@@ -384,7 +385,7 @@
             <label class="btn primary lg filebtn">Upload an image<input type="file" accept="image/png,image/jpeg,image/webp" onChange="{{ libPageFile }}" aria-label="Upload an image to your library" /></label>
           </div>
           <sc-if value="{{ uploadError }}"><div class="alert err" role="alert" style="margin-top:16px"><span>{{ uploadError }}</span><button class="link" onClick="{{ clearUploadError }}">Dismiss</button></div></sc-if>
-          <h3 class="section" style="margin:32px 0 12px">Brand library <span class="meta" style="font-weight:400">· example stock imagery from Unsplash</span></h3>
+          <h3 class="section" style="margin:32px 0 12px">Brand library <span class="meta" style="font-weight:400">· TEKEX photography, plus a few stock frames from Unsplash</span></h3>
           <div class="libpage">
             <sc-for list="{{ brandLibAll }}" as="im"><div class="lib-card"><span class="th" style="{{ im.thStyle }}" role="img" aria-label="{{ im.name }}"></span><span class="nm">{{ im.name }}</span></div></sc-for>
           </div>
@@ -449,7 +450,7 @@
                 </div>
               </sc-if>
               <div class="{{ a.artWrapClass }}" style="{{ a.artBoxStyle }}">
-              <sc-if value="{{ a.isCard }}"><sc-if value="{{ a.badge }}"><span class="badge">{{ a.badge }}</span></sc-if><sc-if value="{{ a.noArt }}"><div class="noart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M12 9v6M9 12h6"/></svg><span>No designs yet</span></div></sc-if><sc-if value="{{ a.thumb }}"><img class="thumbimg" sc-camel-src="{{ a.thumb }}" alt="" style="{{ a.thumbStyle }}" /></sc-if></sc-if>
+              <sc-if value="{{ a.isCard }}"><sc-if value="{{ a.badge }}"><span class="badge">{{ a.badge }}</span></sc-if><sc-if value="{{ a.noArt }}"><div class="noart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M12 9v6M9 12h6"/></svg><span>No designs yet</span></div></sc-if><sc-if value="{{ a.thumbUrl }}"><img class="thumbimg" sc-camel-src="{{ a.thumbUrl }}" alt="" style="{{ a.thumbStyle }}" onError="{{ a.thumbFailed }}" /></sc-if></sc-if>
               <sc-if value="{{ a.hasArt }}">
               <div data-canvas="{{ a.canvasFlag }}" data-design="{{ a.designId }}" style="{{ a.canvasStyle }}" onClick="{{ a.canvasClick }}">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex:0 0 auto">
@@ -903,6 +904,7 @@ class Component extends DCLogic {
     if (drafts.some(d => !d.familyId)) { drafts = drafts.map(d => d.familyId ? d : Object.assign({}, d, { familyId: uid("f") })); try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
     // Thumbnails live in their own store; lift any that older drafts carried inline.
     let thumbs = Store.get(THUMBS_KEY, {});
+    Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || v.indexOf("data:image/") !== 0 || v.length < 1500) delete thumbs[k]; });
     if (drafts.some(d => d.thumb)) { drafts.forEach(d => { if (d.thumb) thumbs[d.id] = d.thumb; }); drafts = drafts.map(d => { const c = Object.assign({}, d); delete c.thumb; return c; }); try { Store.set(THUMBS_KEY, thumbs); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
     this.setState({ drafts, projects, thumbs, uploads: Store.get(UPLOADS_KEY, []) });
     this._onClickAway = () => { if (this.state.menuId || this.state.projMenuOpen) this.setState({ menuId: null, projMenuOpen: false }); };
@@ -998,6 +1000,14 @@ class Component extends DCLogic {
   retrySave = () => this.saveNow();
 
   /* ---------- size families ---------- */
+  static SIZE_SUFFIX = /( · (Square post|Portrait post|Story|Landscape|LinkedIn post|Square|Portrait|LinkedIn))+$/;
+  baseTitle(t) { return String(t || "").replace(Component.SIZE_SUFFIX, ""); }
+  /* Collapse a list of designs into one entry per size family: the most recently edited member represents the group. */
+  familyGroups(list) {
+    const seen = new Map();
+    list.forEach(d => { const k = d.familyId || d.id; const g = seen.get(k); if (!g) seen.set(k, { rep: d, members: [d] }); else { g.members.push(d); if (d.updatedAt > g.rep.updatedAt) g.rep = d; } });
+    return Array.from(seen.values()).map(g => Object.assign(g, { sizes: SIZE_ORDER.filter(k => g.members.some(m => m.size === k)).map(k => SIZES[k].label), platforms: Array.from(new Set(g.members.flatMap(m => m.platforms || []))) }));
+  }
   siblings(d) { return d && d.familyId ? this.state.drafts.filter(x => x.familyId === d.familyId && x.id !== d.id) : []; }
   syncSibling(sib, src) {
     // Shared: words, people, colours, layout options and which image goes where. Per-size: crop position and zoom.
@@ -1078,7 +1088,7 @@ class Component extends DCLogic {
     return {
       title: d.title, sub: (pj ? pj.name + " · " : "") + SIZES[d.size].label,
       aria: d.title + (d.scheduledAt ? ", scheduled " + fmtShort(d.scheduledAt) : ", unscheduled") + ". Drag to a date, use the arrow keys to move it a day or a week, or press Enter to pick a date.",
-      thumb: this.state.thumbs[d.id] || "", swatch: { background: th.ground, color: th.accent },
+      thumb: this.state.thumbs[d.id] || "", thumbFailed: () => this.dropThumb(d.id), swatch: { background: th.ground, color: th.accent },
       cls: (this.state.draggingId === d.id ? "dragging " : "") + (this.state.movedId === d.id ? "settle" : ""),
       dragStart: (e) => { try { e.dataTransfer.setData("text/plain", d.id); e.dataTransfer.effectAllowed = "move"; } catch (err) {} this.setState({ draggingId: d.id }); },
       dragEnd: () => this.setState({ draggingId: null, dragOverDay: null, trayOver: false }),
@@ -1149,9 +1159,21 @@ class Component extends DCLogic {
     return shot.domToDataUrl(node, { width: S.w, height: S.h, scale: 480 / S.w, type: "image/jpeg", quality: 0.74, backgroundColor: BRAND.themes[d.theme].ground, style: { transform: "none", boxShadow: "none", margin: "0", position: "static" }, filter: (el) => !(el.getAttribute && el.getAttribute("data-guide")) });
   }
   storeThumb(id, url) {
-    if (!url || url.length > 140000) return;
-    const thumbs = Object.assign({}, this.state.thumbs, { [id]: url });
-    try { Store.set(THUMBS_KEY, thumbs); } catch (e) { /* out of room: keep in memory only */ }
+    if (!url || url.length < 1500 || url.length > 140000 || url.indexOf("data:image/") !== 0) return;
+    const probe = new Image();
+    probe.onload = () => {
+      if (!probe.naturalWidth) return;
+      const thumbs = Object.assign({}, this.state.thumbs, { [id]: url });
+      try { Store.set(THUMBS_KEY, thumbs); } catch (e) { /* out of room: keep in memory only */ }
+      this.setState({ thumbs });
+    };
+    probe.src = url;
+  }
+  /* A stored thumbnail that no longer decodes is thrown away; the card falls back to live artwork and a fresh one is captured. */
+  dropThumb(id) {
+    if (!this.state.thumbs[id]) return;
+    const thumbs = Object.assign({}, this.state.thumbs); delete thumbs[id];
+    try { Store.set(THUMBS_KEY, thumbs); } catch (e) {}
     this.setState({ thumbs });
   }
   async captureThumb() {
@@ -1467,8 +1489,9 @@ class Component extends DCLogic {
 
     const thumb = isEdit ? "" : (this.state.thumbs[d.id] || "");
     return Object.assign({
-      hasArt: isEdit || !thumb, thumb, noArt: false, designId: d.id,
+      hasArt: isEdit || !thumb, thumbUrl: thumb, noArt: false, designId: d.id,
       thumbStyle: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" },
+      thumbFailed: () => this.dropThumb(d.id),
       isProject: false, hasTags: false, hasMetas: false, canvasClick: isEdit ? this.canvasClick : null,
       cardStyle: isEdit ? {} : { background: "color-mix(in srgb, " + th.ground + " 9%, #FFFFFF)" },
       isCard: !isEdit, canvasFlag: isEdit ? "1" : "0",
@@ -1538,7 +1561,7 @@ class Component extends DCLogic {
       title: pj.example ? pj.name : pj.name, desc: pj.brief || "", sizesText: "", badge: pj.example ? "Example project" : "",
       hasTags: tags.length > 0, tags, hasMetas: true, metas, open, keys, isDraft: false
     };
-    if (!latest) return Object.assign({ hasArt: false, noArt: true, thumb: "", isHeading: false, artWrapClass: "art", artBoxStyle: { aspectRatio: "16 / 10" }, cardStyle: {} }, chrome);
+    if (!latest) return Object.assign({ hasArt: false, noArt: true, thumbUrl: "", isHeading: false, artWrapClass: "art", artBoxStyle: { aspectRatio: "16 / 10" }, cardStyle: {} }, chrome);
     const b = this.boardVals(latest, "card", chrome);
     b.title = pj.name; b.desc = pj.brief || ""; b.sizesText = "";
     return b;
@@ -1555,8 +1578,8 @@ class Component extends DCLogic {
 
     const project = (view === "editor" && d) ? (s.projects.find(x => x.id === d.projectId) || null) : this.currentProject();
     const projName = (id) => { const pj = s.projects.find(x => x.id === id); return pj ? pj.name : "Draft"; };
-    const famCount = (r) => s.drafts.filter(x => x.familyId && x.familyId === r.familyId).length;
-    const designCard = (r, showProject) => this.boardVals(r, "card", { title: r.title, desc: TPL[r.tpl].name + " · " + SIZES[r.size].label + " (" + SIZES[r.size].ratio + ")" + (famCount(r) > 1 ? " · one of " + famCount(r) + " sizes" : "") + (r.scheduledAt ? " · Scheduled " + fmtShort(r.scheduledAt) : "") + (showProject ? " · " + projName(r.projectId) : ""), hasTags: !!(r.platforms && r.platforms.length), tags: (r.platforms || []).map(k => PLAT[k] ? PLAT[k].name : k), sizesText: "Edited " + fmtTime(r.updatedAt), aria: "Open " + r.title, open: () => this.openDesign(r, false), keys: keyAct(() => this.openDesign(r, false)), isDraft: true, dup: (e) => { e.stopPropagation(); this.duplicateDraft(r.id); }, rename: (e) => { e.stopPropagation(); this.openRename(r.id); }, del: (e) => { e.stopPropagation(); this.openDelete(r.id); } });
+    const designCard = (r, showProject, group) => { const g = group || this.familyGroups([r])[0]; const sched = g.members.map(m => m.scheduledAt).filter(Boolean).sort()[0]; return this.boardVals(r, "card", { title: g.members.length > 1 ? this.baseTitle(r.title) : r.title, desc: TPL[r.tpl].name + " · " + g.sizes.join(" · ") + (sched ? " · from " + fmtShort(sched) : "") + (showProject ? " · " + projName(r.projectId) : ""), hasTags: g.platforms.length > 0, tags: g.platforms.map(k => PLAT[k] ? PLAT[k].name : k), sizesText: g.members.length > 1 ? g.members.length + " sizes, edited together" : "", aria: "Open " + r.title, open: () => this.openDesign(r, false), keys: keyAct(() => this.openDesign(r, false)), isDraft: true, dup: (e) => { e.stopPropagation(); this.duplicateDraft(r.id); }, rename: (e) => { e.stopPropagation(); this.openRename(r.id); }, del: (e) => { e.stopPropagation(); this.openDelete(r.id); } }); };
+    const familyCards = (list, showProject) => this.familyGroups(list).sort((a, b) => list.indexOf(a.rep) - list.indexOf(b.rep)).map(g => designCard(g.rep, showProject, g));
     const sortBy = (arr, nameOf) => arr.slice().sort((a, b) => s.sortKey === "oldest" ? a.updatedAt - b.updatedAt : s.sortKey === "az" ? nameOf(a).localeCompare(nameOf(b)) : s.sortKey === "za" ? nameOf(b).localeCompare(nameOf(a)) : b.updatedAt - a.updatedAt);
     const activeProjects = s.projects.filter(pj => !pj.archived), archivedProjects = s.projects.filter(pj => pj.archived);
     const shownProjects = sortBy(s.pill === "active" ? activeProjects : archivedProjects, x => x.name);
@@ -1565,30 +1588,34 @@ class Component extends DCLogic {
     const unassigned = sortBy(s.drafts.filter(x => !x.projectId), x => x.title);
     const q = s.q.trim().toLowerCase();
     const todayIso = isoDay(new Date()); const weekEnd = isoDay(new Date(Date.now() + 7 * 86400000));
-    const weekItems = s.drafts.filter(x => x.scheduledAt && x.scheduledAt >= todayIso && x.scheduledAt <= weekEnd).sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt)).slice(0, 12).map(x => {
-      const th = BRAND.themes[x.theme]; const pj = s.projects.find(y => y.id === x.projectId);
-      return { title: x.title, sub: (pj ? pj.name : "Draft") + " · " + SIZES[x.size].label, day: x.scheduledAt === todayIso ? "Today" : fmtShort(x.scheduledAt), thumb: s.thumbs[x.id] || "", artStyle: { background: th.ground, color: th.accent }, aria: "Open " + x.title + ", going out " + fmtShort(x.scheduledAt), open: () => this.openDesign(x, false) };
+    const weekDue = s.drafts.filter(x => x.scheduledAt && x.scheduledAt >= todayIso && x.scheduledAt <= weekEnd).sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt) || SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size));
+    const weekGroups = []; weekDue.forEach(x => { const k = (x.familyId || x.id) + "@" + x.scheduledAt; let g = weekGroups.find(w => w.k === k); if (!g) { g = { k, rep: x, members: [] }; weekGroups.push(g); } g.members.push(x); });
+    const weekItems = weekGroups.slice(0, 12).map(g => {
+      const x = g.rep; const th = BRAND.themes[x.theme]; const pj = s.projects.find(y => y.id === x.projectId);
+      const sizes = g.members.map(m => SIZES[m.size].label);
+      const withThumb = g.members.find(m => s.thumbs[m.id]) || x;
+      return { title: g.members.length > 1 ? this.baseTitle(x.title) : x.title, sub: pj ? pj.name : "Draft", sizes: sizes.join(" · "), day: x.scheduledAt === todayIso ? "Today" : fmtShort(x.scheduledAt), thumb: s.thumbs[withThumb.id] || "", thumbFailed: () => this.dropThumb(withThumb.id), artStyle: { background: th.ground, color: th.accent }, aria: "Open " + this.baseTitle(x.title) + ", going out " + fmtShort(x.scheduledAt) + " as " + sizes.join(", "), open: () => this.openDesign(withThumb, false) };
     });
     const hit = (str) => (str || "").toLowerCase().indexOf(q) >= 0;
     if (view === "projects" && q) {
       const pjs = shownProjects.filter(pj => hit(pj.name) || hit(pj.brief));
       const des = sortBy(s.drafts.filter(x => hit(x.title) || hit(x.copy.name) || hit(x.copy.headline)), x => x.title);
       if (pjs.length) { boards.push({ isHeading: true, text: "Projects", sub: pjs.length + " matching" }); pjs.forEach(pj => boards.push(this.projectBoard(pj))); }
-      if (des.length) { boards.push({ isHeading: true, text: "Artwork", sub: des.length + " matching" }); des.forEach(r => boards.push(designCard(r, true))); }
+      if (des.length) { const fc = familyCards(des, true); boards.push({ isHeading: true, text: "Artwork", sub: fc.length + " matching" }); fc.forEach(b => boards.push(b)); }
       if (!pjs.length && !des.length) boards.push({ isHeading: true, text: "Nothing matches “" + s.q.trim() + "”", sub: "Try a project name, a speaker or a headline." });
     } else if (view === "projects") {
       if (unassigned.length && s.pill === "active") {
         boards.push({ isHeading: true, text: "Drafts", sub: unassigned.length + " not in a project yet" });
-        unassigned.forEach(r => boards.push(designCard(r, false)));
+        familyCards(unassigned, false).forEach(b => boards.push(b));
         boards.push({ isHeading: true, text: "Projects", sub: "" });
       }
       shownProjects.forEach(pj => boards.push(this.projectBoard(pj)));
     } else if (view === "project" && project) {
-      projDesigns.forEach(r => boards.push(designCard(r, false)));
+      familyCards(projDesigns, false).forEach(b => boards.push(b));
     } else if (view === "templates") {
       TEMPLATES.forEach(t => boards.push(this.boardVals(this.exampleDesign(t.key), "card", { title: t.name, desc: t.desc, sizesText: "Square · Portrait · Story · Landscape", badge: "Example", aria: t.name + ". " + t.desc, open: () => this.pickTemplate(t.key), keys: keyAct(() => this.pickTemplate(t.key)) })));
     } else if (view === "designs") {
-      sortBy(s.drafts.filter(x => !q || hit(x.title) || hit(x.copy.name) || hit(x.copy.headline)), x => x.title).forEach(r => boards.push(designCard(r, true)));
+      familyCards(sortBy(s.drafts.filter(x => !q || hit(x.title) || hit(x.copy.name) || hit(x.copy.headline)), x => x.title), true).forEach(b => boards.push(b));
     } else if (isEditor) {
       boards.push(this.boardVals(d, "edit", { open: null, keys: null, aria: "Artwork preview" }));
     }

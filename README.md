@@ -10,7 +10,7 @@ Client self-service asset studio. TEKEX is the first client workspace.
 
 ## Run locally
 
-Serve the folder over HTTP (fonts and the export renderer need it):
+Serve the folder over HTTP (fonts and the export renderer need it). Either run `./serve.sh` or:
 
 ```bash
 python3 -m http.server 8765 --bind 127.0.0.1
