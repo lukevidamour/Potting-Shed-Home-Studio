@@ -10,8 +10,8 @@
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css">
-<script src="home-studio.lib.js?v=20260922f"></script>
-<link rel="stylesheet" href="home-studio.css?v=20260922f">
+<script src="home-studio.lib.js?v=20260922g"></script>
+<link rel="stylesheet" href="home-studio.css?v=20260922g">
 </helmet>
 
 <div class="app {{ viewClass }}">
@@ -51,7 +51,7 @@
     <!-- Sidebar (all non-editor views) -->
     <sc-if value="{{ !isEditor }}">
       <aside class="side" data-chrome="1" aria-label="Workspace navigation">
-        <div class="brand"><span class="mark" role="img" aria-label="Potting Shed"></span><span class="prod">Home Studio</span></div>
+        <div class="brand"><span class="mark" role="img" aria-label="Potting Shed Home Studio"></span></div>
         <div class="userchip"><span class="avatar" aria-hidden="true"><sc-if value="{{ !avatarMissing }}"><img sc-camel-src="assets/ed.jpg" alt="" onError="{{ avatarFailed }}" /></sc-if><sc-if value="{{ avatarMissing }}">E</sc-if></span><div><b>Ed</b><span>Signed in · TEKEX</span></div></div>
         <div class="wschip"><span class="wsmark"><svg viewBox="0 0 879.658 181" role="img" aria-label="TEKEX"><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path><path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path><path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path><path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path></svg></span><div><b>TEKEX</b><span>Client workspace</span></div></div>
         <nav class="sidegrp" aria-label="Workspace">

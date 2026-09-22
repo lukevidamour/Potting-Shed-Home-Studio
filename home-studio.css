@@ -25,7 +25,7 @@ input::placeholder,textarea::placeholder{color:#8A8A84}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .brand{align-items:center}
 /* Optical alignment: the centre of the "o" in the wordmark sits at 39.9% of the mark height, so the mark is nudged down until that point meets the keyline centre. */
-.brand .mark{width:108px;height:24px;flex:0 0 108px;background:#FF16A5;-webkit-mask:url(assets/ps-logo.svg) center/contain no-repeat;mask:url(assets/ps-logo.svg) center/contain no-repeat;transform:translateY(2.4px)}
+.brand .mark{width:176px;height:38px;flex:0 0 176px;background:#FF16A5;-webkit-mask:url(assets/ps-logo.svg) left center/contain no-repeat;mask:url(assets/ps-logo.svg) left center/contain no-repeat;transform:none}
 .brand .prod{align-self:center;height:20px;display:inline-flex;align-items:center}
 .brand .prod{font-size:14px;line-height:20px;font-weight:500;padding-left:10px;border-left:1px solid var(--hs-rule);white-space:nowrap}
 .nav{display:flex;gap:4px;margin-left:8px}
@@ -281,7 +281,7 @@ main.stage{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-co
 /* ---------- sidebar shell ---------- */
 .shell{flex:1 1 auto;min-height:100vh;display:flex}
 .side{flex:0 0 264px;width:264px;background:var(--hs-surface);border-right:1px solid var(--hs-rule);padding:24px 16px;display:flex;flex-direction:column;gap:24px;position:sticky;top:0;height:100vh;overflow-y:auto}
-.side .brand{padding:0 4px;gap:10px}
+.side .brand{padding:4px 8px 0}
 .wschip{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--hs-rule);border-radius:12px;background:var(--hs-surface)}
 .wschip .wsmark{width:72px;height:40px;border-radius:10px;background:#7824FF;color:#81FFE7;display:flex;align-items:center;justify-content:center;padding:0 9px;flex:0 0 72px}
 .wschip .wsmark svg{width:100%;height:auto;display:block;fill:currentColor}
