@@ -10,8 +10,8 @@
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css">
-<script src="home-studio.lib.js?v=20260922i"></script>
-<link rel="stylesheet" href="home-studio.css?v=20260922i">
+<script src="home-studio.lib.js?v=20260922j"></script>
+<link rel="stylesheet" href="home-studio.css?v=20260922j">
 </helmet>
 
 <div class="app {{ viewClass }}">
@@ -413,7 +413,7 @@
             <div class="{{ a.wrapClass }}" style="{{ a.cardStyle }}" role="{{ a.wrapRole }}" tabIndex="{{ a.tab }}" aria-label="{{ a.aria }}" onClick="{{ a.open }}" onKeyDown="{{ a.keys }}">
               <sc-if value="{{ a.isProject }}">
                 <div class="chead">
-                  <span class="avatar" aria-hidden="true">{{ a.initials }}</span>
+                  <span class="avatar" style="{{ a.avatarStyle }}" aria-hidden="true">{{ a.initials }}</span>
                   <div class="who"><b>{{ a.who }}</b><span>{{ a.sub }}</span></div>
                   <span class="status {{ a.statusClass }}">{{ a.statusText }}</span>
                   <span class="kebab" onClick="{{ stop }}">
@@ -1566,6 +1566,13 @@ class Component extends DCLogic {
     return d;
   }
 
+  /* One Potting Shed colour per project, chosen from the id so it never changes. Dark text on the light ones. */
+  avatarStyle(id) {
+    const PS = [["#245FFF", "#FFFFFF"], ["#12CDFF", "#171717"], ["#01FECD", "#171717"], ["#FDE619", "#171717"], ["#FF16A5", "#FFFFFF"], ["#FE1658", "#FFFFFF"], ["#FF840A", "#171717"], ["#FFADA2", "#171717"], ["#CEFF00", "#171717"], ["#69FF46", "#171717"]];
+    let h = 0; for (let i = 0; i < String(id).length; i++) h = (h * 31 + String(id).charCodeAt(i)) >>> 0;
+    const [bg, fg] = PS[h % PS.length];
+    return { background: bg, color: fg };
+  }
   projectBoard(pj) {
     const designs = this.projectDesigns(pj.id).slice().sort((a, b) => b.updatedAt - a.updatedAt);
     const latest = designs[0];
@@ -1577,7 +1584,7 @@ class Component extends DCLogic {
     const keys = (e) => { if (e.target !== e.currentTarget) return; if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } };
     const chrome = {
       isProject: true, isCard: true, wrapClass: "card", wrapRole: "button", tab: 0, aria: "Open project " + pj.name,
-      initials: initials(pj.name), who: pj.name, sub: "Created " + fmtDate(new Date(pj.createdAt).toISOString().slice(0, 10)),
+      initials: initials(pj.name), avatarStyle: this.avatarStyle(pj.id), who: pj.name, sub: "Created " + fmtDate(new Date(pj.createdAt).toISOString().slice(0, 10)),
       statusText: pj.archived ? "Archived" : "Active", statusClass: pj.archived ? "archived" : "",
       menuOpen: this.state.menuId === pj.id, menuToggle: (e) => { e.stopPropagation(); this.setState(st => ({ menuId: st.menuId === pj.id ? null : pj.id })); },
       edit: (e) => { e.stopPropagation(); this.editProjectById(pj.id); }, archive: (e) => { e.stopPropagation(); this.toggleArchive(pj.id); }, del: (e) => { e.stopPropagation(); this.openDeleteProject(pj.id); },
