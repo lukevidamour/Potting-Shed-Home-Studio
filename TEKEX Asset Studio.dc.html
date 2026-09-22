@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="omelette-owns-print" content="true">
+<link rel="stylesheet" href="styles.css">
+<script src="_ds/potting-shed-design-system-53fe033f-c2f4-49b7-84c0-134371726a28/_ds_bundle.js"></script>
+<script src="image-slot.js"></script>
+<script src="stage-fit.v5.js"></script>
+<style>
+@font-face{font-family:"PP Neue Montreal";src:url("assets/fonts/neue-montreal-book.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"PP Neue Montreal";src:url("assets/fonts/neue-montreal-regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"PP Neue Montreal";src:url("assets/fonts/neue-montreal-medium.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"PP Neue Montreal";src:url("assets/fonts/neue-montreal-medium.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap}
+html,body{margin:0;padding:0;background:#171717;font-family:"PP Neue Montreal","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#245FFF;text-decoration:none}a:hover{color:#12CDFF}
+input,textarea,select,button{font-family:inherit}
+input::placeholder,textarea::placeholder{color:#6F6F6F}
+@page{margin:0}
+@media print{
+  html,body{background:#fff!important}
+  [data-chrome]{display:none!important}
+  [data-stage]{overflow:visible!important;padding:0!important;display:block!important}
+  [data-canvas]{transform:none!important;box-shadow:none!important;margin:0!important}
+}
+</style>
+</helmet>
+
+<div style="display:flex;height:100vh;min-height:100vh;background:#171717;color:#F2F2F2">
+
+  <aside data-chrome="1" style="flex:0 0 360px;height:100vh;overflow-y:auto;background:#1f1f1f;border-right:1px solid #2e2e2e;padding:28px 26px 60px;box-sizing:border-box;display:flex;flex-direction:column;gap:26px">
+
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">TEKEX</div>
+      <div style="font-size:26px;letter-spacing:-0.02em;line-height:1.02">Asset Studio</div>
+      <div style="font-size:13px;line-height:1.4;color:#9A9A9A">Pick a template and size, type the copy, drop in imagery, then send it for brand approval.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Template</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <sc-for list="{{ templates }}" as="t" hint-placeholder-count="4">
+          <button onClick="{{ t.pick }}" style="text-align:left;padding:11px 12px;border-radius:10px;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }};font-size:13px;letter-spacing:-0.01em;cursor:pointer;line-height:1.2">{{ t.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Size</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ sizes }}" as="s" hint-placeholder-count="3">
+          <button onClick="{{ s.pick }}" style="display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-radius:10px;border:1px solid {{ s.bd }};background:{{ s.bg }};color:{{ s.fg }};font-size:13px;cursor:pointer">
+            <span>{{ s.label }}</span>
+            <span style="font-size:11px;color:#9A9A9A;letter-spacing:0.04em">{{ s.dims }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Colourway</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <sc-for list="{{ themes }}" as="th" hint-placeholder-count="6">
+          <button onClick="{{ th.pick }}" title="{{ th.name }}" style="height:52px;border-radius:10px;cursor:pointer;border:2px solid {{ th.bd }};background:{{ th.ground }};display:flex;align-items:center;justify-content:center;padding:0">
+            <span style="font-size:22px;font-weight:600;letter-spacing:-0.02em;color:{{ th.accent }}">Aa</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Copy</div>
+      <sc-for list="{{ fields }}" as="f" hint-placeholder-count="5">
+        <label style="display:flex;flex-direction:column;gap:5px">
+          <span style="font-size:11px;color:#9A9A9A;letter-spacing:0.02em">{{ f.label }}</span>
+          <input value="{{ f.value }}" onChange="{{ f.set }}" placeholder="{{ f.ph }}" style="background:#171717;border:1px solid #2e2e2e;border-radius:8px;padding:9px 11px;color:#F2F2F2;font-size:14px;outline:none;letter-spacing:-0.01em" />
+        </label>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ isListing }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Page</div>
+        <label style="display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:#F2F2F2">
+          <span>Header image</span>
+          <input type="checkbox" checked="{{ showHero }}" onChange="{{ toggleHero }}" style="width:17px;height:17px;accent-color:#245FFF" />
+        </label>
+        <label style="display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:#F2F2F2">
+          <span>Speaker portraits</span>
+          <input type="checkbox" checked="{{ showPortraits }}" onChange="{{ togglePortraits }}" style="width:17px;height:17px;accent-color:#245FFF" />
+        </label>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Speakers</div>
+          <span style="font-size:11px;color:#6F6F6F">{{ speakerCount }}</span>
+        </div>
+        <sc-for list="{{ speakerRows }}" as="sp" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:6px;background:#171717;border:1px solid #2e2e2e;border-radius:10px;padding:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <span style="font-size:11px;color:#6F6F6F;letter-spacing:0.06em">{{ sp.n }}</span>
+              <button onClick="{{ sp.remove }}" style="padding:0;border:none;background:none;color:#9A9A9A;font-size:11px;cursor:pointer;letter-spacing:0.02em">Remove</button>
+            </div>
+            <input value="{{ sp.name }}" onChange="{{ sp.setName }}" placeholder="Speaker name" style="background:#111111;border:1px solid #2e2e2e;border-radius:7px;padding:8px 10px;color:#F2F2F2;font-size:13px;font-family:inherit;width:100%;box-sizing:border-box" />
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <input value="{{ sp.role }}" onChange="{{ sp.setRole }}" placeholder="Role" style="background:#111111;border:1px solid #2e2e2e;border-radius:7px;padding:8px 10px;color:#F2F2F2;font-size:13px;font-family:inherit;width:100%;box-sizing:border-box" />
+              <input value="{{ sp.company }}" onChange="{{ sp.setCompany }}" placeholder="Company" style="background:#111111;border:1px solid #2e2e2e;border-radius:7px;padding:8px 10px;color:#F2F2F2;font-size:13px;font-family:inherit;width:100%;box-sizing:border-box" />
+            </div>
+          </div>
+        </sc-for>
+        <button onClick="{{ addSpeaker }}" style="padding:10px 12px;border-radius:9px;border:1px dashed #3a3a3a;background:none;color:#C9C9C9;font-size:13px;cursor:pointer;font-family:inherit">Add speaker</button>
+      </div>
+    </sc-if>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Bar</div>
+      <label style="display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:#F2F2F2">
+        <span>Powered by Potting Shed</span>
+        <input type="checkbox" checked="{{ showPowered }}" onChange="{{ togglePowered }}" style="width:17px;height:17px;accent-color:#245FFF" />
+      </label>
+      <label style="display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:#F2F2F2">
+        <span>Show bottom bar</span>
+        <input type="checkbox" checked="{{ showBar }}" onChange="{{ toggleBar }}" style="width:17px;height:17px;accent-color:#245FFF" />
+      </label>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;border-top:1px solid #2e2e2e;padding-top:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Approval</div>
+        <span style="{{ statusChipStyle }}">{{ statusLabel }}</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <sc-for list="{{ checks }}" as="ck" hint-placeholder-count="4">
+          <div style="display:flex;align-items:flex-start;gap:9px;font-size:12px;line-height:1.35;color:#C9C9C9">
+            <span style="{{ ck.dotStyle }}"></span>
+            <span style="flex:1 1 auto">{{ ck.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ isDraft }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ openReview }}" style="margin-top:4px;padding:13px 14px;border-radius:10px;border:none;background:#245FFF;color:#FFFFFF;font-size:14px;letter-spacing:-0.01em;cursor:pointer;text-align:center">Submit to Potting Shed</button>
+      </sc-if>
+
+      <sc-if value="{{ isSubmitted }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:8px;background:#171717;border:1px solid #2e2e2e;border-radius:10px;padding:13px 14px">
+          <div style="font-size:13px;line-height:1.4;color:#F2F2F2">{{ submittedHeadline }}</div>
+          <div style="display:flex;justify-content:space-between;gap:10px;font-size:11px;color:#9A9A9A;letter-spacing:0.04em">
+            <span>{{ submittedRef }}</span>
+            <span>{{ submittedAt }}</span>
+          </div>
+          <button onClick="{{ withdraw }}" style="align-self:flex-start;margin-top:2px;padding:0;border:none;background:none;color:#12CDFF;font-size:12px;cursor:pointer">Withdraw and keep editing</button>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="position:sticky;bottom:-60px;z-index:5;margin:0 -26px -60px;padding:14px 26px 18px;background:#1f1f1f;border-top:1px solid #2e2e2e;order:99">
+      <button onClick="{{ downloadPdf }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px;border-radius:10px;border:1px solid #3a3a3a;background:#262626;color:#F2F2F2;font-size:14px;letter-spacing:-0.01em;cursor:pointer" style-hover="background:#2f2f2f;border-color:#4a4a4a">
+        <span>Download PDF</span>
+        <span style="font-size:11px;color:#9A9A9A;letter-spacing:0.04em">{{ sizeDims }}</span>
+      </button>
+    </div>
+
+    <div style="font-size:12px;line-height:1.5;color:#6F6F6F;border-top:1px solid #2e2e2e;padding-top:18px">All partner logos are wired in as vector artwork and render in the current ink colour on every template.</div>
+
+  </aside>
+
+  <main data-stage="1" style="flex:1;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:32px;box-sizing:border-box">
+    <div data-canvas="1" data-screen-label="{{ screenLabel }}" style="{{ canvasStyle }}">
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex:0 0 auto">
+        <div style="min-height:1px"></div>
+        <div style="display:flex;align-items:center;gap:12px;flex:0 0 auto">
+          <span style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ fsUrl }}px">{{ url }}</span>
+          <svg viewBox="0 0 24 24" style="width:{{ fsUrl }}px;height:{{ fsUrl }}px;display:block" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="M5 19 L19 5"></path>
+            <path d="M8 5 L19 5 L19 16"></path>
+          </svg>
+        </div>
+      </div>
+
+      <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:{{ gap }}px;padding-top:{{ gap }}px">
+
+        <sc-if value="{{ isSpeaker }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:{{ contentDir }};gap:{{ gap }}px">
+            <div style="flex:1 1 50%;min-height:{{ halfMin }}px;min-width:0;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor">
+              <image-slot id="tkx-speaker-photo" shape="rect" placeholder="Speaker cut-out or portrait" style="width:100%;height:100%;display:block"></image-slot>
+            </div>
+            <div style="flex:{{ panelFlex }};min-width:0;box-shadow:inset 0 0 0 2px currentColor;padding:{{ panelPad }}px;display:flex;flex-direction:column;justify-content:flex-end;gap:{{ gapS }}px">
+              <span style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ fsEyebrow }}px">{{ eyebrow }}</span>
+              <span style="font-weight:600;letter-spacing:-0.025em;line-height:0.9;font-size:{{ fsName }}px;text-wrap:balance">{{ name }}</span>
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:0 {{ gapS }}px">
+                <span style="font-weight:300;letter-spacing:-0.02em;line-height:1.02;font-size:{{ fsMeta }}px">{{ role }}</span>
+                <span style="font-weight:600;letter-spacing:-0.02em;line-height:1.02;font-size:{{ fsMeta }}px">{{ company }}</span>
+              </div>
+              <span style="font-weight:500;letter-spacing:-0.02em;line-height:1.06;font-size:{{ fsDate }}px">{{ dateLine }}</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isTrio }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:{{ gap }}px">
+            <div style="flex:0 0 auto;display:flex;flex-direction:column;gap:{{ gapS }}px">
+              <span style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ fsEyebrow }}px">{{ eyebrow }}</span>
+              <span style="font-weight:600;letter-spacing:-0.03em;line-height:0.9;font-size:{{ fsHeadline }}px;text-wrap:balance">{{ headline }}</span>
+            </div>
+            <div style="flex:1 1 auto;min-height:0;display:grid;grid-template-columns:{{ trioCols }};gap:{{ gapS }}px">
+              <sc-for list="{{ trio }}" as="t" hint-placeholder-count="3">
+                <div style="min-width:0;min-height:0;display:flex;flex-direction:column;box-shadow:inset 0 0 0 2px currentColor">
+                  <div style="position:relative;flex:1 1 auto;min-height:0;overflow:hidden">
+                    <div role="img" aria-label="{{ t.name }}" style="{{ t.photoStyle }}"></div>
+                    <image-slot id="{{ t.slotId }}" shape="rect" placeholder="{{ t.name }} — drop portrait for export" style="position:absolute;inset:0;width:100%;height:100%;display:block"></image-slot>
+                  </div>
+                  <div style="flex:0 0 auto;padding:{{ gapS }}px;display:flex;flex-direction:column;gap:2px;border-top:2px solid currentColor">
+                    <span contenteditable="true" suppressContentEditableWarning="{{ true }}" onBlur="{{ t.edName }}" style="font-weight:600;letter-spacing:-0.025em;line-height:0.98;font-size:{{ fsTrioName }}px">{{ t.name }}</span>
+                    <span contenteditable="true" suppressContentEditableWarning="{{ true }}" onBlur="{{ t.edCompany }}" style="font-weight:300;letter-spacing:-0.015em;line-height:1.1;font-size:{{ fsTrioCo }}px">{{ t.company }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="flex:0 0 auto;box-shadow:inset 0 0 0 2px currentColor;padding:{{ panelPad }}px">
+              <span style="font-weight:500;letter-spacing:-0.02em;line-height:1.06;font-size:{{ fsDate }}px">{{ dateLine }}</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isEvent }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:{{ contentDir }};gap:{{ gap }}px">
+            <div style="flex:{{ panelFlex }};min-width:0;min-height:0;display:flex;flex-direction:column;justify-content:space-between;gap:{{ gap }}px">
+              <div style="display:flex;flex-direction:column;gap:{{ gapS }}px">
+                <span style="font-weight:600;letter-spacing:-0.03em;line-height:0.88;font-size:{{ fsHeadline }}px;text-wrap:balance">{{ headline }}</span>
+                <span style="font-weight:300;letter-spacing:-0.02em;line-height:1.14;font-size:{{ fsBody }}px;max-width:{{ bodyMax }}px">{{ body }}</span>
+              </div>
+              <div style="flex:0 0 auto;box-shadow:inset 0 0 0 2px currentColor;padding:{{ panelPad }}px">
+                <span style="font-weight:500;letter-spacing:-0.02em;line-height:1.06;font-size:{{ fsDate }}px">{{ dateLine }}</span>
+              </div>
+            </div>
+            <div style="flex:1 1 50%;min-height:{{ eventStripH }}px;min-width:0;overflow:hidden;box-shadow:inset 0 0 0 2px currentColor">
+              <image-slot id="tkx-event-image" shape="rect" placeholder="Event image / venue shot" style="width:100%;height:100%;display:block"></image-slot>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isPartners }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:{{ gap }}px">
+            <span style="font-weight:600;letter-spacing:-0.03em;line-height:0.9;font-size:{{ fsHeadline }}px">{{ headline }}</span>
+            <div style="flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat({{ partnerCols }},1fr);grid-auto-rows:1fr;gap:{{ gapS }}px">
+              <sc-for list="{{ partners }}" as="p" hint-placeholder-count="6">
+                <div style="position:relative;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 2px currentColor;padding:{{ gapS }}px;min-height:0;overflow:hidden">
+                  <sc-if value="{{ p.isMask }}" hint-placeholder-val="{{ false }}">
+                    <div style="{{ p.maskStyle }}"></div>
+                  </sc-if>
+                  <sc-if value="{{ p.isImg }}" hint-placeholder-val="{{ false }}">
+                    <div role="img" aria-label="{{ p.name }}" style="{{ p.imgStyle }}"></div>
+                  </sc-if>
+                  <sc-if value="{{ p.isSlot }}" hint-placeholder-val="{{ true }}">
+                    <image-slot id="{{ p.slotId }}" shape="rect" placeholder="{{ p.name }}" style="width:100%;height:100%;display:block"></image-slot>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isListing }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:{{ docGap }}px">
+            <div style="flex:0 0 auto;display:flex;flex-direction:column;gap:{{ docGapS }}px">
+              <span style="font-weight:600;letter-spacing:0.06em;line-height:1;font-size:{{ fsDocEyebrow }}px;text-transform:uppercase">{{ eyebrow }}</span>
+              <span style="font-weight:600;letter-spacing:-0.03em;line-height:0.94;font-size:{{ fsDocTitle }}px;text-wrap:balance">{{ headline }}</span>
+              <span style="font-weight:300;letter-spacing:-0.005em;line-height:1.36;font-size:{{ fsDocIntro }}px;max-width:{{ docTextMax }}px;text-wrap:pretty">{{ body }}</span>
+            </div>
+
+            <sc-if value="{{ showHero }}" hint-placeholder-val="{{ true }}">
+              <div style="flex:0 0 {{ heroH }}px;overflow:hidden;box-shadow:inset 0 0 0 2px currentColor">
+                <image-slot id="tkx-listing-hero" shape="rect" placeholder="Header image" style="width:100%;height:100%;display:block"></image-slot>
+              </div>
+            </sc-if>
+
+            <div style="flex:0 0 auto;box-shadow:inset 0 0 0 2px currentColor;padding:{{ docRowPad }}px {{ docPad }}px">
+              <span style="font-weight:500;letter-spacing:-0.01em;line-height:1.2;font-size:{{ fsDocDate }}px">{{ dateLine }}</span>
+            </div>
+
+            <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:flex-start">
+              <sc-for list="{{ speakerList }}" as="sp" hint-placeholder-count="5">
+                <div style="flex:1 1 0;min-height:0;max-height:{{ rowMax }}px;display:flex;align-items:center;gap:{{ docGap }}px;border-top:2px solid currentColor;padding:{{ docRowPad }}px 0">
+                  <sc-if value="{{ showPortraits }}" hint-placeholder-val="{{ true }}">
+                    <div style="flex:0 0 auto;height:100%;max-height:{{ thumb }}px;aspect-ratio:1;overflow:hidden;box-shadow:inset 0 0 0 2px currentColor">
+                      <image-slot id="{{ sp.slotId }}" shape="rect" placeholder="{{ sp.shortLabel }}" style="width:100%;height:100%;display:block"></image-slot>
+                    </div>
+                  </sc-if>
+                  <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:{{ docGapXS }}px">
+                    <span style="font-weight:600;letter-spacing:-0.02em;line-height:1;font-size:{{ fsRowName }}px;{{ sp.nameStyle }}">{{ sp.displayName }}</span>
+                    <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:0 {{ docGapS }}px">
+                      <span style="font-weight:300;letter-spacing:-0.01em;line-height:1.2;font-size:{{ fsRowMeta }}px">{{ sp.role }}</span>
+                      <span style="font-weight:600;letter-spacing:-0.01em;line-height:1.2;font-size:{{ fsRowMeta }}px">{{ sp.company }}</span>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="flex:0 0 2px;background:currentColor"></div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isLockup }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:{{ gap }}px">
+            <svg viewBox="0 0 879.658 181" style="width:{{ lockupW }}px;height:auto;display:block" fill="currentColor">
+              <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path>
+              <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path>
+              <path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path>
+              <path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path>
+              <path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path>
+            </svg>
+            <span style="font-weight:300;letter-spacing:-0.02em;line-height:1.1;font-size:{{ fsMeta }}px;text-align:center;max-width:{{ bodyMax }}px">{{ body }}</span>
+          </div>
+        </sc-if>
+
+      </div>
+
+      <sc-if value="{{ showBar }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:0 0 {{ barH }}px;display:flex;gap:{{ gapS }}px;margin-top:{{ gap }}px">
+          <div style="flex:0 0 {{ barLeftW }}px;box-shadow:inset 0 0 0 2px currentColor;display:flex;align-items:center;justify-content:center;padding:0 {{ gapS }}px">
+            <svg viewBox="0 0 879.658 181" style="width:100%;height:52%;display:block" fill="currentColor" preserveAspectRatio="xMidYMid meet">
+              <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path>
+              <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path>
+              <path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path>
+              <path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path>
+              <path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path>
+            </svg>
+          </div>
+          <div style="flex:1 1 auto;box-shadow:inset 0 0 0 2px currentColor;display:flex;align-items:stretch">
+            <div style="flex:1 1 auto;display:flex;align-items:center;padding:0 {{ panelPad }}px;min-width:0">
+              <span style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ fsLabel }}px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ barLabel }}</span>
+            </div>
+            <sc-if value="{{ showPowered }}" hint-placeholder-val="{{ true }}">
+              <div style="flex:0 0 auto;display:flex;align-items:center;gap:{{ gapS }}px;padding:0 {{ panelPad }}px;box-shadow:inset 2px 0 0 0 currentColor">
+                <span style="font-weight:500;letter-spacing:0.02em;line-height:1;font-size:{{ fsPowered }}px;text-transform:uppercase;white-space:nowrap">Powered by</span>
+                <div style="{{ psStyle }}"></div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <sc-if value="{{ reviewOpen }}" hint-placeholder-val="{{ false }}">
+    <div data-chrome="1" style="position:fixed;inset:0;z-index:60;background:rgba(10,10,10,0.72);display:flex;align-items:center;justify-content:center;padding:40px">
+      <div style="width:560px;max-width:100%;max-height:100%;overflow-y:auto;background:#1f1f1f;border:1px solid #2e2e2e;border-radius:16px;padding:32px;box-sizing:border-box;display:flex;flex-direction:column;gap:24px;box-shadow:0 40px 120px rgba(0,0,0,0.6)">
+
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Submit for approval</div>
+          <div style="font-size:24px;letter-spacing:-0.02em;line-height:1.05">Send to Potting Shed</div>
+          <div style="font-size:13px;line-height:1.45;color:#9A9A9A">A brand reviewer checks the asset against the TEKEX system and either approves it or returns notes. You keep editing in the meantime — approval locks to this version.</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:11px;background:#171717;border:1px solid #2e2e2e;border-radius:12px;padding:18px">
+          <sc-for list="{{ summary }}" as="row" hint-placeholder-count="4">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;font-size:13px">
+              <span style="color:#9A9A9A;flex:0 0 auto">{{ row.k }}</span>
+              <span style="color:#F2F2F2;text-align:right;letter-spacing:-0.01em">{{ row.v }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Brand checks</div>
+          <sc-for list="{{ checks }}" as="ck" hint-placeholder-count="4">
+            <div style="display:flex;align-items:flex-start;gap:11px;font-size:13px;line-height:1.4;color:#E4E4E4">
+              <span style="{{ ck.dotStyle }}"></span>
+              <span style="flex:1 1 auto">{{ ck.label }}</span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ hasWarnings }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;line-height:1.45;color:#FDE619">Warnings don't block submission — the reviewer sees them alongside the asset.</div>
+          </sc-if>
+        </div>
+
+        <label style="display:flex;flex-direction:column;gap:7px">
+          <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Note for the reviewer</span>
+          <textarea value="{{ note }}" onChange="{{ setNote }}" placeholder="Where this is going, deadline, anything you're unsure about." style="background:#171717;border:1px solid #2e2e2e;border-radius:10px;padding:12px 13px;color:#F2F2F2;font-size:14px;line-height:1.45;min-height:88px;resize:vertical;outline:none"></textarea>
+        </label>
+
+        <label style="display:flex;flex-direction:column;gap:7px">
+          <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:#9A9A9A">Needed by</span>
+          <input type="date" value="{{ dueDate }}" onChange="{{ setDue }}" style="background:#171717;border:1px solid #2e2e2e;border-radius:10px;padding:11px 13px;color:#F2F2F2;font-size:14px;outline:none;color-scheme:dark" />
+        </label>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;align-items:center">
+          <button onClick="{{ closeReview }}" style="padding:12px 18px;border-radius:10px;border:1px solid #2e2e2e;background:none;color:#C9C9C9;font-size:14px;cursor:pointer">Cancel</button>
+          <button onClick="{{ submitReview }}" style="padding:12px 20px;border-radius:10px;border:none;background:#245FFF;color:#FFFFFF;font-size:14px;cursor:pointer">Send for approval</button>
+        </div>
+
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ receiptOpen }}" hint-placeholder-val="{{ false }}">
+    <div data-chrome="1" style="position:fixed;inset:0;z-index:61;background:rgba(10,10,10,0.72);display:flex;align-items:center;justify-content:center;padding:40px">
+      <div style="width:460px;max-width:100%;background:#1f1f1f;border:1px solid #2e2e2e;border-radius:16px;padding:32px;box-sizing:border-box;display:flex;flex-direction:column;gap:20px;box-shadow:0 40px 120px rgba(0,0,0,0.6)">
+        <div style="width:44px;height:44px;border-radius:999px;background:#01FECD;display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 24 24" style="width:22px;height:22px" fill="none" stroke="#171717" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13 L9 18 L20 6"></path></svg>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:22px;letter-spacing:-0.02em;line-height:1.1">In the queue</div>
+          <div style="font-size:14px;line-height:1.5;color:#9A9A9A">{{ receiptBody }}</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:12px;background:#171717;border:1px solid #2e2e2e;border-radius:10px;padding:13px 15px;font-size:12px;letter-spacing:0.04em;color:#C9C9C9">
+          <span>{{ submittedRef }}</span>
+          <span>{{ submittedAt }}</span>
+        </div>
+        <button onClick="{{ closeReceipt }}" style="align-self:flex-start;padding:12px 20px;border-radius:10px;border:none;background:#245FFF;color:#FFFFFF;font-size:14px;cursor:pointer">Done</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#7824FF"/>
+  <g fill="#81FFE7" transform="translate(120 168) scale(0.182)">
+    <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"/>
+    <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"/>
+    <path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"/>
+    <path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"/>
+    <path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"/>
+  </g>
+</svg>
+</template>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+const SIZES = {
+  square:   { label: "Square",   dims: "1080 × 1080", w: 1080, h: 1080, pad: 48, barH: 120, barLeftW: 349 },
+  portrait: { label: "Portrait", dims: "1080 × 1350", w: 1080, h: 1350, pad: 48, barH: 120, barLeftW: 349 },
+  slide:    { label: "Slide",    dims: "1920 × 1080", w: 1920, h: 1080, pad: 88, barH: 130, barLeftW: 400 },
+  a4:       { label: "A4 page",  dims: "1240 × 1754", w: 1240, h: 1754, pad: 72, barH: 96,  barLeftW: 262, doc: true }
+};
+
+const THEMES = [
+  { name: "Mint / magenta",  ground: "rgb(129,255,231)", accent: "rgb(248,36,255)" },
+  { name: "Lime / violet",   ground: "rgb(208,255,191)", accent: "rgb(120,36,255)" },
+  { name: "Ink / mint",      ground: "rgb(20,20,20)",    accent: "rgb(129,255,231)" },
+  { name: "Violet / light",  ground: "rgb(120,36,255)",  accent: "rgb(229,230,231)" },
+  { name: "Light / violet",  ground: "rgb(229,230,231)", accent: "rgb(120,36,255)" },
+  { name: "Magenta / ink",   ground: "rgb(248,36,255)",  accent: "rgb(20,20,20)" }
+];
+
+const TEMPLATES = [
+  { key: "speaker",  label: "Speaker card" },
+  { key: "event",    label: "Event announce" },
+  { key: "partners", label: "Partner wall" },
+  { key: "lockup",   label: "Logo lockup" },
+  { key: "listing",  label: "Speaker listing" },
+  { key: "trio",     label: "Session trio" }
+];
+
+const TRIO_COPY = {
+  eyebrow: "11.00am · Talks",
+  headline: "Wellness and emerging therapies",
+  dateLine: "Thu 24 Sep: BDO/C5 Hub, St Helier"
+};
+
+const TRIO = [
+  { name: "Nic Rose",       company: "iO-CO",             src: "https://health-innovation.tekex.co/assets/speakers/nic-rose.webp" },
+  { name: "Dr Niraj Singh", company: "Ketamine Therapies", src: "https://health-innovation.tekex.co/assets/speakers/niraj-singh.webp" },
+  { name: "Lisa McCabe",    company: "The Wellbeing Co",   src: "https://health-innovation.tekex.co/assets/speakers/lisa-mccabe.webp" }
+];
+
+const SEED_SPEAKERS = [
+  { name: "Richard Tavernor", role: "Founder",  company: "Yoono" },
+  { name: "",                 role: "Partner",  company: "Rathbones" },
+  { name: "",                 role: "Director", company: "BDO" },
+  { name: "",                 role: "CTO",      company: "C5 Alliance" },
+  { name: "",                 role: "Founder",  company: "Red 5 Systems" },
+  { name: "",                 role: "Chair",    company: "Wild Peak Holdings" }
+];
+
+const PARTNERS = [
+  { name: "Powered by Potting Shed", kind: "mask", src: "assets/ps-logo.svg" },
+  { name: "Rathbones",        kind: "mask", src: "assets/logos/rathbones.svg" },
+  { name: "BDO",              kind: "mask", src: "assets/logos/bdo.svg" },
+  { name: "C5 Alliance",      kind: "mask", src: "assets/logos/c5.svg" },
+  { name: "Red 5 Systems",    kind: "mask", src: "assets/logos/red5.svg" },
+  { name: "Yoono",            kind: "mask", src: "assets/logos/yoono.svg" },
+  { name: "Wild Peak Holdings", kind: "mask", src: "assets/logos/wildpeak.svg" }
+];
+
+const FIELDS = [
+  { key: "eyebrow",  label: "Event number / prefix", ph: "TEKEX #36 Speaker:", on: ["speaker"] },
+  { key: "name",     label: "Speaker name",          ph: "Richard Tavernor",   on: ["speaker"] },
+  { key: "role",     label: "Job title",             ph: "Founder",            on: ["speaker"] },
+  { key: "company",  label: "Company",               ph: "Yoono",              on: ["speaker"] },
+  { key: "eyebrow",  label: "Kicker",                ph: "TEKEX #36 · Speaker line-up", on: ["listing"] },
+  { key: "eyebrow",  label: "Session prefix",        ph: "11.00am · Talks",     on: ["trio"] },
+  { key: "headline", label: "Session title",         ph: "Wellness and emerging therapies", on: ["trio"] },
+  { key: "dateLine", label: "Date / time / venue",   ph: "Thu 24 Sep: BDO/C5 Hub, St Helier", on: ["trio"] },
+  { key: "headline", label: "Headline",              ph: "TEKEX X Rathbones",  on: ["event", "partners", "listing"] },
+  { key: "body",     label: "Intro paragraph",       ph: "The innovation community for the Crown Dependencies.", on: ["event", "lockup", "listing"] },
+  { key: "dateLine", label: "Date / time / venue",   ph: "Fri 22nd Aug: 2pm – 5pm, C5 Hub, Windward House", on: ["speaker", "event", "listing"] },
+  { key: "barLabel", label: "Bar label",             ph: "SPEAKERS",           on: ["speaker", "event", "partners", "lockup", "listing"] },
+  { key: "url",      label: "URL",                   ph: "TEKEX.CO",           on: ["speaker", "event", "partners", "lockup", "listing"] }
+];
+
+class Component extends DCLogic {
+  state = {
+    tpl: "speaker",
+    size: "square",
+    theme: 0,
+    scale: 1,
+    showPowered: true,
+    showBar: true,
+    showHero: true,
+    showPortraits: true,
+    speakers: SEED_SPEAKERS.map((sp, i) => Object.assign({ id: "s" + (i + 1) }, sp)),
+    trio: TRIO.map(t => Object.assign({}, t)),
+    nextSpeakerId: SEED_SPEAKERS.length + 1,
+    copy: {
+      eyebrow: "TEKEX #36 Speaker:",
+      name: "Richard Tavernor",
+      role: "Founder,",
+      company: "Yoono",
+      headline: "TEKEX X Rathbones",
+      body: "TEKEX is the innovation community for the Crown Dependencies. We connect founders, investors, operators and policymakers.",
+      dateLine: "Fri 22nd Aug: 2pm – 5pm, C5 Hub, Windward House",
+      barLabel: "SPEAKERS",
+      url: "TEKEX.CO"
+    },
+    reviewOpen: false,
+    receiptOpen: false,
+    note: "",
+    dueDate: "",
+    submission: null
+  };
+
+  STORE = "tkx-approvals-v1";
+
+  loadSubmissions() {
+    try { return JSON.parse(localStorage.getItem(this.STORE) || "[]"); } catch (e) { return []; }
+  }
+  saveSubmission(rec) {
+    try {
+      const all = this.loadSubmissions();
+      all.unshift(rec);
+      localStorage.setItem(this.STORE, JSON.stringify(all.slice(0, 50)));
+    } catch (e) {}
+  }
+
+  lum(rgb) {
+    const p = rgb.map(v => { const c = v / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+    return 0.2126 * p[0] + 0.7152 * p[1] + 0.0722 * p[2];
+  }
+  parseRgb(str) {
+    const m = String(str).match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+    return m ? [+m[1], +m[2], +m[3]] : [0, 0, 0];
+  }
+  contrast(a, b) {
+    const la = this.lum(this.parseRgb(a)), lb = this.lum(this.parseRgb(b));
+    const hi = Math.max(la, lb), lo = Math.min(la, lb);
+    return (hi + 0.05) / (lo + 0.05);
+  }
+
+  setTrio(i, key, val) {
+    this.setState(s => ({ trio: s.trio.map((t, k) => k === i ? Object.assign({}, t, { [key]: val }) : t) }));
+  }
+
+  slotsFilled() {
+    let total = 0, filled = 0;
+    try {
+      document.querySelectorAll("main[data-stage] image-slot").forEach(el => {
+        total++;
+        const sr = el.shadowRoot;
+        const img = sr && sr.querySelector("img");
+        const hasBg = sr && [...sr.querySelectorAll("*")].some(n => {
+          const bi = getComputedStyle(n).backgroundImage;
+          return bi && bi !== "none" && bi.indexOf("url(") === 0;
+        });
+        if ((img && img.getAttribute("src")) || hasBg) filled++;
+      });
+    } catch (e) {}
+    return { total, filled };
+  }
+
+  buildChecks() {
+    const s = this.state, c = s.copy, th = THEMES[s.theme];
+    const ratio = this.contrast(th.ground, th.accent);
+    const slots = this.slotsFilled();
+    const out = [];
+
+    out.push(ratio >= 4.5
+      ? { level: "pass", label: "Colourway contrast " + ratio.toFixed(1) + ":1 — legible at thumbnail size" }
+      : { level: "warn", label: "Colourway contrast only " + ratio.toFixed(1) + ":1 — reads as texture once scaled down" });
+
+    out.push(s.showPowered
+      ? { level: "pass", label: "Powered by Potting Shed endorsement present" }
+      : { level: "warn", label: "Powered by Potting Shed endorsement hidden" });
+
+    out.push(slots.total === 0
+      ? { level: "pass", label: "No image slots on this template" }
+      : (slots.filled === slots.total
+        ? { level: "pass", label: "All " + slots.total + " image slots filled" }
+        : { level: "warn", label: slots.filled + " of " + slots.total + " image slots filled" }));
+
+    if (s.tpl === "listing") {
+      const blank = s.speakers.filter(sp => !sp.name.trim()).length;
+      out.push(blank === 0
+        ? { level: "pass", label: "All " + s.speakers.length + " speaker rows named" }
+        : { level: "warn", label: blank + " of " + s.speakers.length + " speaker rows still unnamed" });
+      out.push(s.size === "a4"
+        ? { level: "pass", label: "A4 page geometry — exports to PDF at print size" }
+        : { level: "warn", label: "Listing is set to a social size — switch to A4 for the email page" });
+    }
+
+    const longest = s.tpl === "speaker" ? (c.name || "") : (c.headline || "");
+    out.push(longest.length <= 34
+      ? { level: "pass", label: "Headline length within the type scale" }
+      : { level: "warn", label: "Headline runs long — it will shrink below the intended weight" });
+
+    out.push((c.url || "").trim()
+      ? { level: "pass", label: "URL lockup set to " + c.url }
+      : { level: "fail", label: "URL missing from the top-right lockup" });
+
+    return out;
+  }
+
+  openReview = () => this.setState({ reviewOpen: true });
+  closeReview = () => this.setState({ reviewOpen: false });
+  closeReceipt = () => this.setState({ receiptOpen: false });
+  withdraw = () => this.setState({ submission: null, receiptOpen: false });
+
+  submitReview = () => {
+    const s = this.state;
+    const now = new Date();
+    const ref = "TKX-" + now.getFullYear().toString().slice(2) +
+      String(now.getMonth() + 1).padStart(2, "0") + String(now.getDate()).padStart(2, "0") +
+      "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+    const rec = {
+      ref: ref,
+      at: now.toISOString(),
+      brand: "TEKEX",
+      template: s.tpl,
+      size: s.size,
+      theme: THEMES[s.theme].name,
+      copy: Object.assign({}, s.copy),
+      note: s.note,
+      due: s.dueDate,
+      checks: this.buildChecks()
+    };
+    this.saveSubmission(rec);
+    this.setState({ submission: rec, reviewOpen: false, receiptOpen: true });
+  };
+
+  stageEl = null;
+
+  attach() {
+    if (this.stageEl && this.stageEl.isConnected) return this.stageEl;
+    const el = document.querySelector("main[data-stage]");
+    if (!el) return null;
+    this.stageEl = el;
+    if (!this._ro && typeof ResizeObserver !== "undefined") {
+      this._ro = new ResizeObserver(() => this.fit());
+      this._ro.observe(el);
+    }
+    return el;
+  }
+
+  componentDidMount() {
+    let tries = 0;
+    const tick = () => {
+      this.attach();
+      this.fit();
+      if (++tries < 12 && this.state.scale === 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    this._onResize = () => this.fit();
+    window.addEventListener("resize", this._onResize);
+  }
+  componentWillUnmount() {
+    window.removeEventListener("resize", this._onResize);
+    if (this._ro) { this._ro.disconnect(); this._ro = null; }
+  }
+  componentDidUpdate(pp, ps) {
+    if (!ps || ps.size !== this.state.size) requestAnimationFrame(() => this.fit());
+  }
+
+  fit() {
+    const host = this.attach();
+    if (!host || !host.clientWidth || !host.clientHeight) return;
+    const S = SIZES[this.state.size];
+    const availW = host.clientWidth - 64;
+    const availH = host.clientHeight - 64;
+    if (availW <= 0 || availH <= 0) return;
+    const scale = Math.min(availW / S.w, availH / S.h, 1);
+    if (scale > 0 && Math.abs(scale - this.state.scale) > 0.002) this.setState({ scale });
+  }
+
+  setCopy(key, v) { this.setState(s => ({ copy: Object.assign({}, s.copy, { [key]: v }) })); }
+
+  setSpeaker(id, key, v) {
+    this.setState(s => ({ speakers: s.speakers.map(sp => sp.id === id ? Object.assign({}, sp, { [key]: v }) : sp) }));
+  }
+  addSpeaker() {
+    this.setState(s => ({
+      speakers: s.speakers.concat([{ id: "s" + s.nextSpeakerId, name: "", role: "", company: "" }]),
+      nextSpeakerId: s.nextSpeakerId + 1
+    }));
+  }
+  removeSpeaker(id) {
+    this.setState(s => ({ speakers: s.speakers.filter(sp => sp.id !== id) }));
+  }
+  pickTemplate(key) {
+    this.setState(s => {
+      if (key === "listing" && s.tpl !== "listing") return { tpl: key, size: "a4", theme: 4 };
+      if (key === "trio" && s.tpl !== "trio") {
+        return { tpl: key, copy: Object.assign({}, s.copy, TRIO_COPY) };
+      }
+      return { tpl: key };
+    });
+  }
+
+  nameSize(str, base) {
+    const n = (str || "").length;
+    if (n <= 14) return base;
+    if (n <= 20) return Math.round(base * 0.82);
+    if (n <= 28) return Math.round(base * 0.66);
+    return Math.round(base * 0.54);
+  }
+
+  downloadPdf = () => {
+    const S = SIZES[this.state.size];
+    let el = document.getElementById("tkx-page-size");
+    if (!el) { el = document.createElement("style"); el.id = "tkx-page-size"; document.head.appendChild(el); }
+    el.textContent = "@page{size:" + S.w + "px " + S.h + "px;margin:0}";
+    window.print();
+  };
+
+  renderVals() {
+    const s = this.state;
+    const S = SIZES[s.size];
+    const th = THEMES[s.theme];
+    const c = s.copy;
+    const wide = s.size === "slide";
+    const doc = !!S.doc;
+    const du = S.w / 1240;
+    const nSpk = s.speakers.length;
+    const heroOn = s.showHero && nSpk <= 8;
+    const dens = nSpk <= 6 ? 1 : (nSpk <= 9 ? 0.85 : (nSpk <= 12 ? 0.72 : (nSpk <= 16 ? 0.55 : 0.42)));
+    const thumbPx = Math.round(96 * du * dens);
+    const rowPadPx = Math.round(14 * du * dens);
+    const rowNatPx = thumbPx + 2 * rowPadPx;
+    const u = 1;
+
+    const gap = Math.round(24 * u);
+    const gapS = Math.round(14 * u);
+    const panelPad = Math.round(28 * u);
+
+    const fsHeadline = wide ? 104 : (s.size === "portrait" ? 108 : 96);
+    const fsName = this.nameSize(c.name, wide ? 112 : 128);
+    const checks = this.buildChecks();
+    const sub = s.submission;
+
+    return {
+      templates: TEMPLATES.map(t => ({
+        label: t.label,
+        pick: () => this.pickTemplate(t.key),
+        bg: s.tpl === t.key ? "#245FFF" : "#171717",
+        fg: s.tpl === t.key ? "#F2F2F2" : "#9A9A9A",
+        bd: s.tpl === t.key ? "#245FFF" : "#2e2e2e"
+      })),
+      sizeDims: S.dims,
+      downloadPdf: this.downloadPdf,
+      sizes: Object.keys(SIZES).map(k => ({
+        label: SIZES[k].label,
+        dims: SIZES[k].dims,
+        pick: () => this.setState({ size: k }),
+        bg: s.size === k ? "#245FFF" : "#171717",
+        fg: s.size === k ? "#F2F2F2" : "#9A9A9A",
+        bd: s.size === k ? "#245FFF" : "#2e2e2e"
+      })),
+      themes: THEMES.map((t, i) => ({
+        name: t.name, ground: t.ground, accent: t.accent,
+        pick: () => this.setState({ theme: i }),
+        bd: s.theme === i ? "#F2F2F2" : "transparent"
+      })),
+      fields: FIELDS.filter(f => f.on.indexOf(s.tpl) >= 0).map(f => ({
+        label: f.label, ph: f.ph, value: c[f.key] || "",
+        set: (e) => this.setCopy(f.key, e.target.value)
+      })),
+
+      canvasStyle: {
+        width: S.w, height: S.h, flex: "0 0 auto", boxSizing: "border-box",
+        padding: S.pad, background: th.ground, color: th.accent,
+        display: "flex", flexDirection: "column", overflow: "hidden",
+        transform: "scale(var(--tkx-scale, 1))", transformOrigin: "center center",
+        boxShadow: "0 30px 90px rgba(0,0,0,0.55)"
+      },
+      screenLabel: TEMPLATES.filter(t => t.key === s.tpl)[0].label + " · " + S.dims,
+
+      isSpeaker: s.tpl === "speaker",
+      isEvent: s.tpl === "event",
+      isPartners: s.tpl === "partners",
+      isLockup: s.tpl === "lockup",
+      showEyebrowTop: false,
+
+      eyebrow: c.eyebrow, name: c.name, role: c.role, company: c.company,
+      headline: c.headline, body: c.body, dateLine: c.dateLine,
+      barLabel: c.barLabel, url: c.url,
+
+      gap, gapS, panelPad,
+      barH: S.barH, barLeftW: S.barLeftW,
+      fsUrl: doc ? Math.round(22 * du) : Math.round(32 * u), fsEyebrow: Math.round(46 * u),
+      fsName, fsMeta: Math.round(45 * u), fsDate: Math.round(40 * u),
+      fsLabel: doc ? Math.round(30 * du) : Math.round(46 * u),
+      fsPowered: doc ? Math.round(13 * du) : Math.round(16 * u),
+
+      isListing: s.tpl === "listing",
+      isTrio: s.tpl === "trio",
+      trioDir: S.w >= S.h ? "row" : "row",
+      trioCols: "repeat(3,minmax(0,1fr))",
+      trio: s.trio.map((t, i) => ({
+        name: t.name,
+        company: t.company,
+        slotId: "tkx-trio-photo-" + (i + 1),
+        photoStyle: {
+          width: "100%", height: "100%",
+          backgroundImage: "url(" + t.src + ")",
+          backgroundSize: "cover", backgroundPosition: "center top",
+          filter: "grayscale(1) contrast(1.04)"
+        },
+        edName: (e) => this.setTrio(i, "name", e.target.innerText),
+        edCompany: (e) => this.setTrio(i, "company", e.target.innerText)
+      })),
+      fsTrioName: doc ? Math.round(23 * du) : Math.round(30 * u),
+      fsTrioCo: doc ? Math.round(16 * du) : Math.round(21 * u),
+      showHero: heroOn,
+      showPortraits: s.showPortraits,
+      toggleHero: () => this.setState(p => ({ showHero: !p.showHero })),
+      togglePortraits: () => this.setState(p => ({ showPortraits: !p.showPortraits })),
+      addSpeaker: () => this.addSpeaker(),
+      speakerCount: s.speakers.length + (s.speakers.length === 1 ? " row" : " rows"),
+      speakerRows: s.speakers.map((sp, i) => ({
+        n: String(i + 1).padStart(2, "0"),
+        name: sp.name, role: sp.role, company: sp.company,
+        setName: (e) => this.setSpeaker(sp.id, "name", e.target.value),
+        setRole: (e) => this.setSpeaker(sp.id, "role", e.target.value),
+        setCompany: (e) => this.setSpeaker(sp.id, "company", e.target.value),
+        remove: () => this.removeSpeaker(sp.id)
+      })),
+      speakerList: s.speakers.map(sp => ({
+        slotId: "tkx-listing-" + sp.id,
+        displayName: sp.name || "Speaker name",
+        shortLabel: sp.name || sp.company || "Portrait",
+        role: sp.role, company: sp.company,
+        nameStyle: sp.name ? "" : "opacity:0.4"
+      })),
+      docGap: Math.round(20 * du),
+      docGapS: Math.round(10 * du),
+      docGapXS: Math.round(5 * du),
+      docPad: Math.round(20 * du),
+      docRowPad: rowPadPx,
+      rowNat: rowNatPx,
+      docTextMax: Math.round(880 * du),
+      heroH: Math.round(240 * du),
+      thumb: thumbPx,
+      rowMax: Math.round(rowNatPx * 1.4),
+      fsDocEyebrow: Math.round(24 * du),
+      fsDocTitle: Math.round(94 * du),
+      fsDocIntro: Math.round(26 * du),
+      fsDocDate: Math.round(26 * du),
+      fsRowName: Math.round(40 * du * dens),
+      fsRowMeta: Math.round(26 * du * dens),
+      fsHeadline, fsBody: Math.round(42 * u),
+      bodyMax: wide ? 820 : 900,
+      contentDir: wide ? "row" : "column",
+      panelFlex: wide ? "1 1 50%" : "0 1 auto",
+      halfMin: wide ? 0 : 240,
+      eventStripH: wide ? 200 : (s.size === "portrait" ? 320 : 240),
+      lockupW: wide ? 1200 : 800,
+      partnerCols: wide ? 4 : 2,
+      psStyle: {
+        width: Math.round(150 * u), height: Math.round(32 * u), background: "currentColor",
+        WebkitMaskImage: "url(assets/ps-logo.svg)", maskImage: "url(assets/ps-logo.svg)",
+        WebkitMaskSize: "contain", maskSize: "contain",
+        WebkitMaskPosition: "center", maskPosition: "center",
+        WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat"
+      },
+
+      partners: PARTNERS.map(p => ({
+        name: p.name, src: p.src || "", slotId: p.slotId || "",
+        isMask: p.kind === "mask", isImg: p.kind === "img", isSlot: p.kind === "slot",
+        maskStyle: {
+          width: "78%", height: "56%", background: "currentColor",
+          WebkitMaskImage: "url(" + (p.src || "") + ")", maskImage: "url(" + (p.src || "") + ")",
+          WebkitMaskSize: "contain", maskSize: "contain",
+          WebkitMaskPosition: "center", maskPosition: "center",
+          WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat"
+        },
+        imgStyle: {
+          width: "78%", height: "70%",
+          backgroundImage: p.src ? "url(" + p.src + ")" : "none",
+          backgroundSize: "contain", backgroundPosition: "center",
+          backgroundRepeat: "no-repeat"
+        }
+      })),
+
+      checks: checks.map(ck => ({
+        label: ck.label,
+        dotStyle: {
+          flex: "0 0 auto", width: 8, height: 8, borderRadius: 999, marginTop: 5,
+          background: ck.level === "pass" ? "#01FECD" : (ck.level === "warn" ? "#FDE619" : "#FE1658")
+        }
+      })),
+      hasWarnings: checks.some(ck => ck.level !== "pass"),
+      summary: [
+        { k: "Brand", v: "TEKEX" },
+        { k: "Template", v: TEMPLATES.filter(t => t.key === s.tpl)[0].label },
+        { k: "Output", v: S.dims },
+        { k: "Colourway", v: th.name },
+        { k: "Headline", v: (s.tpl === "speaker" ? c.name : c.headline) || "—" }
+      ],
+      statusLabel: sub ? "Submitted" : "Draft",
+      statusChipStyle: {
+        fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase",
+        padding: "4px 9px", borderRadius: 999,
+        background: sub ? "rgba(1,254,205,0.14)" : "#171717",
+        color: sub ? "#01FECD" : "#9A9A9A",
+        border: "1px solid " + (sub ? "rgba(1,254,205,0.35)" : "#2e2e2e")
+      },
+      isDraft: !sub,
+      isSubmitted: !!sub,
+      submittedRef: sub ? sub.ref : "",
+      submittedAt: sub ? new Date(sub.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "",
+      submittedHeadline: sub ? "With the Potting Shed brand desk — usually back within one working day." : "",
+      receiptBody: sub
+        ? ("Sent to the Potting Shed brand desk" + (sub.due ? ", needed by " + new Date(sub.due).toLocaleDateString("en-GB", { day: "numeric", month: "long" }) : "") + ". You'll get the approval or notes against this reference.")
+        : "",
+      reviewOpen: s.reviewOpen,
+      receiptOpen: s.receiptOpen,
+      note: s.note,
+      dueDate: s.dueDate,
+      setNote: (e) => this.setState({ note: e.target.value }),
+      setDue: (e) => this.setState({ dueDate: e.target.value }),
+      openReview: this.openReview,
+      closeReview: this.closeReview,
+      closeReceipt: this.closeReceipt,
+      withdraw: this.withdraw,
+      submitReview: this.submitReview,
+
+      showPowered: s.showPowered,
+      showBar: s.showBar,
+      togglePowered: () => this.setState(st => ({ showPowered: !st.showPowered })),
+      toggleBar: () => this.setState(st => ({ showBar: !st.showBar }))
+    };
+  }
+}
+</script>
+</body>
+</html>

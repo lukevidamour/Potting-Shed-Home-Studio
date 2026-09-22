@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Studio</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="styles.css">
+<script src="home-studio.lib.js"></script>
+<link rel="stylesheet" href="home-studio.css">
+</helmet>
+
+<div class="app {{ viewClass }}">
+
+  <!-- ================= EDITOR HEADER ================= -->
+  <sc-if value="{{ isEditor }}">
+    <header class="hdr compact" data-chrome="1">
+      <button class="btn sm quiet" onClick="{{ backToProject }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>{{ backLabel }}
+      </button>
+      <input class="title-in" value="{{ title }}" onChange="{{ setTitle }}" aria-label="Design title" />
+      <span class="kebab" onClick="{{ stop }}">
+        <button class="projchip {{ projChipClass }}" onClick="{{ toggleProjMenu }}" aria-haspopup="menu" aria-expanded="{{ projMenuOpen }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>{{ projChipLabel }}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <sc-if value="{{ projMenuOpen }}">
+          <div class="menu left" role="menu" aria-label="Project">
+            <div class="mlabel">Add this artwork to</div>
+            <sc-for list="{{ projMenuItems }}" as="pm"><button role="menuitemradio" aria-checked="{{ pm.on }}" onClick="{{ pm.pick }}">{{ pm.name }}</button></sc-for>
+            <div class="msep"></div>
+            <button role="menuitem" onClick="{{ newProjectFromEditor }}">New project…</button>
+            <sc-if value="{{ inProject }}"><button role="menuitem" onClick="{{ unassignProject }}">Keep as a draft</button></sc-if>
+          </div>
+        </sc-if>
+      </span>
+      <div class="save {{ saveClass }}" role="status" aria-live="polite"><span class="sdot" aria-hidden="true"></span><span>{{ saveLabel }}</span>
+        <sc-if value="{{ saveFailed }}"><button class="link" onClick="{{ retrySave }}">Retry</button></sc-if>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn icon" onClick="{{ undo }}" disabled="{{ !canUndo }}" aria-label="Undo" title="Undo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+      <button class="btn icon" onClick="{{ redo }}" disabled="{{ !canRedo }}" aria-label="Redo" title="Redo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+      <button class="btn primary" onClick="{{ openReview }}">Publish</button>
+    </header>
+  </sc-if>
+
+  <!-- ================= BODY ================= -->
+  <div class="{{ bodyClass }}">
+
+    <!-- Sidebar (all non-editor views) -->
+    <sc-if value="{{ !isEditor }}">
+      <aside class="side" data-chrome="1" aria-label="Workspace navigation">
+        <div class="brand"><span class="mark" role="img" aria-label="Potting Shed"></span><span class="prod">Home Studio</span></div>
+        <div class="userchip"><span class="avatar" aria-hidden="true"><sc-if value="{{ !avatarMissing }}"><img sc-camel-src="assets/ed.jpg" alt="" onError="{{ avatarFailed }}" /></sc-if><sc-if value="{{ avatarMissing }}">E</sc-if></span><div><b>Ed</b><span>Signed in · TEKEX</span></div></div>
+        <div class="wschip"><span class="wsmark"><svg viewBox="0 0 879.658 181" role="img" aria-label="TEKEX"><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path><path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path><path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path><path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path></svg></span><div><b>TEKEX</b><span>Client workspace</span></div></div>
+        <nav class="sidegrp" aria-label="Workspace">
+          <div class="lbl">Workspace</div>
+          <button onClick="{{ goProjects }}" aria-current="{{ projectsCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Projects<span class="cnt">{{ projectCount }}</span></button>
+          <button onClick="{{ goDesigns }}" aria-current="{{ designsCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>All designs<span class="cnt">{{ designCount }}</span></button>
+          <button onClick="{{ goCalendar }}" aria-current="{{ calendarCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18M8 3v4M16 3v4M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>Calendar<span class="cnt">{{ scheduledCount }}</span></button>
+          <button onClick="{{ goLibrary }}" aria-current="{{ libraryCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="m4 16 5-5 4 4 3-3 4 4"/><circle cx="15.5" cy="9.5" r="1.5"/></svg>Image library<span class="cnt">{{ libraryCount }}</span></button>
+        </nav>
+        <nav class="sidegrp" aria-label="Support">
+          <div class="lbl">Support</div>
+          <button onClick="{{ openHelp }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/><path d="M12 17h.01"/></svg>How it works</button>
+        </nav>
+        <div class="sidefoot"><b>Saved in this browser</b>Projects and designs stay on this device. Downloads are full-size PNG or JPG.</div>
+      </aside>
+    </sc-if>
+
+    <!-- Editor panel -->
+    <sc-if value="{{ isEditor }}">
+      <aside class="panel" data-chrome="1" aria-label="Editing panel">
+        <div class="panel-head"><h2>Make it yours</h2><p>Click any text on the artwork to edit it. Your brand styling is built in.</p></div>
+        <div class="panel-body">
+          <sc-if value="{{ hasOverflow }}">
+            <div class="alert err" role="alert" style="margin-top:12px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>{{ overflowMsg }}</span></div>
+          </sc-if>
+
+          <section class="sect" aria-labelledby="sl-tpl"><div class="eyebrow" id="sl-tpl">Template</div>
+            <div class="tpl-grid">
+              <sc-for list="{{ templateTiles }}" as="tt"><button class="tplbtn" aria-pressed="{{ tt.on }}" onClick="{{ tt.pick }}">{{ tt.name }}</button></sc-for>
+            </div>
+          </section>
+
+          <section class="sect" aria-labelledby="sl-size"><div class="eyebrow" id="sl-size">Size</div>
+            <div class="sizestrip">
+              <sc-for list="{{ sizeStrip }}" as="ss">
+                <button class="sizepill" role="tab" aria-selected="{{ ss.on }}" onClick="{{ ss.open }}" title="{{ ss.dims }} px"><i style="{{ ss.glyph }}" aria-hidden="true"></i>{{ ss.label }}<span class="r">{{ ss.ratio }}</span></button>
+              </sc-for>
+              <sc-if value="{{ canAddSize }}"><button class="sizepill add" onClick="{{ openSizeDialog }}" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add size</button></sc-if>
+            </div>
+            <sc-if value="{{ hasSiblings }}"><label class="synccheck" style="margin:0"><input type="checkbox" checked="{{ syncSizes }}" onChange="{{ toggleSync }}" />Keep copy in sync across sizes</label></sc-if>
+          </section>
+
+
+          <section class="sect" aria-labelledby="sl-col"><div class="eyebrow" id="sl-col">Colourway</div>
+            <div class="swatches" role="radiogroup" aria-label="Colour combination" onKeyDown="{{ themeKeys }}">
+              <sc-for list="{{ themeTiles }}" as="th">
+                <button class="sw" role="radio" aria-checked="{{ th.on }}" tabIndex="{{ th.tab }}" onClick="{{ th.pick }}" title="{{ th.name }}">
+                  <span class="mini" style="{{ th.miniStyle }}" aria-hidden="true"><b>Aa</b><i style="{{ th.barStyle }}"></i></span>
+                  <span class="nm">{{ th.name }}<span class="chk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span></span>
+                </button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ lowContrast }}"><div class="alert warn"><span>This combination reads as {{ contrastRatio }}:1 contrast. It's approved, but check it at small sizes.</span></div></sc-if>
+          </section>
+
+          <section class="sect" aria-labelledby="sl-copy"><div class="eyebrow" id="sl-copy">Copy</div>
+            <sc-for list="{{ fields }}" as="f">
+              <div class="field">
+                <label for="{{ f.id }}">{{ f.label }}<sc-if value="{{ f.optional }}"><span class="opt">Optional</span></sc-if></label>
+                <sc-if value="{{ f.isText }}"><input class="input {{ f.errClass }}" id="{{ f.id }}" value="{{ f.value }}" onChange="{{ f.set }}" placeholder="{{ f.ph }}" aria-invalid="{{ f.invalid }}" aria-describedby="{{ f.errId }}" /></sc-if>
+                <sc-if value="{{ f.isArea }}"><textarea class="input {{ f.errClass }}" id="{{ f.id }}" value="{{ f.value }}" onChange="{{ f.set }}" placeholder="{{ f.ph }}" aria-invalid="{{ f.invalid }}" aria-describedby="{{ f.errId }}"></textarea></sc-if>
+                <sc-if value="{{ f.error }}"><div class="ferr" id="{{ f.errId }}">{{ f.error }}</div></sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ hasTimeRow }}">
+              <div class="field"><div class="lab">When<span class="opt">Optional</span></div>
+                <div class="row3">
+                  <input class="input {{ flashDate }}" id="f-date" value="{{ copy.date }}" onChange="{{ setDate }}" placeholder="Fri 22nd Aug" aria-label="Date" />
+                  <input class="input" id="f-startTime" value="{{ copy.startTime }}" onChange="{{ setStart }}" placeholder="2pm" aria-label="Start time" />
+                  <input class="input" id="f-endTime" value="{{ copy.endTime }}" onChange="{{ setEnd }}" placeholder="5pm" aria-label="End time" />
+                </div>
+              </div>
+              <div class="field"><label for="f-venue">Venue<span class="opt">Optional</span></label><input class="input {{ venueErrClass }} {{ flashVenue }}" id="f-venue" value="{{ copy.venue }}" onChange="{{ setVenue }}" placeholder="C5 Hub, Windward House" /></div>
+            </sc-if>
+            <sc-if value="{{ isListing }}">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px"><span style="font-size:14px;font-weight:500">Speakers</span><span class="meta">{{ speakerCount }}</span></div>
+              <sc-for list="{{ speakerRows }}" as="sp">
+                <div class="speaker-row">
+                  <div class="top"><span>Speaker {{ sp.n }}</span><button class="link" style="font-size:13px" onClick="{{ sp.remove }}">Remove</button></div>
+                  <input class="input" value="{{ sp.name }}" onChange="{{ sp.setName }}" placeholder="Speaker name" aria-label="Speaker {{ sp.n }} name" />
+                  <div class="row2">
+                    <input class="input" value="{{ sp.role }}" onChange="{{ sp.setRole }}" placeholder="Job title" aria-label="Speaker {{ sp.n }} job title" />
+                    <input class="input" value="{{ sp.company }}" onChange="{{ sp.setCompany }}" placeholder="Company" aria-label="Speaker {{ sp.n }} company" />
+                  </div>
+                </div>
+              </sc-for>
+              <button class="btn" onClick="{{ addSpeaker }}">Add a speaker</button>
+            </sc-if>
+            <sc-if value="{{ isTrio }}">
+              <sc-for list="{{ trioRows }}" as="t">
+                <div class="speaker-row">
+                  <div class="top"><span>Session {{ t.n }}</span></div>
+                  <input class="input" value="{{ t.name }}" onChange="{{ t.setName }}" placeholder="Speaker name" aria-label="Session {{ t.n }} speaker" />
+                  <input class="input" value="{{ t.company }}" onChange="{{ t.setCompany }}" placeholder="Company or topic" aria-label="Session {{ t.n }} company" />
+                </div>
+              </sc-for>
+            </sc-if>
+            <sc-if value="{{ isPartners }}">
+              <div style="font-size:14px;font-weight:500;margin-top:8px">Partners shown</div>
+              <sc-for list="{{ partnerToggles }}" as="p">
+                <label class="check"><span>{{ p.name }}</span><input type="checkbox" checked="{{ p.on }}" onChange="{{ p.toggle }}" /></label>
+              </sc-for>
+            </sc-if>
+            <sc-if value="{{ hasFooter }}">
+              <div class="row2" style="margin-top:4px">
+                <div class="field"><label for="f-barLabel">Footer label</label>
+                  <select class="input {{ flashBar }}" id="f-barLabel" value="{{ copy.barLabel }}" onChange="{{ setBar }}">
+                    <sc-for list="{{ barOptions }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for>
+                  </select>
+                </div>
+                <div class="field"><label for="f-url">Web address<span class="opt">Optional</span></label><input class="input {{ flashUrl }}" id="f-url" value="{{ copy.url }}" onChange="{{ setUrl }}" placeholder="TEKEX.CO" /></div>
+              </div>
+            </sc-if>
+          </section>
+
+
+          <sc-if value="{{ hasSlots }}">
+          <section class="sect" aria-labelledby="sl-img"><div class="eyebrow" id="sl-img">Images <span style="text-transform:none;letter-spacing:0;font-weight:400">· {{ imgCount }} added</span></div>
+            <div class="hint">Drop a PNG, JPG or WebP onto an image area, or choose from the library. Up to {{ maxMb }} MB.</div>
+            <sc-for list="{{ slotCards }}" as="sl">
+              <div class="slot-card {{ sl.overClass }}" onDragOver="{{ sl.dragOver }}" onDragLeave="{{ sl.dragLeave }}" onDrop="{{ sl.drop }}">
+                <div class="th" style="{{ sl.thStyle }}" role="img" aria-label="{{ sl.thAlt }}"></div>
+                <div class="sb">
+                  <div class="nm">{{ sl.label }}</div>
+                  <div class="st">{{ sl.status }}</div>
+                  <sc-if value="{{ sl.soft }}"><div class="alert warn" style="padding:8px 10px"><span>This image may look soft when downloaded. Try a larger version.</span></div></sc-if>
+                  <div class="acts">
+                    <button class="btn sm" onClick="{{ sl.choose }}">Choose an image</button>
+                    <sc-if value="{{ sl.has }}"><button class="btn sm" onClick="{{ sl.adjust }}">Adjust crop</button><button class="btn sm quiet" onClick="{{ sl.clear }}">Remove</button></sc-if>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </section>
+          </sc-if>
+
+          <details class="sect more"><summary><span class="eyebrow">More options</span><span class="meta">Footer bar, powered-by mark, listing extras</span></summary>
+            <div class="moreb">
+            <label class="check"><span>Show the footer bar</span><input type="checkbox" checked="{{ showBar }}" onChange="{{ toggleBar }}" /></label>
+            <sc-if value="{{ showBar }}"><label class="check"><span>Show “Powered by Potting Shed”</span><input type="checkbox" checked="{{ showPowered }}" onChange="{{ togglePowered }}" /></label></sc-if>
+            <sc-if value="{{ isListing }}">
+              <label class="check"><span>Header image</span><input type="checkbox" checked="{{ showHero }}" onChange="{{ toggleHero }}" /></label>
+              <label class="check"><span>Speaker portraits</span><input type="checkbox" checked="{{ showPortraits }}" onChange="{{ togglePortraits }}" /></label>
+            </sc-if>
+            <div class="hint">Fonts, logos and spacing are locked to the TEKEX brand. If you need a different layout, ask Potting Shed.</div>
+            </div>
+          </details>
+
+        </div>
+        <div class="panel-foot">
+          <button class="btn primary lg" onClick="{{ openReview }}"><span>Publish</span><span class="dims">Schedule · post copy · download</span></button>
+        </div>
+      </aside>
+    </sc-if>
+
+    <div class="{{ mainClass }}">
+      <sc-if value="{{ isEditor }}">
+        <div class="toolbar" data-chrome="1">
+          <div class="sizestrip" role="tablist" aria-label="Sizes of this design">
+            <sc-for list="{{ sizeStrip }}" as="ss">
+              <button class="sizepill" role="tab" aria-selected="{{ ss.on }}" onClick="{{ ss.open }}" title="{{ ss.dims }} px"><i style="{{ ss.glyph }}" aria-hidden="true"></i>{{ ss.label }}<span class="r">{{ ss.ratio }}</span></button>
+            </sc-for>
+            <sc-if value="{{ canAddSize }}"><button class="sizepill add" onClick="{{ openSizeDialog }}" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add size</button></sc-if>
+            <sc-if value="{{ hasSiblings }}"><label class="synccheck"><input type="checkbox" checked="{{ syncSizes }}" onChange="{{ toggleSync }}" />Keep copy in sync across sizes</label></sc-if>
+          </div>
+          <span class="spacer"></span>
+          <button class="btn icon" onClick="{{ zoomOut }}" aria-label="Zoom out"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+          <span class="zoomv" aria-live="polite">{{ zoomPct }}</span>
+          <button class="btn icon" onClick="{{ zoomIn }}" aria-label="Zoom in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg></button>
+          <button class="btn sm quiet" onClick="{{ zoomFit }}">Fit</button>
+        </div>
+      </sc-if>
+
+      <!-- Projects home -->
+      <sc-if value="{{ isProjects }}">
+        <div class="page" style="padding-bottom:0">
+          <div class="pagehead">
+            <div><div class="eyebrow">TEKEX workspace · Projects</div><h1 class="welcome">What are we making <em>today</em>?</h1><p class="lede">Start a new artwork straight away, or open a project to see what's in it. Anything not filed yet sits in Drafts.</p></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <button class="btn lg" onClick="{{ openNewProject }}">New project</button>
+              <button class="btn primary lg" onClick="{{ newArtwork }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New artwork</button>
+            </div>
+          </div>
+          <sc-if value="{{ hasWeek }}">
+            <section class="week" aria-labelledby="wk-title">
+              <div class="weekhead"><h3 class="section" id="wk-title">Going out <em>this week</em></h3><span class="meta">{{ weekCount }} scheduled · <button class="link" style="font-size:13px" onClick="{{ goCalendar }}">open the calendar</button></span></div>
+              <div class="weekstrip">
+                <sc-for list="{{ weekItems }}" as="wi">
+                  <button class="weekcard" onClick="{{ wi.open }}" aria-label="{{ wi.aria }}">
+                    <span class="wart" style="{{ wi.artStyle }}"><sc-if value="{{ wi.thumb }}"><img sc-camel-src="{{ wi.thumb }}" alt="" /></sc-if><sc-if value="{{ !wi.thumb }}"><b>Aa</b></sc-if></span>
+                    <span class="wday">{{ wi.day }}</span>
+                    <span class="wttl">{{ wi.title }}</span>
+                    <span class="wsub">{{ wi.sub }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </section>
+          </sc-if>
+          <div class="toolrow">
+            <div class="pills" role="tablist" aria-label="Project status">
+              <button class="pill" role="tab" aria-selected="{{ pillActive }}" onClick="{{ pickActive }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Active <span class="n">{{ activeCount }}</span></button>
+              <button class="pill" role="tab" aria-selected="{{ !pillActive }}" onClick="{{ pickArchived }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v3H3zM5 9v10h14V9M10 13h4"/></svg>Archived <span class="n">{{ archivedCount }}</span></button>
+            </div>
+            <div class="filters">
+              <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" value="{{ q }}" onChange="{{ setQ }}" placeholder="Search projects and artwork" aria-label="Search projects and artwork" /><sc-if value="{{ q }}"><button class="btn icon" onClick="{{ clearQ }}" aria-label="Clear search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></sc-if></label>
+              <select class="input" aria-label="Sort" value="{{ sortKey }}" onChange="{{ setSort }}"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="az">A to Z</option><option value="za">Z to A</option></select>
+              <div class="viewtog" role="group" aria-label="Layout">
+                <button aria-pressed="{{ isGrid }}" aria-label="Grid view" onClick="{{ pickGrid }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
+                <button aria-pressed="{{ !isGrid }}" aria-label="List view" onClick="{{ pickList }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <sc-if value="{{ noProjectsShown }}">
+            <div class="empty" style="margin-top:24px"><svg class="illo" viewBox="0 0 120 80" aria-hidden="true"><rect x="8" y="14" width="56" height="52" rx="6"/><rect x="40" y="6" width="56" height="40" rx="6"/><path d="M52 66V46h32"/><circle cx="24" cy="30" r="5"/></svg><p>{{ emptyProjectsMsg }}</p><sc-if value="{{ pillActive }}"><button class="btn primary" onClick="{{ newArtwork }}">New artwork</button></sc-if></div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- Project page -->
+      <sc-if value="{{ isProject }}">
+        <div class="page" style="padding-bottom:0">
+          <button class="btn sm quiet" onClick="{{ goProjects }}" style="margin-left:-14px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Projects</button>
+          <div class="projhead" style="margin-top:12px">
+            <div class="top">
+              <div style="flex:1 1 420px;min-width:0">
+                <input class="projtitle" value="{{ project.name }}" onChange="{{ setProjectName }}" aria-label="Project name" />
+                <sc-if value="{{ project.brief }}"><p class="lede" style="margin-top:6px">{{ project.brief }}</p></sc-if>
+                <div class="projmeta" style="margin-top:8px"><span class="status {{ projectStatusClass }}">{{ projectStatusText }}</span><span>{{ projectDesignCount }}<sc-if value="{{ projectNextText }}"> · next up {{ projectNextText }}</sc-if> · edited {{ projectEditedText }}</span></div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <button class="btn primary lg" onClick="{{ goTemplates }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New artwork</button>
+                <span class="kebab" onClick="{{ stop }}">
+                  <button class="btn icon" style="border-color:var(--hs-rule)" onClick="{{ toggleProjectPageMenu }}" aria-label="Project options" aria-haspopup="menu" aria-expanded="{{ projectPageMenuOpen }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg></button>
+                  <sc-if value="{{ projectPageMenuOpen }}"><div class="menu" role="menu"><button role="menuitem" onClick="{{ editProject }}">Edit details</button><button role="menuitem" onClick="{{ toggleArchiveCurrent }}">{{ archiveLabel }}</button><button role="menuitem" class="danger" onClick="{{ deleteCurrentProject }}">Delete project</button></div></sc-if>
+                </span>
+              </div>
+            </div>
+          </div>
+          <sc-if value="{{ !projectEmpty }}"><div class="toolrow" style="margin-top:8px"><span class="meta">{{ projectDesignCount }}</span><div class="filters">
+              <select class="input" aria-label="Sort" value="{{ sortKey }}" onChange="{{ setSort }}"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="az">A to Z</option><option value="za">Z to A</option></select>
+              <div class="viewtog" role="group" aria-label="Layout">
+                <button aria-pressed="{{ isGrid }}" aria-label="Grid view" onClick="{{ pickGrid }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
+                <button aria-pressed="{{ !isGrid }}" aria-label="List view" onClick="{{ pickList }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+              </div>
+            </div></div></sc-if>
+          <sc-if value="{{ projectEmpty }}"><div class="empty" style="margin-top:32px"><svg class="illo" viewBox="0 0 120 80" aria-hidden="true"><rect x="8" y="14" width="56" height="52" rx="6"/><rect x="40" y="6" width="56" height="40" rx="6"/><path d="M52 66V46h32"/><circle cx="24" cy="30" r="5"/></svg><p>Nothing in this project yet.</p><button class="btn primary" onClick="{{ goTemplates }}">Make the first artwork</button></div></sc-if>
+        </div>
+      </sc-if>
+
+      <!-- Template choice -->
+      <sc-if value="{{ isTemplates }}">
+        <div class="page" style="padding-bottom:0">
+          <button class="btn sm quiet" onClick="{{ goProject }}" style="margin-left:-14px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>{{ project.name }}</button>
+          <div class="welcome-wrap" style="margin-top:12px;border-bottom:none;padding-bottom:0;min-height:0">
+            <div><div class="eyebrow">New design in {{ project.name }}</div><h1 class="welcome">What are we making <em>today</em>?</h1><p class="lede">Choose a starting point. Your fonts, colours and layouts are already taken care of.</p></div>
+            <div class="welcome-panel"><b>Three steps</b>Pick a template, choose where it will go, then make it yours. Download a PNG or JPG when you're happy.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- All designs -->
+      <sc-if value="{{ isDesigns }}">
+        <div class="page" style="padding-bottom:0">
+          <div class="eyebrow">TEKEX workspace</div>
+          <h1 class="welcome" style="font-size:40px;line-height:44px">All designs</h1>
+          <p class="lede">Every design across your projects. Open one to carry on where you left off.</p>
+          <sc-if value="{{ !noDrafts }}"><div class="toolrow" style="margin-top:8px"><span class="meta">{{ designCount }} designs</span><div class="filters">
+              <select class="input" aria-label="Sort" value="{{ sortKey }}" onChange="{{ setSort }}"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="az">A to Z</option><option value="za">Z to A</option></select>
+              <div class="viewtog" role="group" aria-label="Layout">
+                <button aria-pressed="{{ isGrid }}" aria-label="Grid view" onClick="{{ pickGrid }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
+                <button aria-pressed="{{ !isGrid }}" aria-label="List view" onClick="{{ pickList }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+              </div>
+            </div></div></sc-if>
+          <sc-if value="{{ noDrafts }}">
+            <div class="empty" style="margin-top:32px"><svg class="illo" viewBox="0 0 120 80" aria-hidden="true"><rect x="8" y="14" width="56" height="52" rx="6"/><rect x="40" y="6" width="56" height="40" rx="6"/><path d="M52 66V46h32"/><circle cx="24" cy="30" r="5"/></svg><p>Your artwork will live here. Let's make the first one.</p><button class="btn primary" onClick="{{ newArtwork }}">New artwork</button></div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- Calendar -->
+      <sc-if value="{{ isCalendar }}">
+        <div class="page">
+          <div class="pagehead">
+            <div><div class="eyebrow">TEKEX workspace</div><h1 class="welcome" style="font-size:40px;line-height:44px">Calendar</h1><p class="lede">Drag artwork onto a date to schedule it, or between dates to move it. Drop it back on the tray to unschedule.</p></div>
+            <div class="calnav">
+              <button class="btn icon" onClick="{{ calPrev }}" aria-label="Previous month"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+              <span class="calmonth" aria-live="polite">{{ calTitle }}</span>
+              <button class="btn icon" onClick="{{ calNext }}" aria-label="Next month"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+              <button class="btn sm" onClick="{{ calToday }}">Today</button>
+            </div>
+          </div>
+          <div class="callayout">
+            <div class="cal" role="grid" aria-label="{{ calTitle }}">
+              <div class="calhead" role="row"><sc-for list="{{ calDows }}" as="dw"><span role="columnheader">{{ dw }}</span></sc-for></div>
+              <div class="calgrid">
+                <sc-for list="{{ calCells }}" as="c">
+                  <div class="calcell {{ c.cls }}" role="gridcell" aria-label="{{ c.aria }}" onDragOver="{{ c.dragOver }}" onDragLeave="{{ c.dragLeave }}" onDrop="{{ c.drop }}">
+                    <span class="dnum">{{ c.day }}</span>
+                    <sc-for list="{{ c.items }}" as="it">
+                      <div class="chip {{ it.cls }}" draggable="true" tabIndex="0" role="button" aria-label="{{ it.aria }}" title="{{ it.aria }}" onDragStart="{{ it.dragStart }}" onDragEnd="{{ it.dragEnd }}" onClick="{{ it.pick }}" onKeyDown="{{ it.keys }}">
+                        <sc-if value="{{ it.thumb }}"><img sc-camel-src="{{ it.thumb }}" alt="" /></sc-if>
+                        <sc-if value="{{ !it.thumb }}"><span class="swatch" style="{{ it.swatch }}">Aa</span></sc-if>
+                        <span class="cttl">{{ it.title }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <aside class="caltray {{ trayOverClass }}" aria-label="Unscheduled artwork" onDragOver="{{ trayDragOver }}" onDragLeave="{{ trayDragLeave }}" onDrop="{{ trayDrop }}">
+              <h3 class="section" style="font-size:17px;line-height:23px">Unscheduled <span class="meta" style="font-weight:400">· {{ unscheduledCount }}</span></h3>
+              <sc-if value="{{ !unscheduledCount }}"><p class="meta" style="margin:0">Everything has a date. Drop artwork here to take it off the calendar.</p></sc-if>
+              <sc-for list="{{ unscheduled }}" as="it">
+                <div class="chip {{ it.cls }}" draggable="true" tabIndex="0" role="button" aria-label="{{ it.aria }}" title="{{ it.aria }}" onDragStart="{{ it.dragStart }}" onDragEnd="{{ it.dragEnd }}" onClick="{{ it.pick }}" onKeyDown="{{ it.keys }}">
+                  <sc-if value="{{ it.thumb }}"><img sc-camel-src="{{ it.thumb }}" alt="" /></sc-if>
+                  <sc-if value="{{ !it.thumb }}"><span class="swatch" style="{{ it.swatch }}">Aa</span></sc-if>
+                  <span class="ctext"><span class="cttl">{{ it.title }}</span><span class="csub">{{ it.sub }}</span></span>
+                </div>
+              </sc-for>
+            </aside>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- Image library -->
+      <sc-if value="{{ isLibrary }}">
+        <div class="page">
+          <div class="pagehead">
+            <div><div class="eyebrow">TEKEX workspace</div><h1 class="welcome" style="font-size:40px;line-height:44px">Image library</h1><p class="lede">Approved brand imagery plus anything you've uploaded. Pick from here when you add an image to a design.</p></div>
+            <label class="btn primary lg filebtn">Upload an image<input type="file" accept="image/png,image/jpeg,image/webp" onChange="{{ libPageFile }}" aria-label="Upload an image to your library" /></label>
+          </div>
+          <sc-if value="{{ uploadError }}"><div class="alert err" role="alert" style="margin-top:16px"><span>{{ uploadError }}</span><button class="link" onClick="{{ clearUploadError }}">Dismiss</button></div></sc-if>
+          <h3 class="section" style="margin:32px 0 12px">Brand library <span class="meta" style="font-weight:400">· example stock imagery from Unsplash</span></h3>
+          <div class="libpage">
+            <sc-for list="{{ brandLibAll }}" as="im"><div class="lib-card"><span class="th" style="{{ im.thStyle }}" role="img" aria-label="{{ im.name }}"></span><span class="nm">{{ im.name }}</span></div></sc-for>
+          </div>
+          <h3 class="section" style="margin:32px 0 12px">Your uploads <span class="meta" style="font-weight:400">· {{ uploadCount }} in this browser</span></h3>
+          <sc-if value="{{ !uploadCount }}"><div class="empty">Nothing uploaded yet. PNG, JPG or WebP up to {{ maxMb }} MB.</div></sc-if>
+          <div class="libpage">
+            <sc-for list="{{ uploadsAll }}" as="im"><div class="lib-card"><span class="th" style="{{ im.thStyle }}" role="img" aria-label="{{ im.name }}"></span><span class="nm">{{ im.name }}</span><button class="btn sm quiet" onClick="{{ im.remove }}">Remove</button></div></sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- Size step -->
+      <sc-if value="{{ isSize }}">
+        <div class="step">
+          <div class="progress">Template → <b>Size</b> → Make it yours</div>
+          <div class="eyebrow">{{ sizeTplName }} · {{ project.name }}</div>
+          <h2 class="screen" style="margin-top:8px">Where will this go?</h2>
+          <p class="lede">Pick the format you need. You can add other sizes of the same design later.</p>
+          <div class="tiles" role="radiogroup" aria-label="Format" onKeyDown="{{ sizeKeys }}">
+            <sc-for list="{{ sizeTiles }}" as="s">
+              <button class="tile" role="radio" aria-checked="{{ s.on }}" tabIndex="{{ s.tab }}" onClick="{{ s.pick }}">
+                <span class="ratio" aria-hidden="true"><i style="{{ s.ratioStyle }}"></i></span>
+                <span><span class="lbl" style="display:block">{{ s.label }}</span><span class="dims">{{ s.dims }} px</span></span>
+                <span class="chk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>
+              </button>
+            </sc-for>
+          </div>
+          <div class="step-actions">
+            <button class="btn" onClick="{{ goTemplates }}">Back</button>
+            <button class="btn primary lg" onClick="{{ startCreating }}">Start creating</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <main class="{{ stageClass }}" data-stage="1">
+        <sc-if value="{{ isEditor }}"><span class="artlabel" data-chrome="1">Preview · export renders at {{ sizeDims }} px</span></sc-if>
+
+        <div class="{{ boardsClass }}">
+          <sc-for list="{{ boards }}" as="a">
+
+            <sc-if value="{{ a.isHeading }}">
+              <div class="heading gridhead"><h3 class="section">{{ a.text }}</h3><sc-if value="{{ a.sub }}"><span class="meta">{{ a.sub }}</span></sc-if></div>
+            </sc-if>
+
+            <sc-if value="{{ !a.isHeading }}">
+            <div class="{{ a.wrapClass }}" style="{{ a.cardStyle }}" role="{{ a.wrapRole }}" tabIndex="{{ a.tab }}" aria-label="{{ a.aria }}" onClick="{{ a.open }}" onKeyDown="{{ a.keys }}">
+              <sc-if value="{{ a.isProject }}">
+                <div class="chead">
+                  <span class="avatar" aria-hidden="true">{{ a.initials }}</span>
+                  <div class="who"><b>{{ a.who }}</b><span>{{ a.sub }}</span></div>
+                  <span class="status {{ a.statusClass }}">{{ a.statusText }}</span>
+                  <span class="kebab" onClick="{{ stop }}">
+                    <button class="btn icon" onClick="{{ a.menuToggle }}" aria-label="Project options" aria-haspopup="menu" aria-expanded="{{ a.menuOpen }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg></button>
+                    <sc-if value="{{ a.menuOpen }}">
+                      <div class="menu" role="menu">
+                        <button role="menuitem" onClick="{{ a.edit }}">Edit details</button>
+                        <button role="menuitem" onClick="{{ a.archive }}">{{ a.archiveLabel }}</button>
+                        <button role="menuitem" class="danger" onClick="{{ a.del }}">Delete project</button>
+                      </div>
+                    </sc-if>
+                  </span>
+                </div>
+              </sc-if>
+              <div class="{{ a.artWrapClass }}" style="{{ a.artBoxStyle }}">
+              <sc-if value="{{ a.isCard }}"><sc-if value="{{ a.badge }}"><span class="badge">{{ a.badge }}</span></sc-if><sc-if value="{{ a.noArt }}"><div class="noart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M12 9v6M9 12h6"/></svg><span>No designs yet</span></div></sc-if><sc-if value="{{ a.thumb }}"><img class="thumbimg" sc-camel-src="{{ a.thumb }}" alt="" style="{{ a.thumbStyle }}" /></sc-if></sc-if>
+              <sc-if value="{{ a.hasArt }}">
+              <div data-canvas="{{ a.canvasFlag }}" data-design="{{ a.designId }}" style="{{ a.canvasStyle }}" onClick="{{ a.canvasClick }}">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex:0 0 auto">
+                  <div style="min-height:1px"></div>
+                  <sc-if value="{{ a.url }}">
+                  <div style="display:flex;align-items:center;gap:12px;flex:0 0 auto">
+                    <span data-field="url" style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsUrl }}px">{{ a.url }}</span>
+                    <svg viewBox="0 0 24 24" style="width:{{ a.fsUrl }}px;height:{{ a.fsUrl }}px;display:block" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 19 L19 5"></path><path d="M8 5 L19 5 L19 16"></path></svg>
+                  </div>
+                  </sc-if>
+                </div>
+
+                <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:{{ a.gap }}px;padding-top:{{ a.gap }}px">
+
+                  <!-- Introduce a speaker -->
+                  <sc-if value="{{ a.isSpeaker }}">
+                    <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:{{ a.contentDir }};gap:{{ a.gap }}px">
+                      <div style="flex:1 1 50%;min-height:{{ a.halfMin }}px;min-width:0;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor" data-slot="speaker-photo">
+                        <sc-if value="{{ a.img1.has }}"><img sc-camel-src="{{ a.img1.src }}" alt="" style="{{ a.img1.style }}" /></sc-if>
+                        <sc-if value="{{ !a.img1.has }}"><div class="ph" data-guide="1"><span>Speaker portrait</span></div></sc-if>
+                      </div>
+                      <div data-fit="name,role,company,venue" style="flex:{{ a.panelFlex }};min-width:0;overflow:hidden;box-shadow:inset 0 0 0 2px currentColor;padding:{{ a.panelPad }}px;display:flex;flex-direction:column;justify-content:flex-end;gap:{{ a.gapS }}px">
+                        <span data-field="eyebrow" style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsEyebrow }}px">{{ a.eyebrow }}</span>
+                        <span data-field="name" style="font-weight:600;letter-spacing:-0.025em;line-height:0.9;font-size:{{ a.fsName }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.name }}</span>
+                        <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:0 {{ a.gapS }}px">
+                          <span data-field="role" style="font-weight:300;letter-spacing:-0.02em;line-height:1.02;font-size:{{ a.fsMeta }}px">{{ a.role }}</span>
+                          <span data-field="company" style="font-weight:600;letter-spacing:-0.02em;line-height:1.02;font-size:{{ a.fsMeta }}px">{{ a.company }}</span>
+                        </div>
+                        <span data-field="date" style="font-weight:500;letter-spacing:-0.02em;line-height:1.06;font-size:{{ a.fsDate }}px">{{ a.dateLine }}</span>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <!-- Highlight three sessions -->
+                  <sc-if value="{{ a.isTrio }}">
+                    <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:{{ a.gap }}px">
+                      <div data-fit="sessionTitle" style="flex:0 0 auto;display:flex;flex-direction:column;gap:{{ a.gapS }}px;max-height:{{ a.trioHeadMax }}px;overflow:hidden">
+                        <span data-field="eyebrow" style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsEyebrow }}px">{{ a.eyebrow }}</span>
+                        <span data-field="headline" style="font-weight:600;letter-spacing:-0.03em;line-height:0.9;font-size:{{ a.fsHeadline }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.headline }}</span>
+                      </div>
+                      <div style="flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:{{ a.gapS }}px">
+                        <sc-for list="{{ a.trio }}" as="t">
+                          <div style="min-width:0;min-height:0;display:flex;flex-direction:column;box-shadow:inset 0 0 0 2px currentColor">
+                            <div style="position:relative;flex:1 1 auto;min-height:0;overflow:hidden" data-slot="{{ t.slotId }}">
+                              <sc-if value="{{ t.img.has }}"><img sc-camel-src="{{ t.img.src }}" alt="" style="{{ t.img.style }}" /></sc-if>
+                              <sc-if value="{{ !t.img.has }}"><div class="ph" data-guide="1"><span>{{ t.name }}</span></div></sc-if>
+                            </div>
+                            <div style="flex:0 0 auto;padding:{{ a.gapS }}px;display:flex;flex-direction:column;gap:2px;border-top:2px solid currentColor">
+                              <span style="font-weight:600;letter-spacing:-0.025em;line-height:0.98;font-size:{{ a.fsTrioName }}px;overflow-wrap:anywhere">{{ t.name }}</span>
+                              <span style="font-weight:300;letter-spacing:-0.015em;line-height:1.1;font-size:{{ a.fsTrioCo }}px">{{ t.company }}</span>
+                            </div>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <div style="flex:0 0 auto;box-shadow:inset 0 0 0 2px currentColor;padding:{{ a.panelPad }}px">
+                        <span data-field="date" style="font-weight:500;letter-spacing:-0.02em;line-height:1.06;font-size:{{ a.fsDate }}px">{{ a.dateLine }}</span>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <!-- Announce an event -->
+                  <sc-if value="{{ a.isEvent }}">
+                    <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:{{ a.contentDir }};gap:{{ a.gap }}px">
+                      <div data-fit="headline,body,venue" style="flex:{{ a.panelFlex }};min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:{{ a.gap }}px">
+                        <div style="display:flex;flex-direction:column;gap:{{ a.gapS }}px">
+                          <span data-field="headline" style="font-weight:600;letter-spacing:-0.03em;line-height:0.88;font-size:{{ a.fsHeadline }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.headline }}</span>
+                          <span data-field="body" style="font-weight:300;letter-spacing:-0.02em;line-height:1.14;font-size:{{ a.fsBody }}px;max-width:{{ a.bodyMax }}px">{{ a.body }}</span>
+                        </div>
+                        <div style="flex:0 0 auto;box-shadow:inset 0 0 0 2px currentColor;padding:{{ a.panelPad }}px">
+                          <span data-field="date" style="font-weight:500;letter-spacing:-0.02em;line-height:1.06;font-size:{{ a.fsDate }}px">{{ a.dateLine }}</span>
+                        </div>
+                      </div>
+                      <div style="flex:1 1 50%;min-height:{{ a.eventStripH }}px;min-width:0;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor" data-slot="event-image">
+                        <sc-if value="{{ a.img1.has }}"><img sc-camel-src="{{ a.img1.src }}" alt="" style="{{ a.img1.style }}" /></sc-if>
+                        <sc-if value="{{ !a.img1.has }}"><div class="ph" data-guide="1"><span>Event image</span></div></sc-if>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <!-- Showcase your partners -->
+                  <sc-if value="{{ a.isPartners }}">
+                    <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:{{ a.gap }}px">
+                      <div data-fit="headline" style="flex:0 0 auto;max-height:{{ a.trioHeadMax }}px;overflow:hidden"><span data-field="headline" style="font-weight:600;letter-spacing:-0.03em;line-height:0.9;font-size:{{ a.fsHeadline }}px;overflow-wrap:anywhere">{{ a.headline }}</span></div>
+                      <div style="flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat({{ a.partnerCols }},1fr);grid-auto-rows:1fr;gap:{{ a.gapS }}px">
+                        <sc-for list="{{ a.partners }}" as="p">
+                          <div style="position:relative;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 2px currentColor;padding:{{ a.gapS }}px;min-height:0;overflow:hidden">
+                            <div role="img" aria-label="{{ p.name }}" style="{{ p.maskStyle }}"></div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <!-- Meet the speakers -->
+                  <sc-if value="{{ a.isListing }}">
+                    <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:{{ a.docGap }}px">
+                      <div data-fit="headline,body" style="flex:0 0 auto;display:flex;flex-direction:column;gap:{{ a.docGapS }}px;max-height:{{ a.listHeadMax }}px;overflow:hidden">
+                        <span data-field="eyebrow" style="font-weight:600;letter-spacing:0.06em;line-height:1;font-size:{{ a.fsDocEyebrow }}px;text-transform:uppercase">{{ a.eyebrow }}</span>
+                        <span data-field="headline" style="font-weight:600;letter-spacing:-0.03em;line-height:0.94;font-size:{{ a.fsDocTitle }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.headline }}</span>
+                        <span data-field="body" style="font-weight:300;letter-spacing:-0.005em;line-height:1.36;font-size:{{ a.fsDocIntro }}px;max-width:{{ a.docTextMax }}px;text-wrap:pretty">{{ a.body }}</span>
+                      </div>
+                      <sc-if value="{{ a.showHero }}">
+                        <div style="flex:0 0 {{ a.heroH }}px;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor" data-slot="listing-hero">
+                          <sc-if value="{{ a.img1.has }}"><img sc-camel-src="{{ a.img1.src }}" alt="" style="{{ a.img1.style }}" /></sc-if>
+                          <sc-if value="{{ !a.img1.has }}"><div class="ph" data-guide="1"><span>Header image</span></div></sc-if>
+                        </div>
+                      </sc-if>
+                      <div style="flex:0 0 auto;box-shadow:inset 0 0 0 2px currentColor;padding:{{ a.docRowPad }}px {{ a.docPad }}px">
+                        <span data-field="date" style="font-weight:500;letter-spacing:-0.01em;line-height:1.2;font-size:{{ a.fsDocDate }}px">{{ a.dateLine }}</span>
+                      </div>
+                      <div data-fit="speakers" style="flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start">
+                        <sc-for list="{{ a.speakerList }}" as="sp">
+                          <div style="flex:0 0 auto;display:flex;align-items:center;gap:{{ a.docGap }}px;border-top:2px solid currentColor;padding:{{ a.docRowPad }}px 0">
+                            <sc-if value="{{ a.showPortraits }}">
+                              <div style="flex:0 0 auto;width:{{ a.thumb }}px;height:{{ a.thumb }}px;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor" data-slot="{{ sp.slotId }}">
+                                <sc-if value="{{ sp.img.has }}"><img sc-camel-src="{{ sp.img.src }}" alt="" style="{{ sp.img.style }}" /></sc-if>
+                              </div>
+                            </sc-if>
+                            <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:{{ a.docGapXS }}px">
+                              <span style="font-weight:600;letter-spacing:-0.02em;line-height:1;font-size:{{ a.fsRowName }}px;{{ sp.nameStyle }}">{{ sp.displayName }}</span>
+                              <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:0 {{ a.docGapS }}px">
+                                <span style="font-weight:300;letter-spacing:-0.01em;line-height:1.2;font-size:{{ a.fsRowMeta }}px">{{ sp.role }}</span>
+                                <span style="font-weight:600;letter-spacing:-0.01em;line-height:1.2;font-size:{{ a.fsRowMeta }}px">{{ sp.company }}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </sc-for>
+                        <div style="flex:0 0 2px;background:currentColor"></div>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <!-- Brand announcement -->
+                  <sc-if value="{{ a.isLockup }}">
+                    <div data-fit="body" style="flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:{{ a.gap }}px">
+                      <svg viewBox="0 0 879.658 181" style="width:{{ a.lockupW }}px;height:auto;display:block" fill="currentColor" aria-label="TEKEX" role="img">
+                        <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path>
+                        <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path>
+                        <path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path>
+                        <path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path>
+                        <path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path>
+                      </svg>
+                      <span data-field="body" style="font-weight:300;letter-spacing:-0.02em;line-height:1.1;font-size:{{ a.fsMeta }}px;text-align:center;max-width:{{ a.bodyMax }}px">{{ a.body }}</span>
+                    </div>
+                  </sc-if>
+
+                </div>
+
+                <sc-if value="{{ a.showBar }}">
+                  <div style="flex:0 0 {{ a.barH }}px;display:flex;gap:{{ a.gapS }}px;margin-top:{{ a.gap }}px">
+                    <div style="flex:0 0 {{ a.barLeftW }}px;box-shadow:inset 0 0 0 2px currentColor;display:flex;align-items:center;justify-content:center;padding:0 {{ a.gapS }}px">
+                      <svg viewBox="0 0 879.658 181" style="width:100%;height:52%;display:block" fill="currentColor" preserveAspectRatio="xMidYMid meet" role="img" aria-label="TEKEX">
+                        <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path>
+                        <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path>
+                        <path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path>
+                        <path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path>
+                        <path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path>
+                      </svg>
+                    </div>
+                    <div style="flex:1 1 auto;min-width:0;box-shadow:inset 0 0 0 2px currentColor;display:flex;align-items:stretch">
+                      <div style="flex:1 1 auto;display:flex;align-items:center;padding:0 {{ a.panelPad }}px;min-width:0">
+                        <span data-field="barLabel" style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsLabel }}px;white-space:nowrap;overflow:hidden">{{ a.barLabel }}</span>
+                      </div>
+                      <sc-if value="{{ a.showPowered }}">
+                        <div style="flex:0 0 auto;display:flex;align-items:center;gap:{{ a.gapS }}px;padding:0 {{ a.panelPad }}px;box-shadow:inset 2px 0 0 0 currentColor">
+                          <span style="font-weight:500;letter-spacing:0.02em;line-height:1;font-size:{{ a.fsPowered }}px;text-transform:uppercase;white-space:nowrap">Powered by</span>
+                          <div style="{{ a.psStyle }}" role="img" aria-label="Potting Shed"></div>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+              </sc-if>
+              </div>
+
+              <sc-if value="{{ a.isCard }}">
+                <div class="cap"><span class="ttl">{{ a.title }}</span><sc-if value="{{ a.desc }}"><span class="desc">{{ a.desc }}</span></sc-if><sc-if value="{{ a.sizesText }}"><span class="sizes">{{ a.sizesText }}</span></sc-if></div>
+                <sc-if value="{{ a.hasTags }}"><div class="tags"><sc-for list="{{ a.tags }}" as="tg"><span class="tag">{{ tg }}</span></sc-for></div></sc-if>
+                <sc-if value="{{ a.hasMetas }}"><div class="metas"><sc-for list="{{ a.metas }}" as="m"><div><svg viewBox="0 0 24 24" aria-hidden="true"><path sc-camel-d="{{ m.icon }}"/></svg><span>{{ m.text }}</span></div></sc-for></div></sc-if>
+                <sc-if value="{{ a.isDraft }}">
+                  <div class="actions" onClick="{{ stop }}">
+                    <button class="btn sm" onClick="{{ a.dup }}">Duplicate</button>
+                    <button class="btn sm" onClick="{{ a.rename }}">Rename</button>
+                    <button class="btn sm quiet" onClick="{{ a.del }}">Delete</button>
+                  </div>
+                </sc-if>
+              </sc-if>
+            </div>
+            </sc-if>
+
+          </sc-for>
+        </div>
+      </main>
+    </div>
+
+    <!-- ================= REVIEW DRAWER ================= -->
+    <sc-if value="{{ reviewOpen }}">
+      <aside class="drawer" data-chrome="1" role="dialog" aria-modal="false" aria-labelledby="rv-title">
+        <div class="dbody">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+            <div><div class="eyebrow">{{ tplName }} · {{ sizeLabel }}</div><h2 class="screen" id="rv-title" style="font-size:26px;line-height:32px;margin-top:4px">Publish</h2><p class="lede" style="margin-top:4px;font-size:14px">Give it a date, grab the post copy, then download.</p></div>
+            <button class="btn icon" onClick="{{ closeReview }}" aria-label="Close publish panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <section class="psect" aria-labelledby="pb-sched"><div class="eyebrow" id="pb-sched">Schedule</div>
+            <div class="field"><label for="f-sched">Scheduled date<span class="opt">Optional</span></label>
+              <div style="display:flex;gap:8px;align-items:center"><input class="input" id="f-sched" type="date" sc-camel-value="{{ scheduledAt }}" onChange="{{ setScheduled }}" style="max-width:220px" /><sc-if value="{{ scheduledAt }}"><button class="link" onClick="{{ clearScheduled }}">Clear</button></sc-if></div>
+              <div class="meta">{{ scheduledHint }}</div>
+            </div>
+          </section>
+
+          <section class="psect" aria-labelledby="pb-post"><div class="eyebrow" id="pb-post">Post copy</div>
+            <div class="field"><div class="lab">Where is this going?<span class="opt">Pick one or more</span></div>
+              <div class="pchips" role="group" aria-label="Platforms">
+                <sc-for list="{{ platformChips }}" as="pc"><button class="pchip" aria-pressed="{{ pc.on }}" onClick="{{ pc.toggle }}"><sc-if value="{{ pc.on }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></sc-if>{{ pc.name }}</button></sc-for>
+              </div>
+            </div>
+            <sc-if value="{{ !hasPlatforms }}"><div class="hint">Choose where this post is going and we'll draft the copy to go with it.</div></sc-if>
+            <sc-if value="{{ hasPlatforms }}">
+              <div class="seg" role="radiogroup" aria-label="How the post copy is written">
+                <button class="opt" role="radio" aria-checked="{{ captionAuto }}" onClick="{{ pickAuto }}"><b>Draft it for me</b><small>Built from the details above. Edit any time.</small></button>
+                <button class="opt" role="radio" aria-checked="{{ !captionAuto }}" onClick="{{ pickManual }}"><b>I'll write it</b><small>Your own copy, one version per platform.</small></button>
+              </div>
+              <sc-if value="{{ multiPlatform }}">
+                <div class="ptabs" role="tablist" aria-label="Platform copy"><sc-for list="{{ captionTabs }}" as="ct"><button class="tab" role="tab" aria-selected="{{ ct.on }}" onClick="{{ ct.pick }}">{{ ct.name }}</button></sc-for></div>
+              </sc-if>
+              <sc-if value="{{ captionAuto }}">
+                <div class="caption-box {{ captionEmptyClass }}" aria-live="polite">{{ captionDisplay }}</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <button class="btn sm" onClick="{{ shuffleCaption }}">Try another</button>
+                  <button class="btn sm" onClick="{{ editCaption }}">Edit this draft</button>
+                  <button class="btn sm primary {{ copiedClass }}" onClick="{{ copyCaption }}">{{ copyLabel }}</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ !captionAuto }}">
+                <div class="field"><label for="f-caption">{{ captionLabel }}</label><textarea class="input" id="f-caption" style="min-height:160px" value="{{ captionText }}" onChange="{{ setCaptionText }}" placeholder="Write the post that goes with this image."></textarea></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" onClick="{{ draftIntoManual }}">Start from a draft</button><button class="btn sm primary {{ copiedClass }}" onClick="{{ copyCaption }}">{{ copyLabel }}</button></div>
+              </sc-if>
+              <div class="meta {{ captionOverClass }}">{{ captionCount }}</div>
+            </sc-if>
+          </section>
+
+          <section class="psect" aria-labelledby="pb-chk"><div class="eyebrow" id="pb-chk">Checks</div>
+            <div class="checks">
+              <sc-for list="{{ checks }}" as="ck"><div class="ck"><span class="cdot" style="{{ ck.dot }}"></span><span>{{ ck.label }}</span></div></sc-for>
+            </div>
+          </section>
+
+          <section class="psect" aria-labelledby="pb-file"><div class="eyebrow" id="pb-file">Download</div>
+            <div class="field"><div class="lab">File type</div>
+              <div class="seg" role="radiogroup" aria-label="File type">
+                <button class="opt" role="radio" aria-checked="{{ isPng }}" onClick="{{ pickPng }}"><b>PNG</b><small>Crisp text and graphics. Recommended.</small></button>
+                <button class="opt" role="radio" aria-checked="{{ isJpg }}" onClick="{{ pickJpg }}"><b>JPG</b><small>Smaller file for photographic designs.</small></button>
+              </div>
+            </div>
+            <div class="field"><label for="fname">File name</label><input class="input" id="fname" value="{{ fileName }}" onChange="{{ setFileName }}" /></div>
+            <div class="meta">{{ sizeDims }} px · exact export size, independent of zoom</div>
+          </section>
+        </div>
+        <div class="dfoot">
+          <sc-if value="{{ blocked }}"><div class="alert warn" style="margin-bottom:6px"><span>{{ blockedMsg }}</span></div></sc-if>
+          <sc-if value="{{ exportError }}"><div class="alert err" role="alert" style="margin-bottom:6px"><span>We couldn't prepare your image. Your design is still here. {{ exportError }}</span></div></sc-if>
+          <sc-if value="{{ exportDone }}"><div class="alert ok done" role="status" style="margin-bottom:6px"><svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>Your download has started. {{ exportDoneDetail }}</span></div></sc-if>
+          <button class="btn primary lg" onClick="{{ download }}" disabled="{{ downloadDisabled }}" aria-busy="{{ exporting }}">{{ downloadLabel }}</button>
+          <button class="btn" onClick="{{ closeReview }}">Back to editing</button>
+          <sc-if value="{{ exportDone }}"><div style="display:flex;gap:10px;justify-content:center;margin-top:4px"><button class="link" onClick="{{ openSizeDialog }}">Make another size</button><button class="link" onClick="{{ backToProject }}">Back to the project</button></div></sc-if>
+        </div>
+      </aside>
+    </sc-if>
+  </div>
+
+  <!-- ================= DIALOGS ================= -->
+  <sc-if value="{{ sizeDialogOpen }}">
+    <div class="scrim" data-chrome="1" onClick="{{ scrimClose }}">
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="sd-title" onClick="{{ stop }}" onKeyDown="{{ dialogKeys }}">
+        <div class="dhead"><div><h2 id="sd-title">Add a size</h2><p>Your copy, images and colours carry over into the agency layout for that format. This size stays as it is. Check the image crops in the new one.</p></div><button class="btn icon" onClick="{{ closeSizeDialog }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        <div class="tiles" style="margin-top:0" role="radiogroup" aria-label="Format" onKeyDown="{{ addSizeKeys }}">
+          <sc-for list="{{ addSizeTiles }}" as="s">
+            <button class="tile" role="radio" aria-checked="{{ s.on }}" aria-disabled="{{ s.added }}" tabIndex="{{ s.tab }}" onClick="{{ s.pick }}">
+              <span class="ratio" aria-hidden="true"><i style="{{ s.ratioStyle }}"></i></span>
+              <span><span class="lbl" style="display:block">{{ s.label }} <span class="dims" style="display:inline">· {{ s.ratio }}</span></span><span class="dims">{{ s.dims }} px</span></span>
+              <sc-if value="{{ s.added }}"><span class="added">Added</span></sc-if>
+              <sc-if value="{{ !s.added }}"><span class="chk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span></sc-if>
+            </button>
+          </sc-for>
+        </div>
+        <div class="dactions"><button class="btn" onClick="{{ closeSizeDialog }}">Cancel</button><button class="btn primary" onClick="{{ applySize }}" disabled="{{ !canApplySize }}">Add {{ pendingSizeLabel }}</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ libOpen }}">
+    <div class="scrim" data-chrome="1" onClick="{{ scrimClose }}">
+      <div class="dialog wide" role="dialog" aria-modal="true" aria-labelledby="lb-title" onClick="{{ stop }}" onKeyDown="{{ dialogKeys }}">
+        <div class="dhead"><div><h2 id="lb-title">Choose an image</h2><p>For “{{ libSlotLabel }}”. PNG, JPG or WebP up to {{ maxMb }} MB.</p></div><button class="btn icon" onClick="{{ closeLib }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        <div class="lib-tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="{{ libBrand }}" onClick="{{ libPickBrand }}">Brand library</button>
+          <button class="tab" role="tab" aria-selected="{{ !libBrand }}" onClick="{{ libPickUploads }}">Your uploads<sc-if value="{{ uploadCount }}"> ({{ uploadCount }})</sc-if></button>
+        </div>
+        <sc-if value="{{ libBrand }}">
+          <div class="lib-grid">
+            <sc-for list="{{ brandLib }}" as="im">
+              <button class="lib-card" role="radio" aria-checked="{{ im.on }}" onClick="{{ im.pick }}"><span class="th" style="{{ im.thStyle }}" role="img" aria-label="{{ im.name }}"></span><span class="nm">{{ im.name }}</span></button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ !libBrand }}">
+          <div class="drop {{ dropOverClass }}" onDragOver="{{ libDragOver }}" onDragLeave="{{ libDragLeave }}" onDrop="{{ libDrop }}">
+            <span>Drag a file here, or</span>
+            <label class="btn sm filebtn">Choose a file<input type="file" accept="image/png,image/jpeg,image/webp" onChange="{{ libFile }}" aria-label="Upload an image" /></label>
+            <span>Uploads are kept in this browser only.</span>
+          </div>
+          <sc-if value="{{ uploadError }}"><div class="alert err" role="alert"><span>{{ uploadError }}</span><button class="link" onClick="{{ clearUploadError }}">Dismiss</button></div></sc-if>
+          <sc-if value="{{ uploadCount }}">
+            <div class="lib-grid">
+              <sc-for list="{{ uploads }}" as="im">
+                <button class="lib-card" role="radio" aria-checked="{{ im.on }}" onClick="{{ im.pick }}"><span class="th" style="{{ im.thStyle }}" role="img" aria-label="{{ im.name }}"></span><span class="nm">{{ im.name }}</span></button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </sc-if>
+        <div class="dactions"><button class="btn" onClick="{{ closeLib }}">Cancel</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ cropOpen }}">
+    <div class="scrim" data-chrome="1" onClick="{{ scrimClose }}">
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="cr-title" onClick="{{ stop }}" onKeyDown="{{ dialogKeys }}">
+        <div class="dhead"><div><h2 id="cr-title">Position your image</h2><p>Drag to move it inside the frame. Use the slider to zoom. Arrow keys nudge.</p></div><button class="btn icon" onClick="{{ cancelCrop }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        <div class="crop" style="{{ cropBoxStyle }}" tabIndex="0" role="application" aria-label="Image position. Use arrow keys to nudge." onPointerDown="{{ cropDown }}" onPointerMove="{{ cropMove }}" onPointerUp="{{ cropUp }}" onPointerCancel="{{ cropUp }}" onKeyDown="{{ cropKeys }}">
+          <img sc-camel-src="{{ crop.src }}" alt="" style="{{ cropImgStyle }}" draggable="false" />
+          <div class="frame"></div>
+        </div>
+        <div class="field"><label for="zoom">Zoom <span class="opt">{{ cropZoomPct }}</span></label><input class="range" id="zoom" type="range" min="1" max="3" step="0.02" value="{{ crop.zoom }}" onChange="{{ cropZoom }}" /></div>
+        <sc-if value="{{ cropSoft }}"><div class="alert warn"><span>This image may look soft when downloaded at this zoom. Try a larger version or zoom out.</span></div></sc-if>
+        <div class="dactions"><button class="btn quiet" onClick="{{ resetCrop }}">Reset</button><button class="btn" onClick="{{ cancelCrop }}">Cancel</button><button class="btn primary" onClick="{{ useCrop }}">Use image</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ renameOpen }}">
+    <div class="scrim" data-chrome="1" onClick="{{ scrimClose }}">
+      <div class="dialog" style="width:440px" role="dialog" aria-modal="true" aria-labelledby="rn-title" onClick="{{ stop }}" onKeyDown="{{ dialogKeys }}">
+        <div class="dhead"><h2 id="rn-title">Rename design</h2></div>
+        <div class="field"><label for="rn-in">Name</label><input class="input" id="rn-in" value="{{ renameValue }}" onChange="{{ setRenameValue }}" /></div>
+        <div class="dactions"><button class="btn" onClick="{{ closeRename }}">Cancel</button><button class="btn primary" onClick="{{ applyRename }}">Save name</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ deleteOpen }}">
+    <div class="scrim" data-chrome="1" onClick="{{ scrimClose }}">
+      <div class="dialog" style="width:460px" role="dialog" aria-modal="true" aria-labelledby="dl-title" onClick="{{ stop }}" onKeyDown="{{ dialogKeys }}">
+        <div class="dhead"><div><h2 id="dl-title">Delete “{{ deleteName }}”?</h2><p>{{ deleteBody }}</p></div></div>
+        <div class="dactions"><button class="btn" onClick="{{ closeDelete }}">Cancel</button><button class="btn primary" onClick="{{ applyDelete }}">Delete</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ schedOpen }}">
+    <div class="scrim" data-chrome="1" onClick="{{ scrimClose }}">
+      <div class="dialog" style="width:440px" role="dialog" aria-modal="true" aria-labelledby="sc-title" onClick="{{ stop }}" onKeyDown="{{ dialogKeys }}">
+        <div class="dhead"><div><h2 id="sc-title">{{ sched.title }}</h2><p>{{ sched.sub }}</p></div><button class="btn icon" onClick="{{ closeSched }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        <div class="field"><label for="sc-date">Scheduled date</label><input class="input" id="sc-date" type="date" sc-camel-value="{{ sched.date }}" onChange="{{ setSchedDate }}" style="max-width:220px" /></div>
+        <div class="dactions"><button class="btn quiet" onClick="{{ unschedule }}" disabled="{{ !sched.date }}">Take off calendar</button><button class="btn" onClick="{{ openScheduled }}">Open design</button><button class="btn primary" onClick="{{ closeSched }}">Done</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ projDialogOpen }}">
+    <div class="scrim" data-chrome="1" onClick="{{ scrimClose }}">
+      <div class="dialog" style="width:520px" role="dialog" aria-modal="true" aria-labelledby="pj-title" onClick="{{ stop }}" onKeyDown="{{ projDialogKeys }}">
+        <div class="dhead"><div><h2 id="pj-title">{{ projDialogTitle }}</h2><p>{{ projDialogSub }}</p></div><button class="btn icon" onClick="{{ closeProjDialog }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        <div class="field"><label for="pj-name">Project name</label><input class="input {{ projNameErrClass }}" id="pj-name" value="{{ projDialog.name }}" onChange="{{ setProjName }}" placeholder="TEKEX #36 · Speaker campaign" aria-invalid="{{ projNameInvalid }}" aria-describedby="pj-err" /><sc-if value="{{ projDialog.error }}"><div class="ferr" id="pj-err">{{ projDialog.error }}</div></sc-if></div>
+        <div class="field"><label for="pj-brief">Brief<span class="opt">Optional</span></label><textarea class="input" id="pj-brief" value="{{ projDialog.brief }}" onChange="{{ setProjBrief }}" placeholder="What is this for, who is it going to, anything the designs need to say."></textarea></div>
+        <div class="dactions"><button class="btn" onClick="{{ closeProjDialog }}">Cancel</button><button class="btn primary" onClick="{{ saveProjDialog }}">{{ projDialogAction }}</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ helpOpen }}">
+    <div class="scrim" data-chrome="1" onClick="{{ scrimClose }}">
+      <div class="dialog" style="width:520px" role="dialog" aria-modal="true" aria-labelledby="hp-title" onClick="{{ stop }}" onKeyDown="{{ dialogKeys }}">
+        <div class="dhead"><div><h2 id="hp-title">How Home Studio works</h2></div><button class="btn icon" onClick="{{ closeHelp }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:22px">
+          <li>Open a project and start a new design. Everything for the post sits in one panel: template, size, colours, copy and images.</li>
+          <li>Add other sizes from the same design; the copy stays in sync while each size keeps its own image crops.</li>
+          <li>Review, then download a PNG or JPG at full size.</li>
+        </ol>
+        <p class="meta" style="margin:0">Designs are saved in this browser only. Need a new template or layout? Ask Potting Shed.</p>
+        <div class="dactions"><button class="btn primary" onClick="{{ closeHelp }}">Got it</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div class="sr" role="status" aria-live="polite" aria-atomic="true">{{ announce }}</div>
+  <sc-if value="{{ toast }}">
+    <div class="toast" role="status" aria-live="polite"><span>{{ toast.text }}</span><sc-if value="{{ toast.hasAction }}"><button onClick="{{ toast.action }}">{{ toast.actionLabel }}</button></sc-if></div>
+  </sc-if>
+
+</div>
+</x-dc>
+
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#F5F4F0"/><rect x="40" y="120" width="320" height="160" rx="16" fill="#DFF7FC"/><text x="60" y="210" font-family="Helvetica,Arial" font-size="36" fill="#171717">Home Studio</text></svg>
+</template>
+
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+/* Data, brand configuration and helpers live in home-studio.lib.js */
+class Component extends DCLogic {
+  state = {
+    view: "projects",             // projects | project | templates | size | editor | designs | library
+    drafts: [], uploads: [], projects: [],
+    projectId: null, pill: "active", menuId: null, projDialog: null, deleteKind: "design", syncSizes: true,
+    thumbs: {},
+    calMonth: isoDay(new Date()).slice(0, 7), dragOverDay: null, trayOver: false, draggingId: null, sched: null, captionTab: null, projMenuOpen: false, sortKey: "newest", layout: "grid", flashField: null, q: "", copied: false, movedId: null, avatarMissing: false, announce: "",
+    pendingTpl: "speaker", pendingSize: "square",
+    design: null,                 // the open design (editor)
+    tab: "content",
+    zoom: 1, fitScale: 1, cardW: 0,
+    saveState: "idle", savedAt: 0,
+    past: [], future: [],
+    overflow: [],                 // field keys whose text overflows the layout
+    reviewOpen: false, format: "png", fileName: "", exporting: false, exportError: "", exportDone: false, exportDoneDetail: "",
+    sizeDialogOpen: false, libOpen: false, libSlot: null, libBrand: true, libOver: false, uploadError: "",
+    crop: null, dragging: null, slotOver: null,
+    renameOpen: false, renameId: null, renameValue: "",
+    deleteOpen: false, deleteId: null,
+    helpOpen: false, toast: null,
+    logoData: {}
+  };
+
+  /* ---------- persistence (this browser only) ---------- */
+  componentDidMount() {
+    let drafts = Store.get(DRAFTS_KEY, []), projects = Store.get(PROJECTS_KEY, []);
+    if (!Store.raw("hs-seed-v2")) {
+      const ex = seedExamples(projects);
+      projects = projects.concat(ex.projects); drafts = drafts.concat(ex.drafts);
+      try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag("hs-seed-v2"); } catch (e) {}
+    }
+    if (drafts.some(d => !d.projectId)) {
+      // Designs saved before projects existed: gather them into one project so nothing is lost.
+      let home = projects.find(pj => pj.migrated);
+      if (!home) { home = newProject("TEKEX designs", "Designs made before projects were introduced.", ""); home.migrated = true; projects = [home].concat(projects); }
+      drafts = drafts.map(d => d.projectId ? d : Object.assign({}, d, { projectId: home.id }));
+      try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); } catch (e) {}
+    }
+    if (drafts.some(d => !d.platforms || !d.caption)) { drafts = drafts.map(d => Object.assign({}, d, { platforms: d.platforms || (DEFAULT_PLATFORMS[d.size] || ["linkedin"]).slice(), caption: d.caption || { mode: "auto", variant: 0, text: {} } })); try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
+    if (drafts.some(d => !d.familyId)) { drafts = drafts.map(d => d.familyId ? d : Object.assign({}, d, { familyId: uid("f") })); try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
+    // Thumbnails live in their own store; lift any that older drafts carried inline.
+    let thumbs = Store.get(THUMBS_KEY, {});
+    if (drafts.some(d => d.thumb)) { drafts.forEach(d => { if (d.thumb) thumbs[d.id] = d.thumb; }); drafts = drafts.map(d => { const c = Object.assign({}, d); delete c.thumb; return c; }); try { Store.set(THUMBS_KEY, thumbs); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
+    this.setState({ drafts, projects, thumbs, uploads: Store.get(UPLOADS_KEY, []) });
+    this._onClickAway = () => { if (this.state.menuId || this.state.projMenuOpen) this.setState({ menuId: null, projMenuOpen: false }); };
+    window.addEventListener("click", this._onClickAway);
+    this._onResize = () => this.measure();
+    window.addEventListener("resize", this._onResize);
+    this._onKey = (e) => this.globalKeys(e);
+    window.addEventListener("keydown", this._onKey);
+    this._onLeave = (e) => { if (this.state.view === "editor" && (this.state.saveState === "saving" || this.state.saveState === "error")) { e.preventDefault(); e.returnValue = ""; } };
+    window.addEventListener("beforeunload", this._onLeave);
+    if (typeof ResizeObserver !== "undefined") { this._ro = new ResizeObserver(() => this.measure()); }
+    // Inline partner logos as data URLs so the export never depends on a fetch mid-render.
+    BRAND.partners.forEach(p => {
+      fetch(p.src).then(r => r.ok ? r.text() : "").then(svg => {
+        if (!svg) return;
+        const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg).replace(/[()'"]/g, ch => "%" + ch.charCodeAt(0).toString(16).toUpperCase());
+        this.setState(s => ({ logoData: Object.assign({}, s.logoData, { [p.src]: data }) }));
+      }).catch(() => {});
+    });
+    requestAnimationFrame(() => this.measure());
+  }
+  componentWillUnmount() {
+    window.removeEventListener("resize", this._onResize);
+    window.removeEventListener("keydown", this._onKey);
+    window.removeEventListener("beforeunload", this._onLeave);
+    window.removeEventListener("click", this._onClickAway);
+    if (this._ro) this._ro.disconnect();
+    clearTimeout(this._saveT); clearTimeout(this._toastT); clearTimeout(this._thumbT);
+  }
+  componentDidUpdate() { requestAnimationFrame(() => { this.measure(); this.thumbBacklog(); }); }
+
+  measure() {
+    const s = this.state;
+    if (this._ro) {
+      const stage = document.querySelector("main[data-stage]");
+      if (stage && stage !== this._roEl) { if (this._roEl) this._ro.unobserve(this._roEl); this._ro.observe(stage); this._roEl = stage; }
+    }
+    const patch = {};
+    if (s.view === "editor" && s.design) {
+      const stage = document.querySelector("main[data-stage]");
+      const S = SIZES[s.design.size];
+      if (stage && stage.clientWidth) {
+        const pad = stage.clientWidth < 1100 ? 48 : 64;
+        const fit = Math.min((stage.clientWidth - pad) / S.w, (stage.clientHeight - pad) / S.h, 1);
+        if (fit > 0 && Math.abs(fit - s.fitScale) > 0.002) patch.fitScale = fit;
+      }
+      const over = [];
+      const LIMITS = { name: 40, role: 30, company: 30, venue: 60, headline: 60, body: 220, sessionTitle: 70 };
+      const copy = s.design.copy;
+      document.querySelectorAll("[data-canvas='1'] [data-fit]").forEach(el => {
+        // Children can spill out of the top (justify-content:flex-end) as well as the bottom, so compare
+        // rendered boxes rather than scrollHeight. Both rects share the stage transform, so no unscaling needed.
+        const br = el.getBoundingClientRect();
+        let spill = el.scrollWidth > el.clientWidth + 2;
+        Array.from(el.children).forEach(ch => { const r = ch.getBoundingClientRect(); if (r.top < br.top - 1 || r.bottom > br.bottom + 1) spill = true; });
+        if (!spill) return;
+        const keys = el.getAttribute("data-fit").split(",");
+        const culprits = keys.filter(k => LIMITS[k] && (copy[k] || "").length > LIMITS[k]);
+        (culprits.length ? culprits : keys).forEach(k => over.push(k));
+      });
+      const uniq = Array.from(new Set(over));
+      if (uniq.join() !== s.overflow.join()) patch.overflow = uniq;
+    } else {
+      const art = document.querySelector(".card .art");
+      if (art && art.clientWidth && Math.abs(art.clientWidth - s.cardW) > 1) patch.cardW = art.clientWidth;
+    }
+    if (Object.keys(patch).length) this.setState(patch);
+  }
+
+  /* ---------- drafts ---------- */
+  persistDrafts(drafts) { Store.set(DRAFTS_KEY, drafts); }
+  upsertDraft(d) {
+    const drafts = this.state.drafts.filter(x => x.id !== d.id);
+    drafts.unshift(d);
+    return drafts;
+  }
+  scheduleSave() {
+    clearTimeout(this._saveT);
+    this.setState({ saveState: "saving" });
+    this._saveT = setTimeout(() => this.saveNow(), 700);
+  }
+  saveNow = () => {
+    const d = this.state.design; if (!d) return;
+    const rec = Object.assign({}, d, { updatedAt: Date.now() });
+    const drafts = this.upsertDraft(rec);
+    const projects = this.state.projects.map(pj => pj.id === rec.projectId ? Object.assign({}, pj, { updatedAt: rec.updatedAt }) : pj);
+    try { this.persistDrafts(drafts); this.persistProjects(projects); this.setState({ drafts, projects, design: rec, saveState: "saved", savedAt: rec.updatedAt }); }
+    catch (e) { this.setState({ saveState: "error" }); this.say("Couldn't save. Retry is available in the header."); }
+  };
+  persistProjects(projects) { Store.set(PROJECTS_KEY, projects); }
+  currentProject() { const s = this.state; return s.projects.find(pj => pj.id === s.projectId) || null; }
+  projectDesigns(id) { return this.state.drafts.filter(d => d.projectId === id); }
+  retrySave = () => this.saveNow();
+
+  /* ---------- size families ---------- */
+  siblings(d) { return d && d.familyId ? this.state.drafts.filter(x => x.familyId === d.familyId && x.id !== d.id) : []; }
+  syncSibling(sib, src) {
+    // Shared: words, people, colours, layout options and which image goes where. Per-size: crop position and zoom.
+    const images = {};
+    Object.keys(src.images).forEach(k => { const cur = sib.images[k] || { x: 50, y: 50, zoom: 1 }; images[k] = Object.assign({}, cur, { src: src.images[k].src, name: src.images[k].name, w: src.images[k].w, h: src.images[k].h }); });
+    return Object.assign({}, sib, { tpl: src.tpl, copy: src.copy, speakers: src.speakers, trio: src.trio, theme: src.theme, partnersOn: src.partnersOn, showBar: src.showBar, showPowered: src.showPowered, showHero: src.showHero, showPortraits: src.showPortraits, images, updatedAt: Date.now() });
+  }
+  async switchSize(id) {
+    clearTimeout(this._saveT); await this.captureThumb(); if (this.state.design) this.saveNow();
+    const sib = this.state.drafts.find(x => x.id === id); if (!sib) return;
+    this.openDesign(sib, false);
+  }
+
+  /* ---------- keep Tab inside an open dialog ---------- */
+  trapTab = (e) => {
+    if (e.key !== "Tab") return;
+    const dlg = e.currentTarget; const f = Array.from(dlg.querySelectorAll('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')).filter(el => el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
+  focusDialog() { requestAnimationFrame(() => { const dlg = document.querySelector(".scrim .dialog"); if (!dlg) return; if (dlg.contains(document.activeElement)) return; const f = dlg.querySelector('input,select,textarea,button:not([aria-label="Close"])'); if (f) f.focus(); }); }
+
+  /* ---------- click a word on the artwork, land in its field ---------- */
+  canvasClick = (e) => {
+    const el = e.target && e.target.closest ? e.target.closest("[data-field]") : null; if (!el) return;
+    const d = this.state.design; let k = el.getAttribute("data-field");
+    if (k === "eyebrow") k = d.tpl === "speaker" ? "eventNumber" : d.tpl === "trio" ? "sessionPrefix" : "eyebrow";
+    if (k === "headline" && d.tpl === "trio") k = "sessionTitle";
+    if (k === "date" && !d.copy.date && d.copy.venue) k = "venue";
+    const input = document.getElementById("f-" + k); if (!input) return;
+    input.focus({ preventScroll: true }); input.scrollIntoView({ block: "center", behavior: "smooth" });
+    clearTimeout(this._flashT); this.setState({ flashField: k }); this._flashT = setTimeout(() => this.setState({ flashField: null }), 1400);
+  };
+
+  /* ---------- post copy ---------- */
+  captionPlatform() { const d = this.state.design; if (!d || !d.platforms.length) return null; return d.platforms.indexOf(this.state.captionTab) >= 0 ? this.state.captionTab : d.platforms[0]; }
+  captionFor(d, platform) { if (!platform) return ""; const cp = d.caption || { mode: "auto", variant: 0, text: {} }; return cp.mode === "manual" ? (cp.text[platform] || "") : draftCaption(d, platform, cp.variant); }
+  setCaption(patch) { const d = this.state.design; this.commit({ caption: Object.assign({}, d.caption || { mode: "auto", variant: 0, text: {} }, patch) }, "caption"); }
+  togglePlatform(key) {
+    const d = this.state.design; const on = d.platforms.indexOf(key) >= 0;
+    const platforms = on ? d.platforms.filter(k => k !== key) : PLATFORMS.map(p => p.key).filter(k => k === key || d.platforms.indexOf(k) >= 0);
+    this.commit({ platforms });
+  }
+  async copyText(text, label) {
+    if (!text) return this.showToast("Nothing to copy yet — add some details first.");
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {
+      try { const ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); ok = document.execCommand("copy"); ta.remove(); } catch (e2) { ok = false; }
+    }
+    if (ok) { clearTimeout(this._copiedT); this.setState({ copied: true }); this._copiedT = setTimeout(() => this.setState({ copied: false }), 1600); }
+    this.showToast(ok ? label + " copied to your clipboard." : "Couldn't copy automatically — select the text and copy it yourself.");
+  }
+
+  /* ---------- scheduling ---------- */
+  setSchedule(id, iso) {
+    const drafts = this.state.drafts.map(x => x.id === id ? Object.assign({}, x, { scheduledAt: iso || "", updatedAt: Date.now() }) : x);
+    try { this.persistDrafts(drafts); } catch (e) {}
+    const patch = { drafts, dragOverDay: null, trayOver: false, draggingId: null };
+    if (this.state.design && this.state.design.id === id) patch.design = Object.assign({}, this.state.design, { scheduledAt: iso || "" });
+    if (this.state.sched && this.state.sched.id === id) patch.sched = Object.assign({}, this.state.sched, { date: iso || "" });
+    this.setState(patch);
+  }
+  dropOn(iso, e) {
+    e.preventDefault();
+    const id = (e.dataTransfer && e.dataTransfer.getData("text/plain")) || this.state.draggingId; if (!id) return;
+    const d = this.state.drafts.find(x => x.id === id); if (!d) return;
+    this.setSchedule(id, iso);
+    clearTimeout(this._movedT); this.setState({ movedId: id }); this._movedT = setTimeout(() => this.setState({ movedId: null }), 500);
+    this.showToast(iso ? "“" + d.title + "” scheduled for " + fmtShort(iso) + "." : "“" + d.title + "” taken off the calendar.");
+  }
+  openSched(id) { const d = this.state.drafts.find(x => x.id === id); if (!d) return; this._schedReturn = document.activeElement; this.setState({ sched: { id, title: d.title, sub: TPL[d.tpl].name + " · " + SIZES[d.size].label, date: d.scheduledAt || "" } }); this.focusLater("sc-date"); }
+  closeSched = () => { this.setState({ sched: null }); if (this._schedReturn && this._schedReturn.focus) this._schedReturn.focus(); };
+  chipVals(d) {
+    const th = BRAND.themes[d.theme];
+    const pj = this.state.projects.find(x => x.id === d.projectId);
+    return {
+      title: d.title, sub: (pj ? pj.name + " · " : "") + SIZES[d.size].label,
+      aria: d.title + (d.scheduledAt ? ", scheduled " + fmtShort(d.scheduledAt) : ", unscheduled") + ". Drag to a date, use the arrow keys to move it a day or a week, or press Enter to pick a date.",
+      thumb: this.state.thumbs[d.id] || "", swatch: { background: th.ground, color: th.accent },
+      cls: (this.state.draggingId === d.id ? "dragging " : "") + (this.state.movedId === d.id ? "settle" : ""),
+      dragStart: (e) => { try { e.dataTransfer.setData("text/plain", d.id); e.dataTransfer.effectAllowed = "move"; } catch (err) {} this.setState({ draggingId: d.id }); },
+      dragEnd: () => this.setState({ draggingId: null, dragOverDay: null, trayOver: false }),
+      pick: () => this.openSched(d.id),
+      keys: (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); return this.openSched(d.id); }
+        const delta = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key];
+        if (delta == null) return;
+        e.preventDefault();
+        const base = d.scheduledAt ? new Date(d.scheduledAt + "T12:00:00") : new Date();
+        const nx = new Date(base.getFullYear(), base.getMonth(), base.getDate() + (d.scheduledAt ? delta : 0));
+        const iso = isoDay(nx);
+        this.setSchedule(d.id, iso); this.say(d.title + " moved to " + fmtShort(iso));
+        if (iso.slice(0, 7) !== this.state.calMonth) this.setState({ calMonth: iso.slice(0, 7) });
+        requestAnimationFrame(() => { const el = Array.from(document.querySelectorAll(".chip")).find(c => (c.getAttribute("aria-label") || "").startsWith(d.title + ",")); if (el) el.focus(); });
+      }
+    };
+  }
+
+  /* ---------- history ---------- */
+  commit(patch, groupKey) {
+    const d = this.state.design; if (!d) return;
+    const now = Date.now();
+    const grouped = groupKey && this._lastGroup === groupKey && now - (this._lastCommit || 0) < 1500;
+    this._lastGroup = groupKey || null; this._lastCommit = now;
+    const next = Object.assign({}, d, patch);
+    const shared = Object.keys(patch).some(k => k !== "title");
+    this.setState(s => {
+      const out = { design: next, past: grouped ? s.past : s.past.concat([d]).slice(-60), future: [] };
+      if (shared && s.syncSizes && next.familyId) out.drafts = s.drafts.map(x => x.familyId === next.familyId && x.id !== next.id ? this.syncSibling(x, next) : x);
+      return out;
+    });
+    this.scheduleSave(); this.scheduleThumb();
+  }
+  undo = () => { this.setState(s => { if (!s.past.length) return {}; const prev = s.past[s.past.length - 1]; return { design: prev, past: s.past.slice(0, -1), future: [s.design].concat(s.future) }; }); this._lastGroup = null; this.scheduleSave(); };
+  redo = () => { this.setState(s => { if (!s.future.length) return {}; const nx = s.future[0]; return { design: nx, future: s.future.slice(1), past: s.past.concat([s.design]) }; }); this._lastGroup = null; this.scheduleSave(); };
+  globalKeys(e) {
+    const tag = (e.target && e.target.tagName || "").toLowerCase();
+    const typing = tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable);
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z" && !typing && this.state.view === "editor") {
+      e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo();
+    }
+    if (e.key === "Escape") this.escape();
+  }
+  escape() {
+    const s = this.state;
+    if (s.menuId || s.projMenuOpen) return this.setState({ menuId: null, projMenuOpen: false });
+    if (s.sched) return this.closeSched();
+    if (s.projDialog) return this.closeProjDialog();
+    if (s.crop) return this.cancelCrop();
+    if (s.libOpen) return this.closeLib();
+    if (s.sizeDialogOpen) return this.closeSizeDialog();
+    if (s.renameOpen) return this.closeRename();
+    if (s.deleteOpen) return this.closeDelete();
+    if (s.helpOpen) return this.closeHelp();
+    if (s.reviewOpen) return this.closeReview();
+  }
+
+  /* ---------- navigation ---------- */
+  goProjects = () => this.setState({ view: "projects", reviewOpen: false, menuId: null });
+  goDesigns = () => this.setState({ view: "designs", reviewOpen: false, menuId: null });
+  goLibrary = () => this.setState({ view: "library", reviewOpen: false, menuId: null, uploadError: "" });
+  goCalendar = () => this.setState({ view: "calendar", reviewOpen: false, menuId: null });
+  /* Small JPEG of the current artboard, stored on the draft so calendar chips can show the artwork. */
+  async renderThumb(node, d) {
+    const shot = await ensureShot();
+    const S = SIZES[d.size];
+    return shot.domToDataUrl(node, { width: S.w, height: S.h, scale: 480 / S.w, type: "image/jpeg", quality: 0.74, backgroundColor: BRAND.themes[d.theme].ground, style: { transform: "none", boxShadow: "none", margin: "0", position: "static" }, filter: (el) => !(el.getAttribute && el.getAttribute("data-guide")) });
+  }
+  storeThumb(id, url) {
+    if (!url || url.length > 140000) return;
+    const thumbs = Object.assign({}, this.state.thumbs, { [id]: url });
+    try { Store.set(THUMBS_KEY, thumbs); } catch (e) { /* out of room: keep in memory only */ }
+    this.setState({ thumbs });
+  }
+  async captureThumb() {
+    const d = this.state.design; const node = document.querySelector("[data-canvas='1']");
+    if (!d || !node) return;
+    try { const url = await this.renderThumb(node, d); if (this.state.design && this.state.design.id === d.id) this.storeThumb(d.id, url); } catch (e) {}
+  }
+  scheduleThumb() { clearTimeout(this._thumbT); this._thumbT = setTimeout(() => { if (this.state.view === "editor") this.captureThumb(); }, 2500); }
+  /* Cards without a stored thumbnail render live artwork; capture them one at a time so later visits are cheap. */
+  async thumbBacklog() {
+    if (this._thumbBusy || this.state.view === "editor") return;
+    const node = Array.from(document.querySelectorAll("[data-canvas='0'][data-design]")).find(n => !this.state.thumbs[n.getAttribute("data-design")]);
+    if (!node) return;
+    const d = this.state.drafts.find(x => x.id === node.getAttribute("data-design")); if (!d) return;
+    this._thumbBusy = true;
+    try { const url = await this.renderThumb(node, d); this.storeThumb(d.id, url); } catch (e) {}
+    this._thumbBusy = false;
+    setTimeout(() => this.thumbBacklog(), 120);
+  }
+  openProject(id) { this.setState({ view: "project", projectId: id, reviewOpen: false, menuId: null }); }
+  goProject = () => this.setState({ view: this.state.projectId ? "project" : "projects", reviewOpen: false });
+  goTemplates = () => { this.openDesign(newDesign("speaker", "square", this.state.projectId || null), true); };
+  newArtwork = () => { this.setState({ projectId: null }); this.openDesign(newDesign("speaker", "square", null), true); };
+  assignProject(pid) {
+    const d = this.state.design; if (!d) return;
+    const ids = [d.id].concat(this.siblings(d).map(x => x.id));
+    const drafts = this.state.drafts.map(x => ids.indexOf(x.id) >= 0 ? Object.assign({}, x, { projectId: pid, updatedAt: Date.now() }) : x);
+    const design = Object.assign({}, d, { projectId: pid });
+    const projects = pid ? this.state.projects.map(pj => pj.id === pid ? Object.assign({}, pj, { updatedAt: Date.now() }) : pj) : this.state.projects;
+    try { this.persistDrafts(drafts.some(x => x.id === d.id) ? drafts : this.upsertDraft(design)); this.persistProjects(projects); } catch (e) {}
+    this.setState({ drafts: drafts.some(x => x.id === d.id) ? drafts : this.upsertDraft(design), design, projects, projectId: pid, projMenuOpen: false });
+    const pj = this.state.projects.find(x => x.id === pid);
+    this.showToast(pj ? "Added to “" + pj.name + "”" + (ids.length > 1 ? " with its other sizes." : ".") : "Kept as a draft.");
+    this.scheduleSave();
+  }
+  switchTemplate(key) {
+    const d = this.state.design; if (!d || d.tpl === key) return;
+    const oldName = TPL[d.tpl].name;
+    const title = d.title.indexOf(oldName) === 0 ? TPL[key].name + d.title.slice(oldName.length) : d.title;
+    const patch = { tpl: key, title };
+    if (key === "trio" && !d.copy.sessionTitle) patch.copy = Object.assign({}, d.copy, { sessionPrefix: EXAMPLE_COPY.sessionPrefix, sessionTitle: EXAMPLE_COPY.sessionTitle });
+    this.commit(patch);
+  }
+  backToProject = async () => { clearTimeout(this._saveT); await this.captureThumb(); const d = this.state.design; if (d) this.saveNow(); const pid = d && d.projectId; this.setState({ view: pid ? "project" : "projects", projectId: pid || null, reviewOpen: false, projMenuOpen: false }); };
+  pickTemplate(key) { this.setState({ view: "size", pendingTpl: key, pendingSize: "square" }); }
+  startCreating = () => {
+    const d = newDesign(this.state.pendingTpl, this.state.pendingSize, this.state.projectId);
+    this.openDesign(d, true);
+  };
+  /* ---------- projects ---------- */
+  openNewProject = () => { this._projReturn = document.activeElement; this.setState({ projDialog: { id: null, name: "", brief: "", due: "", error: "", assign: false }, menuId: null, projMenuOpen: false }); this.focusLater("pj-name"); };
+  newProjectFromEditor = () => { this._projReturn = document.activeElement; this.setState({ projDialog: { id: null, name: "", brief: "", due: "", error: "", assign: true }, projMenuOpen: false }); this.focusLater("pj-name"); };
+  editProjectById(id) { const pj = this.state.projects.find(x => x.id === id); if (!pj) return; this._projReturn = document.activeElement; this.setState({ projDialog: { id, name: pj.name, brief: pj.brief || "", due: pj.due || "", error: "" }, menuId: null }); this.focusLater("pj-name"); }
+  focusLater(id) { requestAnimationFrame(() => { const el = document.getElementById(id); if (el) { el.focus(); if (el.select) el.select(); } }); }
+  closeProjDialog = () => { this.setState({ projDialog: null }); if (this._projReturn && this._projReturn.focus) this._projReturn.focus(); };
+  saveProjDialog = () => {
+    const pd = this.state.projDialog; if (!pd) return;
+    const name = pd.name.trim();
+    if (!name) return this.setState({ projDialog: Object.assign({}, pd, { error: "Give the project a name to continue." }) });
+    let projects, openId = pd.id;
+    if (pd.id) projects = this.state.projects.map(pj => pj.id === pd.id ? Object.assign({}, pj, { name, brief: pd.brief.trim(), updatedAt: Date.now() }) : pj);
+    else { const pj = newProject(name, pd.brief.trim(), ""); openId = pj.id; projects = [pj].concat(this.state.projects); }
+    try { this.persistProjects(projects); } catch (e) { return this.setState({ projDialog: Object.assign({}, pd, { error: "Couldn't save — this browser is out of storage." }) }); }
+    if (pd.id) { this.setState({ projects, projDialog: null }); return; }
+    if (pd.assign) { this.setState({ projects, projDialog: null }); this.assignProject(openId); return; }
+    // From the Projects page: straight into the first artwork of the new project, not an empty page.
+    this.setState({ projects, projDialog: null, pill: "active", projectId: openId });
+    this.openDesign(newDesign("speaker", "square", openId), true);
+    this.showToast("Project created — this is its first artwork. Back takes you to the project.");
+  };
+  setProjectName = (e) => { const v = e.target.value; const projects = this.state.projects.map(pj => pj.id === this.state.projectId ? Object.assign({}, pj, { name: v, updatedAt: Date.now() }) : pj); try { this.persistProjects(projects); } catch (err) {} this.setState({ projects }); };
+  toggleArchive(id) {
+    const pj = this.state.projects.find(x => x.id === id); if (!pj) return;
+    const projects = this.state.projects.map(x => x.id === id ? Object.assign({}, x, { archived: !x.archived, updatedAt: Date.now() }) : x);
+    try { this.persistProjects(projects); } catch (e) {}
+    this.setState({ projects, menuId: null, pill: pj.archived ? "active" : this.state.pill });
+    this.showToast(pj.archived ? "“" + pj.name + "” is active again." : "“" + pj.name + "” archived. Find it under Archived.");
+  }
+  openDeleteProject(id) { this._delReturn = document.activeElement; this.setState({ deleteOpen: true, deleteId: id, deleteKind: "project", menuId: null }); this.focusDialog(); }
+  deleteProject(id) {
+    const pj = this.state.projects.find(x => x.id === id); if (!pj) return;
+    const gone = this.projectDesigns(id);
+    const projects = this.state.projects.filter(x => x.id !== id);
+    const drafts = this.state.drafts.filter(d => d.projectId !== id);
+    try { this.persistProjects(projects); this.persistDrafts(drafts); } catch (e) {}
+    this.setState({ projects, drafts, deleteOpen: false, deleteId: null, view: "projects", projectId: null });
+    this.showToast("Deleted “" + pj.name + "”" + (gone.length ? " and " + gone.length + " design" + (gone.length > 1 ? "s" : "") : "") + ".", "Undo", () => {
+      const p2 = [pj].concat(this.state.projects), d2 = gone.concat(this.state.drafts);
+      try { this.persistProjects(p2); this.persistDrafts(d2); } catch (e) {}
+      this.setState({ projects: p2, drafts: d2, toast: null });
+    });
+  }
+  openDesign(d, isNew) {
+    this.setState({ view: "editor", design: d, projectId: d.projectId || this.state.projectId, tab: "content", zoom: 1, past: [], future: [], overflow: [], reviewOpen: false, exportDone: false, exportError: "", saveState: isNew ? "idle" : "saved", savedAt: d.updatedAt || 0, fileName: "" });
+    if (isNew) { this._lastGroup = null; this.scheduleSave(); }
+  }
+  setTitle = (e) => this.commit({ title: e.target.value }, "title");
+
+  /* ---------- content ---------- */
+  setCopy(key, v, group) { const d = this.state.design; this.commit({ copy: Object.assign({}, d.copy, { [key]: v }) }, group || key); }
+  setSpeaker(id, key, v) { const d = this.state.design; this.commit({ speakers: d.speakers.map(sp => sp.id === id ? Object.assign({}, sp, { [key]: v }) : sp) }, "sp-" + id + key); }
+  addSpeaker = () => { const d = this.state.design; this.commit({ speakers: d.speakers.concat([{ id: uid("s"), name: "", role: "", company: "" }]) }); };
+  removeSpeaker(id) { const d = this.state.design; this.commit({ speakers: d.speakers.filter(sp => sp.id !== id) }); }
+  setTrio(i, key, v) { const d = this.state.design; this.commit({ trio: d.trio.map((t, k) => k === i ? Object.assign({}, t, { [key]: v }) : t) }, "trio" + i + key); }
+  togglePartner(key) { const d = this.state.design; const on = d.partnersOn.indexOf(key) >= 0; this.commit({ partnersOn: on ? d.partnersOn.filter(k => k !== key) : BRAND.partners.map(p => p.key).filter(k => k === key || d.partnersOn.indexOf(k) >= 0) }); }
+  toggleFlag(key) { const d = this.state.design; this.commit({ [key]: !d[key] }); }
+
+  /* ---------- images ---------- */
+  slotLabel(id) { const d = this.state.design; const sl = slotsFor(d).find(x => x.id === id); return sl ? sl.label : "Image"; }
+  openLib(slotId) { this._libReturn = document.activeElement; this.setState({ libOpen: true, libSlot: slotId, libBrand: true, uploadError: "" }); this.focusDialog(); }
+  closeLib = () => { this.setState({ libOpen: false, libSlot: null, libOver: false }); if (this._libReturn && this._libReturn.focus) this._libReturn.focus(); };
+  persistUploads(list) { try { Store.set(UPLOADS_KEY, list); return true; } catch (e) { return false; } }
+  async ingest(file, slotId) {
+    try {
+      const im = await readFileAsImage(file);
+      const uploads = [im].concat(this.state.uploads).slice(0, 24);
+      const kept = this.persistUploads(uploads);
+      this.setState({ uploads, uploadError: kept ? "" : "Added to this design, but this browser has run out of storage for your upload library." });
+      this.applyImage(slotId, im);
+    } catch (e) { this.setState({ uploadError: e.message || "We couldn't read that image." }); if (!this.state.libOpen) this.showToast(e.message || "We couldn't read that image."); }
+  }
+  applyImage(slotId, im) {
+    const d = this.state.design;
+    const prev = d.images[slotId];
+    const rec = { src: im.src, name: im.name, w: im.w, h: im.h, x: 50, y: 50, zoom: 1 };
+    this.commit({ images: Object.assign({}, d.images, { [slotId]: rec }) });
+    if (!im.w) { const probe = new Image(); probe.onload = () => { const cur = this.state.design; if (!cur || !cur.images[slotId] || cur.images[slotId].src !== im.src) return; this.setState({ design: Object.assign({}, cur, { images: Object.assign({}, cur.images, { [slotId]: Object.assign({}, cur.images[slotId], { w: probe.naturalWidth, h: probe.naturalHeight }) }) }) }); }; probe.src = im.src; }
+    this.setState({ libOpen: false, libSlot: null });
+    requestAnimationFrame(() => this.openCrop(slotId, prev));
+  }
+  clearImage(slotId) { const d = this.state.design; const images = Object.assign({}, d.images); delete images[slotId]; this.commit({ images }); }
+  slotBox(slotId) {
+    const el = document.querySelector("[data-canvas='1'] [data-slot='" + slotId + "']");
+    return el ? { w: el.clientWidth || 1, h: el.clientHeight || 1 } : { w: 1, h: 1 };
+  }
+  openCrop(slotId, prev) {
+    const d = this.state.design; const im = d.images[slotId]; if (!im) return;
+    const box = this.slotBox(slotId);
+    this._cropReturn = document.activeElement;
+    this.setState({ crop: { slotId, src: im.src, w: im.w, h: im.h, x: im.x, y: im.y, zoom: im.zoom, boxW: box.w, boxH: box.h, prev: prev === undefined ? im : prev } });
+    requestAnimationFrame(() => { const el = document.querySelector(".crop"); if (el) el.focus(); });
+  }
+  cancelCrop = () => {
+    const c = this.state.crop; if (!c) return;
+    // Restore whatever was there before this crop session began (including "nothing").
+    const d = this.state.design; const images = Object.assign({}, d.images);
+    if (c.prev) images[c.slotId] = c.prev; else delete images[c.slotId];
+    this.setState({ crop: null, design: Object.assign({}, d, { images }) });
+    this.scheduleSave();
+    if (this._cropReturn && this._cropReturn.focus) this._cropReturn.focus();
+  };
+  useCrop = () => {
+    const c = this.state.crop; if (!c) return;
+    const d = this.state.design;
+    const rec = Object.assign({}, d.images[c.slotId], { x: c.x, y: c.y, zoom: c.zoom });
+    this.setState({ crop: null });
+    this.commit({ images: Object.assign({}, d.images, { [c.slotId]: rec }) });
+    if (this._cropReturn && this._cropReturn.focus) this._cropReturn.focus();
+  };
+  resetCrop = () => this.setState(s => ({ crop: Object.assign({}, s.crop, { x: 50, y: 50, zoom: 1 }) }));
+  cropZoom = (e) => { const z = parseFloat(e.target.value) || 1; this.setState(s => ({ crop: Object.assign({}, s.crop, { zoom: z }) })); };
+  cropDown = (e) => { e.currentTarget.setPointerCapture(e.pointerId); this.setState(s => ({ dragging: { x: e.clientX, y: e.clientY, sx: s.crop.x, sy: s.crop.y, w: e.currentTarget.clientWidth, h: e.currentTarget.clientHeight } })); };
+  cropMove = (e) => {
+    const g = this.state.dragging; if (!g) return;
+    const z = this.state.crop.zoom;
+    const nx = clamp(g.sx - ((e.clientX - g.x) / g.w) * 100 / z, 0, 100);
+    const ny = clamp(g.sy - ((e.clientY - g.y) / g.h) * 100 / z, 0, 100);
+    this.setState(s => ({ crop: Object.assign({}, s.crop, { x: nx, y: ny }) }));
+  };
+  cropUp = () => this.setState({ dragging: null });
+  cropKeys = (e) => {
+    const step = e.shiftKey ? 10 : 2; let dx = 0, dy = 0;
+    if (e.key === "ArrowLeft") dx = step; else if (e.key === "ArrowRight") dx = -step; else if (e.key === "ArrowUp") dy = step; else if (e.key === "ArrowDown") dy = -step;
+    else if (e.key === "+" || e.key === "=") { e.preventDefault(); return this.setState(s => ({ crop: Object.assign({}, s.crop, { zoom: clamp(s.crop.zoom + 0.1, 1, 3) }) })); }
+    else if (e.key === "-") { e.preventDefault(); return this.setState(s => ({ crop: Object.assign({}, s.crop, { zoom: clamp(s.crop.zoom - 0.1, 1, 3) }) })); }
+    else return;
+    e.preventDefault();
+    this.setState(s => ({ crop: Object.assign({}, s.crop, { x: clamp(s.crop.x + dx, 0, 100), y: clamp(s.crop.y + dy, 0, 100) }) }));
+  };
+  softAt(im, boxW, boxH, zoom) {
+    if (!im || !im.w) return false;
+    const cover = Math.max(boxW / im.w, boxH / im.h) * (zoom || 1);
+    return cover > 1.35; // the source is being enlarged by more than ~35% at export size
+  }
+  libPageFile = async (e) => {
+    const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return;
+    try { const im = await readFileAsImage(f); const uploads = [im].concat(this.state.uploads).slice(0, 24); const kept = this.persistUploads(uploads); this.setState({ uploads, uploadError: kept ? "" : "This browser has run out of storage for your upload library." }); }
+    catch (err) { this.setState({ uploadError: err.message || "We couldn't read that image." }); }
+  };
+  removeUpload(id) { const uploads = this.state.uploads.filter(u => u.id !== id); this.persistUploads(uploads); this.setState({ uploads }); }
+  onFileInput = (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (f && this.state.libSlot) this.ingest(f, this.state.libSlot); };
+  dropTo(slotId, e) { e.preventDefault(); const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; this.setState({ slotOver: null, libOver: false }); if (f) this.ingest(f, slotId); }
+
+  /* ---------- size ---------- */
+  openSizeDialog = () => {
+    const d = this.state.design; const taken = [d.size].concat(this.siblings(d).map(x => x.size));
+    const first = SIZE_ORDER.find(k => taken.indexOf(k) < 0) || d.size;
+    this._sizeReturn = document.activeElement; this.setState({ sizeDialogOpen: true, pendingSize: first }); this.focusDialog();
+  };
+  closeSizeDialog = () => { this.setState({ sizeDialogOpen: false }); if (this._sizeReturn && this._sizeReturn.focus) this._sizeReturn.focus(); };
+  applySize = async () => {
+    const d0 = this.state.design; const k = this.state.pendingSize;
+    const taken = [d0.size].concat(this.siblings(d0).map(x => x.size));
+    if (taken.indexOf(k) >= 0) return;
+    clearTimeout(this._saveT); await this.captureThumb(); this.saveNow();
+    const d = this.state.design;
+    const base = d.title.replace(/( · (Square post|Portrait post|Story|Landscape|LinkedIn post|Square|Portrait|LinkedIn))+$/, "");
+    const copy = Object.assign({}, d, { id: uid("d"), size: k, familyId: d.familyId || uid("f"), title: base + " · " + SIZES[k].label, updatedAt: Date.now() });
+    if (!d.familyId) { const fixed = Object.assign({}, d, { familyId: copy.familyId }); this.setState(s => ({ drafts: s.drafts.map(x => x.id === d.id ? fixed : x) })); }
+    this.setState({ sizeDialogOpen: false, reviewOpen: false, exportDone: false });
+    this.openDesign(copy, true);
+    const hasImgs = Object.keys(copy.images).length > 0;
+    this.showToast(hasImgs ? "New " + SIZES[k].label.toLowerCase() + " version created. Check your image crops." : "New " + SIZES[k].label.toLowerCase() + " version created.");
+  };
+  radioKeys(e, keys, current, set) {
+    let i = keys.indexOf(current); if (i < 0) return;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") i = (i + 1) % keys.length;
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") i = (i - 1 + keys.length) % keys.length;
+    else return;
+    e.preventDefault(); set(keys[i]);
+    requestAnimationFrame(() => { const el = e.currentTarget.querySelectorAll("[role=radio]")[i]; if (el) el.focus(); });
+  }
+
+  /* ---------- review / export ---------- */
+  requiredMissing() { const d = this.state.design; return TPL[d.tpl].required.filter(k => !(d.copy[k] || "").trim()); }
+  defaultFileName() {
+    const d = this.state.design; const c = d.copy;
+    const subject = d.tpl === "speaker" ? c.name : d.tpl === "trio" ? c.sessionTitle : d.tpl === "lockup" ? "announcement" : c.headline;
+    return join(["tekex", d.tpl === "speaker" ? "speaker" : slug(TPL[d.tpl].name), slug(subject), d.size], "-");
+  }
+  openReview = () => { this._reviewReturn = document.activeElement; this.setState(s => ({ reviewOpen: true, exportDone: false, exportError: "", fileName: s.fileName || this.defaultFileName() })); requestAnimationFrame(() => { const el = document.getElementById("rv-title"); if (el) { el.setAttribute("tabindex", "-1"); el.focus(); } }); };
+  closeReview = () => { this.setState({ reviewOpen: false }); if (this._reviewReturn && this._reviewReturn.focus) this._reviewReturn.focus(); };
+  download = async () => {
+    const s = this.state; if (s.exporting) return;
+    const d = s.design; const S = SIZES[d.size]; const th = BRAND.themes[d.theme];
+    const node = document.querySelector("[data-canvas='1']");
+    if (!node) return this.setState({ exportError: "The artwork isn't on screen. Close any dialogs and try again." });
+    this.setState({ exporting: true, exportError: "", exportDone: false }); this.say("Preparing your image");
+    try {
+      let shot; try { shot = await ensureShot(); } catch (e) { throw new Error("The image renderer didn't load. Check your connection and try again."); }
+      if (document.fonts && document.fonts.ready) await document.fonts.ready;
+      const jpg = s.format === "jpg";
+      const blob = await shot.domToBlob(node, {
+        width: S.w, height: S.h, scale: 1,
+        type: jpg ? "image/jpeg" : "image/png", quality: 0.92,
+        backgroundColor: jpg ? th.ground : null,
+        style: { transform: "none", boxShadow: "none", margin: "0" },
+        filter: (el) => !(el.getAttribute && el.getAttribute("data-guide"))
+      });
+      if (!blob || !blob.size) throw new Error("Empty image.");
+      const bmp = await createImageBitmap(blob);
+      const ok = bmp.width === S.w && bmp.height === S.h; bmp.close && bmp.close();
+      if (!ok) throw new Error("The rendered size didn't match " + S.dims + " px.");
+      const name = (slug(s.fileName) || this.defaultFileName()) + (jpg ? ".jpg" : ".png");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      this.setState({ exporting: false, exportDone: true, exportDoneDetail: name + " · " + S.dims + " px · " + Math.round(blob.size / 1024) + " KB" }); this.say("Your download has started: " + name);
+    } catch (e) {
+      this.setState({ exporting: false, exportError: (e && e.message) ? "(" + e.message + ")" : "" });
+    }
+  };
+
+  /* ---------- drafts management ---------- */
+  duplicateDraft(id) { const d = this.state.drafts.find(x => x.id === id); if (!d) return; const copy = Object.assign({}, d, { id: uid("d"), title: d.title + " (copy)", updatedAt: Date.now() }); const drafts = this.upsertDraft(copy); try { this.persistDrafts(drafts); this.setState({ drafts }); this.showToast("Duplicated “" + d.title + "”."); } catch (e) { this.showToast("Couldn't duplicate — this browser is out of storage."); } }
+  openRename(id) { const d = this.state.drafts.find(x => x.id === id); if (!d) return; this.setState({ renameOpen: true, renameId: id, renameValue: d.title }); requestAnimationFrame(() => { const el = document.getElementById("rn-in"); if (el) { el.focus(); el.select(); } }); }
+  closeRename = () => this.setState({ renameOpen: false, renameId: null });
+  applyRename = () => { const s = this.state; const drafts = s.drafts.map(d => d.id === s.renameId ? Object.assign({}, d, { title: s.renameValue.trim() || d.title }) : d); try { this.persistDrafts(drafts); } catch (e) {} this.setState({ drafts, renameOpen: false, renameId: null }); };
+  openDelete(id) { this._delReturn = document.activeElement; this.setState({ deleteOpen: true, deleteId: id, deleteKind: "design" }); this.focusDialog(); }
+  closeDelete = () => { this.setState({ deleteOpen: false, deleteId: null }); if (this._delReturn && this._delReturn.focus) this._delReturn.focus(); };
+  applyDelete = () => {
+    const s = this.state;
+    if (s.deleteKind === "project") return this.deleteProject(s.deleteId);
+    const victim = s.drafts.find(d => d.id === s.deleteId); if (!victim) return this.closeDelete();
+    const drafts = s.drafts.filter(d => d.id !== s.deleteId);
+    try { this.persistDrafts(drafts); } catch (e) {}
+    this.setState({ drafts, deleteOpen: false, deleteId: null });
+    this.showToast("Deleted “" + victim.title + "”.", "Undo", () => { const back = this.upsertDraft(victim); try { this.persistDrafts(back); } catch (e) {} this.setState({ drafts: back, toast: null }); });
+  };
+  say(text) { this.setState({ announce: "" }); requestAnimationFrame(() => this.setState({ announce: text })); }
+  showToast(text, actionLabel, action) {
+    this.say(text);
+    clearTimeout(this._toastT);
+    this.setState({ toast: { text, actionLabel, action, hasAction: !!action } });
+    this._toastT = setTimeout(() => this.setState({ toast: null }), action ? 8000 : 4000);
+  }
+
+  /* ---------- artwork vals (shared by editor stage and template/draft cards) ---------- */
+  boardVals(d, mode, extra) {
+    const S = SIZES[d.size]; const th = BRAND.themes[d.theme]; const c = d.copy;
+    const wide = S.w > S.h; const tall = S.h / S.w >= 1.6;
+    const k = Math.min(1, S.h / 1080, S.w / 1080); // existing formats stay at 1; short formats such as LinkedIn scale down
+    const r = (v) => Math.round(v * k);
+    const gap = r(24), gapS = r(14), panelPad = r(28);
+    const nSpk = d.speakers.length;
+    const dens = nSpk <= 6 ? 1 : nSpk <= 9 ? 0.85 : nSpk <= 12 ? 0.72 : 0.55;
+    const thumbPx = r(120 * dens), rowPadPx = r(18 * dens), rowNatPx = thumbPx + 2 * rowPadPx;
+    const headline = d.tpl === "trio" ? c.sessionTitle : c.headline;
+    const eyebrow = d.tpl === "speaker" ? composeEyebrow(c) : d.tpl === "trio" ? c.sessionPrefix : c.eyebrow;
+    const dateLine = d.tpl === "trio" ? join([c.date, c.venue], ": ") : composeDateLine(c);
+    const logo = (src) => this.state.logoData[src] || src;
+    const mask = (src, w, h) => ({ width: w, height: h, background: "currentColor", WebkitMaskImage: "url(\"" + logo(src) + "\")", maskImage: "url(\"" + logo(src) + "\")", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center", WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat" });
+    const img = (id) => imgVals(d.images[id]);
+    const isEdit = mode === "edit";
+    // Card previews: fixed 16:10 landscape box, artwork scaled to cover it and centred (tall formats crop top and bottom).
+    const boxW = this.state.cardW || 380, boxH = Math.round(boxW * 10 / 16);
+    const cover = Math.max(boxW / S.w, boxH / S.h);
+    const offX = Math.round((boxW - S.w * cover) / 2), offY = Math.round((boxH - S.h * cover) / 2);
+    const scale = isEdit ? this.state.fitScale * this.state.zoom : cover;
+    const partnersShown = BRAND.partners.filter(p => d.partnersOn.indexOf(p.key) >= 0);
+
+    const pCols = wide ? 4 : (partnersShown.length <= 4 ? 2 : 2);
+
+    const thumb = isEdit ? "" : (this.state.thumbs[d.id] || "");
+    return Object.assign({
+      hasArt: isEdit || !thumb, thumb, noArt: false, designId: d.id,
+      thumbStyle: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" },
+      isProject: false, hasTags: false, hasMetas: false, canvasClick: isEdit ? this.canvasClick : null,
+      cardStyle: isEdit ? {} : { background: "color-mix(in srgb, " + th.ground + " 9%, #FFFFFF)" },
+      isCard: !isEdit, canvasFlag: isEdit ? "1" : "0",
+      wrapClass: isEdit ? "stage-item" : "card",
+      wrapRole: isEdit ? "group" : "button", tab: isEdit ? -1 : 0,
+      artWrapClass: isEdit ? "stage-item-wrap" : "art", artBoxStyle: isEdit ? {} : { aspectRatio: "16 / 10" },
+      canvasStyle: Object.assign({
+        width: S.w, height: S.h, flex: "0 0 auto", boxSizing: "border-box",
+        padding: S.pad, background: th.ground, color: th.accent,
+        display: "flex", flexDirection: "column", overflow: "hidden",
+        fontFamily: "'PP Neue Montreal','Helvetica Neue',Helvetica,Arial,sans-serif",
+        transform: "scale(" + scale + ")", transformOrigin: isEdit ? "center center" : "0 0"
+      }, isEdit ? {} : { position: "absolute", left: offX, top: offY }),
+      isSpeaker: d.tpl === "speaker", isEvent: d.tpl === "event", isPartners: d.tpl === "partners",
+      isLockup: d.tpl === "lockup", isListing: d.tpl === "listing", isTrio: d.tpl === "trio",
+      eyebrow, name: c.name, role: c.role, company: c.company, headline, body: c.body, dateLine,
+      barLabel: c.barLabel, url: c.url, showBar: d.showBar, showPowered: d.showPowered,
+      showHero: d.showHero, showPortraits: d.showPortraits,
+      gap, gapS, panelPad, barH: S.barH, barLeftW: S.barLeftW,
+      fsUrl: r(32), fsEyebrow: r(46), fsName: r(fitSize(c.name, wide ? 112 : 128, 0.48)),
+      fsMeta: r(45), fsDate: r(40), fsLabel: r(46), fsPowered: r(16),
+      fsHeadline: r(fitSize(headline, wide ? 104 : (S.key === "portrait" || tall ? 108 : 96), 0.5)),
+      fsBody: r(42), bodyMax: wide ? r(820) : 900,
+      contentDir: wide ? "row" : "column", panelFlex: wide ? "1 1 50%" : "0 1 auto",
+      halfMin: wide ? 0 : (tall ? 520 : 240), eventStripH: wide ? r(200) : (tall ? 640 : S.key === "portrait" ? 320 : 240),
+      lockupW: wide ? r(1200) : 800, partnerCols: pCols,
+      trioHeadMax: tall ? 560 : r(360), listHeadMax: tall ? 700 : r(420),
+      fsTrioName: r(30), fsTrioCo: r(21),
+      psStyle: mask("assets/ps-logo.svg", r(150), r(32)),
+      img1: img(d.tpl === "speaker" ? "speaker-photo" : d.tpl === "event" ? "event-image" : "listing-hero"),
+      trio: d.trio.map((t, i) => ({ name: t.name || "Speaker " + (i + 1), company: t.company, slotId: "trio-" + (i + 1), img: img("trio-" + (i + 1)) })),
+      partners: partnersShown.map(p => ({ name: p.name, maskStyle: mask(p.src, "78%", "56%") })),
+      speakerList: d.speakers.map(sp => ({ slotId: "listing-" + sp.id, displayName: sp.name || "Speaker name", role: sp.role, company: sp.company, nameStyle: sp.name ? "" : "opacity:0.4", img: img("listing-" + sp.id) })),
+      docGap: r(20), docGapS: r(10), docGapXS: r(5), docPad: r(20), docRowPad: rowPadPx, docTextMax: r(880),
+      heroH: tall ? 420 : r(240), thumb: thumbPx, rowMax: Math.round(rowNatPx * 1.4),
+      fsDocEyebrow: r(24), fsDocTitle: r(fitSize(headline, 94, 0.55)), fsDocIntro: r(26), fsDocDate: r(26),
+      fsRowName: r(40 * dens), fsRowMeta: r(26 * dens)
+    }, extra || {});
+  }
+
+  exampleDesign(tpl) {
+    const d = newDesign(tpl, "square", null);
+    if (tpl === "speaker") d.images["speaker-photo"] = Object.assign({ x: 50, y: 30, zoom: 1 }, BRAND.library[0]);
+    if (tpl === "event") d.images["event-image"] = { src: LIB.u1.src, name: LIB.u1.name, x: 50, y: 50, zoom: 1 };
+    if (tpl === "trio") { d.images["trio-1"] = { src: LIB.u4.src, x: 50, y: 30, zoom: 1 }; d.images["trio-2"] = { src: LIB.u7.src, x: 50, y: 30, zoom: 1 }; d.images["trio-3"] = { src: LIB.u6.src, x: 50, y: 30, zoom: 1 }; }
+    if (tpl === "listing") d.images["listing-hero"] = { src: LIB.u8.src, x: 50, y: 50, zoom: 1 };
+    return d;
+  }
+
+  projectBoard(pj) {
+    const designs = this.projectDesigns(pj.id).slice().sort((a, b) => b.updatedAt - a.updatedAt);
+    const latest = designs[0];
+    const tags = Array.from(new Set(designs.map(d => TPL[d.tpl].name)));
+    const formats = Array.from(new Set(designs.map(d => SIZES[d.size].label)));
+    const metas = [{ icon: ICON.layers, text: designs.length + (designs.length === 1 ? " design" : " designs") }];
+    if (formats.length) metas.push({ icon: ICON.format, text: formats.join(" · ") });
+    metas.push({ icon: ICON.clock, text: "Edited " + fmtWhen(pj.updatedAt) });
+    const open = () => this.openProject(pj.id);
+    const keys = (e) => { if (e.target !== e.currentTarget) return; if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } };
+    const chrome = {
+      isProject: true, isCard: true, wrapClass: "card", wrapRole: "button", tab: 0, aria: "Open project " + pj.name,
+      initials: initials(pj.name), who: pj.name, sub: "Created " + fmtDate(new Date(pj.createdAt).toISOString().slice(0, 10)),
+      statusText: pj.archived ? "Archived" : "Active", statusClass: pj.archived ? "archived" : "",
+      menuOpen: this.state.menuId === pj.id, menuToggle: (e) => { e.stopPropagation(); this.setState(st => ({ menuId: st.menuId === pj.id ? null : pj.id })); },
+      edit: (e) => { e.stopPropagation(); this.editProjectById(pj.id); }, archive: (e) => { e.stopPropagation(); this.toggleArchive(pj.id); }, del: (e) => { e.stopPropagation(); this.openDeleteProject(pj.id); },
+      archiveLabel: pj.archived ? "Make active" : "Archive",
+      title: pj.example ? pj.name : pj.name, desc: pj.brief || "", sizesText: "", badge: pj.example ? "Example project" : "",
+      hasTags: tags.length > 0, tags, hasMetas: true, metas, open, keys, isDraft: false
+    };
+    if (!latest) return Object.assign({ hasArt: false, noArt: true, thumb: "", isHeading: false, artWrapClass: "art", artBoxStyle: { aspectRatio: "16 / 10" }, cardStyle: {} }, chrome);
+    const b = this.boardVals(latest, "card", chrome);
+    b.title = pj.name; b.desc = pj.brief || ""; b.sizesText = "";
+    return b;
+  }
+
+  renderVals() {
+    const s = this.state; const d = s.design;
+    const view = s.view;
+    const isEditor = view === "editor" && !!d;
+    const boards = [];
+    const stop = (e) => e.stopPropagation();
+    const fmtTime = (t) => new Date(t).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    const keyAct = (fn) => (e) => { if (e.target !== e.currentTarget) return; if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fn(); } };
+
+    const project = (view === "editor" && d) ? (s.projects.find(x => x.id === d.projectId) || null) : this.currentProject();
+    const projName = (id) => { const pj = s.projects.find(x => x.id === id); return pj ? pj.name : "Draft"; };
+    const famCount = (r) => s.drafts.filter(x => x.familyId && x.familyId === r.familyId).length;
+    const designCard = (r, showProject) => this.boardVals(r, "card", { title: r.title, desc: TPL[r.tpl].name + " · " + SIZES[r.size].label + " (" + SIZES[r.size].ratio + ")" + (famCount(r) > 1 ? " · one of " + famCount(r) + " sizes" : "") + (r.scheduledAt ? " · Scheduled " + fmtShort(r.scheduledAt) : "") + (showProject ? " · " + projName(r.projectId) : ""), hasTags: !!(r.platforms && r.platforms.length), tags: (r.platforms || []).map(k => PLAT[k] ? PLAT[k].name : k), sizesText: "Edited " + fmtTime(r.updatedAt), aria: "Open " + r.title, open: () => this.openDesign(r, false), keys: keyAct(() => this.openDesign(r, false)), isDraft: true, dup: (e) => { e.stopPropagation(); this.duplicateDraft(r.id); }, rename: (e) => { e.stopPropagation(); this.openRename(r.id); }, del: (e) => { e.stopPropagation(); this.openDelete(r.id); } });
+    const sortBy = (arr, nameOf) => arr.slice().sort((a, b) => s.sortKey === "oldest" ? a.updatedAt - b.updatedAt : s.sortKey === "az" ? nameOf(a).localeCompare(nameOf(b)) : s.sortKey === "za" ? nameOf(b).localeCompare(nameOf(a)) : b.updatedAt - a.updatedAt);
+    const activeProjects = s.projects.filter(pj => !pj.archived), archivedProjects = s.projects.filter(pj => pj.archived);
+    const shownProjects = sortBy(s.pill === "active" ? activeProjects : archivedProjects, x => x.name);
+    const projDesigns = project ? sortBy(this.projectDesigns(project.id), x => x.title) : [];
+
+    const unassigned = sortBy(s.drafts.filter(x => !x.projectId), x => x.title);
+    const q = s.q.trim().toLowerCase();
+    const todayIso = isoDay(new Date()); const weekEnd = isoDay(new Date(Date.now() + 7 * 86400000));
+    const weekItems = s.drafts.filter(x => x.scheduledAt && x.scheduledAt >= todayIso && x.scheduledAt <= weekEnd).sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt)).slice(0, 12).map(x => {
+      const th = BRAND.themes[x.theme]; const pj = s.projects.find(y => y.id === x.projectId);
+      return { title: x.title, sub: (pj ? pj.name : "Draft") + " · " + SIZES[x.size].label, day: x.scheduledAt === todayIso ? "Today" : fmtShort(x.scheduledAt), thumb: s.thumbs[x.id] || "", artStyle: { background: th.ground, color: th.accent }, aria: "Open " + x.title + ", going out " + fmtShort(x.scheduledAt), open: () => this.openDesign(x, false) };
+    });
+    const hit = (str) => (str || "").toLowerCase().indexOf(q) >= 0;
+    if (view === "projects" && q) {
+      const pjs = shownProjects.filter(pj => hit(pj.name) || hit(pj.brief));
+      const des = sortBy(s.drafts.filter(x => hit(x.title) || hit(x.copy.name) || hit(x.copy.headline)), x => x.title);
+      if (pjs.length) { boards.push({ isHeading: true, text: "Projects", sub: pjs.length + " matching" }); pjs.forEach(pj => boards.push(this.projectBoard(pj))); }
+      if (des.length) { boards.push({ isHeading: true, text: "Artwork", sub: des.length + " matching" }); des.forEach(r => boards.push(designCard(r, true))); }
+      if (!pjs.length && !des.length) boards.push({ isHeading: true, text: "Nothing matches “" + s.q.trim() + "”", sub: "Try a project name, a speaker or a headline." });
+    } else if (view === "projects") {
+      if (unassigned.length && s.pill === "active") {
+        boards.push({ isHeading: true, text: "Drafts", sub: unassigned.length + " not in a project yet" });
+        unassigned.forEach(r => boards.push(designCard(r, false)));
+        boards.push({ isHeading: true, text: "Projects", sub: "" });
+      }
+      shownProjects.forEach(pj => boards.push(this.projectBoard(pj)));
+    } else if (view === "project" && project) {
+      projDesigns.forEach(r => boards.push(designCard(r, false)));
+    } else if (view === "templates") {
+      TEMPLATES.forEach(t => boards.push(this.boardVals(this.exampleDesign(t.key), "card", { title: t.name, desc: t.desc, sizesText: "Square · Portrait · Story · Landscape", badge: "Example", aria: t.name + ". " + t.desc, open: () => this.pickTemplate(t.key), keys: keyAct(() => this.pickTemplate(t.key)) })));
+    } else if (view === "designs") {
+      sortBy(s.drafts.filter(x => !q || hit(x.title) || hit(x.copy.name) || hit(x.copy.headline)), x => x.title).forEach(r => boards.push(designCard(r, true)));
+    } else if (isEditor) {
+      boards.push(this.boardVals(d, "edit", { open: null, keys: null, aria: "Artwork preview" }));
+    }
+
+    const pd = s.projDialog;
+    const delTarget = s.deleteKind === "project" ? s.projects.find(x => x.id === s.deleteId) : s.drafts.find(x => x.id === s.deleteId);
+    const delDesigns = s.deleteKind === "project" && delTarget ? this.projectDesigns(delTarget.id).length : 0;
+    const out = {
+      viewClass: isEditor ? "is-editor" : "is-" + view,
+      isProjects: view === "projects", isProject: view === "project" && !!project, isTemplates: view === "templates" && !!project,
+      isDesigns: view === "designs", isLibrary: view === "library", isCalendar: view === "calendar", isSize: view === "size", isEditor,
+      calendarCurrent: view === "calendar" ? "page" : "false", goCalendar: this.goCalendar, scheduledCount: s.drafts.filter(x => x.scheduledAt).length,
+      projectsCurrent: (view === "projects" || view === "project" || view === "templates" || view === "size") ? "page" : "false",
+      designsCurrent: view === "designs" ? "page" : "false", libraryCurrent: view === "library" ? "page" : "false",
+      projectCount: s.projects.length, designCount: s.drafts.length, libraryCount: BRAND.library.length + s.uploads.length,
+      avatarMissing: s.avatarMissing, avatarFailed: () => this.setState({ avatarMissing: true }), announce: s.announce,
+      goProjects: this.goProjects, goDesigns: this.goDesigns, goLibrary: this.goLibrary, goProject: this.goProject, goTemplates: this.goTemplates,
+      openHelp: () => { this._helpReturn = document.activeElement; this.setState({ helpOpen: true }); this.focusDialog(); }, closeHelp: () => { this.setState({ helpOpen: false }); if (this._helpReturn && this._helpReturn.focus) this._helpReturn.focus(); }, helpOpen: s.helpOpen,
+      bodyClass: isEditor ? "body" : "shell",
+      mainClass: isEditor ? "stage-wrap" : "content",
+      stageClass: isEditor ? "stage" : "",
+      boardsClass: isEditor ? "boards stage-boards" : (boards.length ? "page grid" + (s.layout === "list" ? " list" : "") : "sr"),
+      sortKey: s.sortKey, setSort: (e) => { this.setState({ sortKey: e.target.value }); this.say("Sorted " + e.target.options[e.target.selectedIndex].text.toLowerCase()); },
+      q: s.q, setQ: (e) => this.setState({ q: e.target.value, menuId: null }), clearQ: () => this.setState({ q: "" }),
+      isGrid: s.layout === "grid", pickGrid: () => { this.setState({ layout: "grid" }); this.say("Grid view"); }, pickList: () => { this.setState({ layout: "list" }); this.say("List view"); },
+      boards,
+      noDrafts: s.drafts.length === 0,
+      /* projects */
+      hasWeek: view === "projects" && weekItems.length > 0, weekCount: weekItems.length, weekItems,
+      pillActive: s.pill === "active", pickActive: () => this.setState({ pill: "active", menuId: null }), pickArchived: () => this.setState({ pill: "archived", menuId: null }),
+      activeCount: activeProjects.length, archivedCount: archivedProjects.length,
+      noProjectsShown: !q && shownProjects.length === 0 && !(s.pill === "active" && unassigned.length),
+      newArtwork: this.newArtwork,
+      emptyProjectsMsg: s.pill === "active" ? "No active projects. Create one to start making designs." : "Nothing archived. Archive a project from its menu when it's finished.",
+      openNewProject: this.openNewProject,
+      project: project || { name: "", brief: "", due: "" },
+      projectDesignCount: projDesigns.length + (projDesigns.length === 1 ? " design" : " designs"),
+      projectNextText: (() => { if (!project) return ""; const today = isoDay(new Date()); const nx = projDesigns.map(x => x.scheduledAt).filter(x => x && x >= today).sort()[0]; return nx ? fmtShort(nx) : ""; })(),
+      projectEditedText: project ? fmtWhen(project.updatedAt) : "",
+      projectStatusText: project && project.archived ? "Archived" : "Active", projectStatusClass: project && project.archived ? "archived" : "",
+      projectEmpty: !!project && projDesigns.length === 0,
+      setProjectName: this.setProjectName,
+      editProject: () => project && this.editProjectById(project.id),
+      projectPageMenuOpen: !!project && s.menuId === "page:" + project.id,
+      toggleProjectPageMenu: (e) => { e.stopPropagation(); this.setState(st => ({ menuId: st.menuId === "page:" + project.id ? null : "page:" + project.id })); },
+      deleteCurrentProject: () => project && this.openDeleteProject(project.id),
+      toggleArchiveCurrent: () => project && this.toggleArchive(project.id),
+      archiveLabel: project && project.archived ? "Make active" : "Archive",
+      projDialogOpen: !!pd, projDialog: pd || {}, projDialogTitle: pd && pd.id ? "Edit project" : "New project", projDialogAction: pd && pd.id ? "Save changes" : (pd && pd.assign ? "Create and add" : "Create project"),
+      projDialogSub: pd && pd.id ? "Rename the project or update its brief." : (pd && pd.assign ? "This artwork and its other sizes will move into the new project." : "Just a name to start with. You'll land in the editor with the first artwork."),
+      projNameErrClass: pd && pd.error ? "err" : "", projNameInvalid: !!(pd && pd.error),
+      setProjName: (e) => this.setState(st => ({ projDialog: Object.assign({}, st.projDialog, { name: e.target.value, error: "" }) })),
+      setProjBrief: (e) => this.setState(st => ({ projDialog: Object.assign({}, st.projDialog, { brief: e.target.value }) })),
+      setProjDue: (e) => this.setState(st => ({ projDialog: Object.assign({}, st.projDialog, { due: e.target.value }) })),
+      projDialogKeys: (e) => { if (e.key === "Enter" && e.target && e.target.tagName !== "TEXTAREA") { e.preventDefault(); return this.saveProjDialog(); } this.trapTab(e); },
+      closeProjDialog: this.closeProjDialog, saveProjDialog: this.saveProjDialog,
+      deleteBody: s.deleteKind === "project" ? (delDesigns ? "This also deletes its " + delDesigns + " design" + (delDesigns > 1 ? "s" : "") + ". You can undo for a short while from the message that appears." : "You can undo this for a short while from the message that appears.") : "You can undo this for a short while from the message that appears.",
+      /* calendar */
+      calTitle: (() => { const [y, m] = s.calMonth.split("-").map(Number); return new Date(y, m - 1, 1).toLocaleDateString("en-GB", { month: "long", year: "numeric" }); })(),
+      calPrev: () => this.setState(st => { const [y, m] = st.calMonth.split("-").map(Number); const d = new Date(y, m - 2, 1); return { calMonth: isoDay(d).slice(0, 7) }; }),
+      calNext: () => this.setState(st => { const [y, m] = st.calMonth.split("-").map(Number); const d = new Date(y, m, 1); return { calMonth: isoDay(d).slice(0, 7) }; }),
+      calToday: () => this.setState({ calMonth: isoDay(new Date()).slice(0, 7) }),
+      calDows: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      calCells: (() => {
+        const [y, m] = s.calMonth.split("-").map(Number);
+        const first = new Date(y, m - 1, 1); const startOffset = (first.getDay() + 6) % 7;
+        const start = new Date(y, m - 1, 1 - startOffset);
+        const today = isoDay(new Date());
+        const cells = [];
+        for (let i = 0; i < 42; i++) {
+          const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+          const iso = isoDay(d); const inMonth = d.getMonth() === m - 1;
+          if (i >= 35 && !inMonth && cells.every(c => c.iso !== iso)) { if (cells.length >= 35 && cells.slice(35).length === 0 && !inMonth) { /* skip trailing week if wholly outside month */ } }
+          const items = s.drafts.filter(x => x.scheduledAt === iso).sort((a, b) => a.title.localeCompare(b.title)).map(x => this.chipVals(x));
+          cells.push({ iso, day: d.getDate(), items, cls: (inMonth ? "" : "out ") + (iso === today ? "today " : "") + (s.dragOverDay === iso ? "over" : ""),
+            aria: d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) + (items.length ? ", " + items.length + " scheduled" : ""),
+            dragOver: (e) => { e.preventDefault(); if (s.dragOverDay !== iso) this.setState({ dragOverDay: iso }); }, dragLeave: () => { if (s.dragOverDay === iso) this.setState({ dragOverDay: null }); }, drop: (e) => this.dropOn(iso, e) });
+        }
+        // Drop the sixth row when it is entirely next month.
+        if (cells.slice(35).every(c => c.cls.indexOf("out") === 0)) cells.length = 35;
+        return cells;
+      })(),
+      unscheduled: s.drafts.filter(x => !x.scheduledAt).sort((a, b) => b.updatedAt - a.updatedAt).map(x => this.chipVals(x)),
+      unscheduledCount: s.drafts.filter(x => !x.scheduledAt).length,
+      trayOverClass: s.trayOver ? "over" : "",
+      trayDragOver: (e) => { e.preventDefault(); if (!s.trayOver) this.setState({ trayOver: true }); }, trayDragLeave: () => { if (s.trayOver) this.setState({ trayOver: false }); }, trayDrop: (e) => this.dropOn("", e),
+      schedOpen: !!s.sched, sched: s.sched || {}, closeSched: this.closeSched,
+      setSchedDate: (e) => s.sched && this.setSchedule(s.sched.id, e.target.value),
+      unschedule: () => s.sched && this.setSchedule(s.sched.id, ""),
+      openScheduled: () => { const d = s.sched && s.drafts.find(x => x.id === s.sched.id); if (d) { this.setState({ sched: null }); this.openDesign(d, false); } },
+      /* library page */
+      brandLibAll: BRAND.library.map(im => ({ name: im.name, thStyle: { backgroundImage: "url(" + im.src + ")" } })),
+      uploadsAll: s.uploads.map(im => ({ name: im.name, thStyle: { backgroundImage: "url(" + im.src + ")" }, remove: () => this.removeUpload(im.id) })),
+      libPageFile: this.libPageFile, uploadCount: s.uploads.length, uploadError: s.uploadError, clearUploadError: () => this.setState({ uploadError: "" }),
+      stop, scrimClose: () => this.escape(), dialogKeys: this.trapTab,
+      toast: s.toast,
+      sizeTplName: TPL[s.pendingTpl].name,
+      sizeTiles: SIZE_ORDER.map(k => { const S = SIZES[k]; const r = S.w / S.h; const bw = r >= 1 ? 48 : Math.round(48 * r), bh = r >= 1 ? Math.round(48 / r) : 48; return { label: S.label, dims: S.dims, on: s.pendingSize === k, tab: s.pendingSize === k ? 0 : -1, pick: () => this.setState({ pendingSize: k }), ratioStyle: { width: bw, height: bh } }; }),
+      sizeKeys: (e) => this.radioKeys(e, SIZE_ORDER, s.pendingSize, (k) => this.setState({ pendingSize: k })),
+      startCreating: this.startCreating,
+      renameOpen: s.renameOpen, renameValue: s.renameValue, setRenameValue: (e) => this.setState({ renameValue: e.target.value }), closeRename: this.closeRename, applyRename: this.applyRename,
+      deleteOpen: s.deleteOpen, deleteName: delTarget ? (delTarget.title || delTarget.name) : "", closeDelete: this.closeDelete, applyDelete: this.applyDelete,
+      maxMb: MAX_UPLOAD_MB
+    };
+    if (!isEditor) return out;
+
+    /* ---------------- editor vals ---------------- */
+    const S = SIZES[d.size]; const th = BRAND.themes[d.theme]; const c = d.copy;
+    const tplDef = TPL[d.tpl];
+    const missing = this.requiredMissing();
+    const over = s.overflow;
+    const LABELS = { name: "Speaker name", role: "Job title", company: "Company", venue: "Venue", headline: "Headline", body: "Intro", sessionTitle: "Session title", speakers: "Speaker list" };
+    const overLabels = over.map(k => LABELS[k] || k);
+    const slots = slotsFor(d);
+    const fieldsDef = FIELDS[d.tpl];
+    const ratio = contrast(th.ground, th.accent);
+    const blocked = missing.length > 0 || over.length > 0;
+    const blockedMsg = missing.length ? "Add " + (fieldsDef.find(f => f.key === missing[0]) || { label: missing[0] }).label.toLowerCase().replace(/^a /, "") + " to continue." : "Some text doesn't fit this layout yet. Shorten it or choose another size.";
+    const checks = [];
+    checks.push(missing.length ? { level: "fail", label: "Required content missing: " + missing.map(k => (fieldsDef.find(f => f.key === k) || { label: k }).label).join(", ") } : { level: "pass", label: "All required content is in" });
+    checks.push(over.length ? { level: "fail", label: "Text overflows the layout: " + overLabels.join(", ") } : { level: "pass", label: "All text fits the layout" });
+    if (slots.length) { const filled = slots.filter(sl => d.images[sl.id]).length; checks.push(filled === slots.length ? { level: "pass", label: "All " + slots.length + " image area" + (slots.length > 1 ? "s" : "") + " filled" } : { level: "warn", label: filled + " of " + slots.length + " image areas filled — empty areas export as flat colour" }); }
+    const soft = slots.filter(sl => { const im = d.images[sl.id]; if (!im) return false; const b = this.slotBox(sl.id); return this.softAt(im, b.w, b.h, im.zoom); });
+    if (soft.length) checks.push({ level: "warn", label: "May look soft: " + soft.map(x => x.label).join(", ") });
+    checks.push({ level: ratio >= 4.5 ? "pass" : "warn", label: th.name + " · " + ratio.toFixed(1) + ":1 contrast" });
+    const dotColor = (l) => l === "pass" ? "var(--hs-success)" : l === "warn" ? "var(--hs-warning)" : "var(--hs-error)";
+    const fieldErr = (k) => missing.indexOf(k) >= 0 ? (LABELS[k] ? "Add a " + LABELS[k].toLowerCase() + " to continue." : "This is needed.") : (over.indexOf(k) >= 0 ? "This is too long for this layout. Shorten it or choose another size." : "");
+
+    return Object.assign(out, {
+      title: d.title, setTitle: this.setTitle,
+      saveClass: s.saveState, saveFailed: s.saveState === "error",
+      saveLabel: s.saveState === "saving" ? "Saving…" : s.saveState === "saved" ? "Saved in this browser" : s.saveState === "error" ? "Couldn't save" : "Not saved yet",
+      retrySave: this.retrySave,
+      undo: this.undo, redo: this.redo, canUndo: s.past.length > 0, canRedo: s.future.length > 0,
+      backToProject: this.backToProject, backLabel: d.projectId && project ? "Back to " + project.name : "Back",
+      inProject: !!d.projectId, projChipLabel: d.projectId && project ? project.name : "Draft · add to a project", projChipClass: d.projectId ? "" : "draft",
+      projMenuOpen: s.projMenuOpen, toggleProjMenu: (e) => { e.stopPropagation(); this.setState(st => ({ projMenuOpen: !st.projMenuOpen })); },
+      projMenuItems: s.projects.filter(pj => !pj.archived).slice().sort((a, b) => b.updatedAt - a.updatedAt).map(pj => ({ name: pj.name, on: pj.id === d.projectId, pick: () => this.assignProject(pj.id) })),
+      newProjectFromEditor: this.newProjectFromEditor, unassignProject: () => this.assignProject(null),
+      tplName: tplDef.name, sizeLabel: S.label, sizeDims: S.dims, themeName: th.name,
+      templateTiles: TEMPLATES.map(t => ({ name: t.name, on: d.tpl === t.key, pick: () => this.switchTemplate(t.key) })),
+      scheduledAt: d.scheduledAt || "", setScheduled: (e) => this.setSchedule(d.id, e.target.value), clearScheduled: () => this.setSchedule(d.id, ""),
+      platformChips: PLATFORMS.map(pl => ({ name: pl.name, on: d.platforms.indexOf(pl.key) >= 0, toggle: () => this.togglePlatform(pl.key) })),
+      hasPlatforms: d.platforms.length > 0, multiPlatform: d.platforms.length > 1,
+      platformsText: d.platforms.map(k => PLAT[k].name).join(" · "),
+      captionTabs: d.platforms.map(k => ({ name: PLAT[k].name, on: this.captionPlatform() === k, pick: () => this.setState({ captionTab: k }) })),
+      captionAuto: (d.caption || {}).mode !== "manual",
+      pickAuto: () => this.setCaption({ mode: "auto" }),
+      pickManual: () => { const text = Object.assign({}, (d.caption || {}).text || {}); d.platforms.forEach(pk => { if (!text[pk]) text[pk] = draftCaption(d, pk, (d.caption || {}).variant || 0); }); this.setCaption({ mode: "manual", text }); },
+      captionText: this.captionFor(d, this.captionPlatform()),
+      captionDisplay: this.captionFor(d, this.captionPlatform()) || "Nothing to say yet — add a name, headline or date above and the copy will follow.",
+      captionEmptyClass: this.captionFor(d, this.captionPlatform()) ? "" : "empty",
+      captionLabel: (PLAT[this.captionPlatform()] || { name: "" }).name + " post",
+      captionPlatformName: (PLAT[this.captionPlatform()] || { name: "" }).name,
+      shuffleCaption: () => this.setCaption({ variant: ((d.caption || {}).variant || 0) + 1 }),
+      editCaption: () => { const k = this.captionPlatform(); const text = Object.assign({}, (d.caption || {}).text || {}); d.platforms.forEach(pk => { if (!text[pk]) text[pk] = draftCaption(d, pk, (d.caption || {}).variant || 0); }); text[k] = draftCaption(d, k, (d.caption || {}).variant || 0); this.setCaption({ mode: "manual", text }); requestAnimationFrame(() => { const el = document.getElementById("f-caption"); if (el) el.focus(); }); },
+      draftIntoManual: () => { const k = this.captionPlatform(); const text = Object.assign({}, (d.caption || {}).text || {}); text[k] = draftCaption(d, k, ((d.caption || {}).variant || 0) + 1); this.setCaption({ text, variant: ((d.caption || {}).variant || 0) + 1 }); },
+      setCaptionText: (e) => { const k = this.captionPlatform(); const text = Object.assign({}, (d.caption || {}).text || {}, { [k]: e.target.value }); this.setCaption({ text }); },
+      copiedClass: s.copied ? "copied" : "", copyLabel: s.copied ? "Copied ✓" : "Copy to clipboard", copyLabelLong: s.copied ? "Copied ✓" : "Copy " + (PLAT[this.captionPlatform()] || { name: "" }).name + " copy",
+      copyCaption: () => this.copyText(this.captionFor(d, this.captionPlatform()), (PLAT[this.captionPlatform()] || { name: "Post" }).name + " copy"),
+      captionCount: (() => { const k = this.captionPlatform(); if (!k) return ""; const n = this.captionFor(d, k).length; const lim = PLAT[k].limit; return n + " characters" + (n > lim ? " — over the " + PLAT[k].name + " limit of " + lim : (k === "x" ? " of 280" : "")); })(),
+      captionOverClass: (() => { const k = this.captionPlatform(); return k && this.captionFor(d, k).length > PLAT[k].limit ? "ferr" : ""; })(),
+      scheduledHint: d.scheduledAt ? "Going out " + fmtShort(d.scheduledAt) + ". Move it from the calendar any time." : "Pick a date and this post appears on the calendar.",
+      tabContent: s.tab === "content", tabImages: s.tab === "images", tabStyle: s.tab === "style",
+      tabContentIdx: s.tab === "content" ? 0 : -1, tabImagesIdx: s.tab === "images" ? 0 : -1, tabStyleIdx: s.tab === "style" ? 0 : -1,
+      pickContent: () => this.setState({ tab: "content" }), pickImages: () => this.setState({ tab: "images" }), pickStyle: () => this.setState({ tab: "style" }),
+      tabKeys: (e) => { const order = ["content", "images", "style"]; let i = order.indexOf(s.tab); if (e.key === "ArrowRight") i = (i + 1) % 3; else if (e.key === "ArrowLeft") i = (i + 2) % 3; else return; e.preventDefault(); this.setState({ tab: order[i] }); requestAnimationFrame(() => { const el = document.getElementById("tab-" + order[i]); if (el) el.focus(); }); },
+      hasSlots: slots.length > 0, imgCount: slots.filter(sl => d.images[sl.id]).length + "/" + slots.length,
+      hasOverflow: over.length > 0, overflowMsg: "This text is too long for this layout: " + overLabels.join(", ") + ". Shorten it or choose another size.",
+      fields: fieldsDef.map(f => ({
+        id: "f-" + f.key, label: f.label, ph: f.ph, optional: !!f.optional, value: c[f.key] || "",
+        isText: !f.kind, isArea: f.kind === "area", isSelect: f.kind === "select", options: f.options || [],
+        set: (e) => this.setCopy(f.key, e.target.value),
+        error: fieldErr(f.key), errId: "e-" + f.key, errClass: (fieldErr(f.key) ? "err" : "") + (s.flashField === f.key ? " flash" : ""), invalid: !!fieldErr(f.key)
+      })),
+      hasTimeRow: !!TIME_ROW[d.tpl], copy: c,
+      setDate: (e) => this.setCopy("date", e.target.value), setStart: (e) => this.setCopy("startTime", e.target.value), setEnd: (e) => this.setCopy("endTime", e.target.value), setVenue: (e) => this.setCopy("venue", e.target.value),
+      venueErrClass: over.indexOf("venue") >= 0 ? "err" : "", flashVenue: s.flashField === "venue" ? "flash" : "", flashDate: s.flashField === "date" ? "flash" : "",
+      isListing: d.tpl === "listing", isTrio: d.tpl === "trio", isPartners: d.tpl === "partners",
+      speakerCount: d.speakers.length + (d.speakers.length === 1 ? " speaker" : " speakers"),
+      speakerRows: d.speakers.map((sp, i) => ({ n: i + 1, name: sp.name, role: sp.role, company: sp.company, setName: (e) => this.setSpeaker(sp.id, "name", e.target.value), setRole: (e) => this.setSpeaker(sp.id, "role", e.target.value), setCompany: (e) => this.setSpeaker(sp.id, "company", e.target.value), remove: () => this.removeSpeaker(sp.id) })),
+      addSpeaker: this.addSpeaker,
+      trioRows: d.trio.map((t, i) => ({ n: i + 1, name: t.name, company: t.company, setName: (e) => this.setTrio(i, "name", e.target.value), setCompany: (e) => this.setTrio(i, "company", e.target.value) })),
+      partnerToggles: BRAND.partners.map(p => ({ name: p.name, on: d.partnersOn.indexOf(p.key) >= 0, toggle: () => this.togglePartner(p.key) })),
+      hasFooter: !!FOOTER[d.tpl], flashBar: s.flashField === "barLabel" ? "flash" : "", flashUrl: s.flashField === "url" ? "flash" : "", barOptions: BRAND.barLabels, setBar: (e) => this.setCopy("barLabel", e.target.value), setUrl: (e) => this.setCopy("url", e.target.value),
+      slotCards: slots.map(sl => { const im = d.images[sl.id]; const b = this.slotBox(sl.id); return {
+        label: sl.label, has: !!im, status: im ? (im.name || "Image added") : "No image yet",
+        thStyle: im ? { backgroundImage: "url(" + im.src + ")" } : {}, thAlt: im ? sl.label + " thumbnail" : "Empty",
+        soft: !!im && this.softAt(im, b.w, b.h, im.zoom),
+        choose: () => this.openLib(sl.id), adjust: () => this.openCrop(sl.id), clear: () => this.clearImage(sl.id),
+        overClass: s.slotOver === sl.id ? "over" : "",
+        dragOver: (e) => { e.preventDefault(); if (s.slotOver !== sl.id) this.setState({ slotOver: sl.id }); }, dragLeave: () => this.setState({ slotOver: null }), drop: (e) => this.dropTo(sl.id, e)
+      }; }),
+      themeTiles: BRAND.themes.map((t, i) => ({ name: t.name, on: d.theme === i, tab: d.theme === i ? 0 : -1, pick: () => this.commit({ theme: i }), miniStyle: { background: t.ground, color: t.accent }, barStyle: { background: t.accent } })),
+      themeKeys: (e) => this.radioKeys(e, BRAND.themes.map((_, i) => i), d.theme, (i) => this.commit({ theme: i })),
+      lowContrast: ratio < 4.5, contrastRatio: ratio.toFixed(1),
+      showBar: d.showBar, showPowered: d.showPowered, showHero: d.showHero, showPortraits: d.showPortraits,
+      toggleBar: () => this.toggleFlag("showBar"), togglePowered: () => this.toggleFlag("showPowered"), toggleHero: () => this.toggleFlag("showHero"), togglePortraits: () => this.toggleFlag("showPortraits"),
+      openSizeDialog: this.openSizeDialog, closeSizeDialog: this.closeSizeDialog, sizeDialogOpen: s.sizeDialogOpen, applySize: this.applySize, pendingSizeLabel: SIZES[s.pendingSize].label,
+      sizeStrip: [d].concat(this.siblings(d)).sort((a, b) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)).map(x => { const Z = SIZES[x.size]; const rr = Z.w / Z.h; return { label: Z.label, ratio: Z.ratio, dims: Z.dims, on: x.id === d.id, open: () => { if (x.id !== d.id) this.switchSize(x.id); }, glyph: { width: rr >= 1 ? 16 : Math.round(16 * rr), height: rr >= 1 ? Math.round(16 / rr) : 16 } }; }),
+      hasSiblings: this.siblings(d).length > 0, canAddSize: [d.size].concat(this.siblings(d).map(x => x.size)).length < SIZE_ORDER.length,
+      syncSizes: s.syncSizes, toggleSync: () => this.setState(st => ({ syncSizes: !st.syncSizes })),
+      addSizeTiles: SIZE_ORDER.map(k => { const Z = SIZES[k]; const rr = Z.w / Z.h; const bw = rr >= 1 ? 48 : Math.round(48 * rr), bh = rr >= 1 ? Math.round(48 / rr) : 48; const added = [d.size].concat(this.siblings(d).map(x => x.size)).indexOf(k) >= 0; return { label: Z.label, ratio: Z.ratio, dims: Z.dims, added, on: !added && s.pendingSize === k, tab: s.pendingSize === k ? 0 : -1, pick: () => { if (!added) this.setState({ pendingSize: k }); }, ratioStyle: { width: bw, height: bh } }; }),
+      addSizeKeys: (e) => { const free = SIZE_ORDER.filter(k => [d.size].concat(this.siblings(d).map(x => x.size)).indexOf(k) < 0); this.radioKeys(e, free, s.pendingSize, (k) => this.setState({ pendingSize: k })); },
+      canApplySize: [d.size].concat(this.siblings(d).map(x => x.size)).indexOf(s.pendingSize) < 0,
+      zoomPct: Math.round(s.fitScale * s.zoom * 100) + "%",
+      zoomIn: () => this.setState({ zoom: clamp(s.zoom * 1.25, 0.25, 4) }), zoomOut: () => this.setState({ zoom: clamp(s.zoom / 1.25, 0.25, 4) }), zoomFit: () => this.setState({ zoom: 1 }),
+      reviewOpen: s.reviewOpen, openReview: this.openReview, closeReview: this.closeReview,
+      isPng: s.format === "png", isJpg: s.format === "jpg", pickPng: () => this.setState({ format: "png", exportDone: false }), pickJpg: () => this.setState({ format: "jpg", exportDone: false }),
+      fileName: s.fileName, setFileName: (e) => this.setState({ fileName: e.target.value }),
+      checks: checks.map(ck => ({ label: ck.label, dot: { background: dotColor(ck.level) } })),
+      blocked, blockedMsg, downloadDisabled: blocked || s.exporting, exporting: s.exporting,
+      downloadLabel: s.exporting ? "Preparing your image…" : "Download " + s.format.toUpperCase(),
+      download: this.download, exportError: s.exportError, exportDone: s.exportDone, exportDoneDetail: s.exportDoneDetail,
+      libOpen: s.libOpen, closeLib: this.closeLib, libSlotLabel: s.libSlot ? this.slotLabel(s.libSlot) : "", libBrand: s.libBrand,
+      libPickBrand: () => this.setState({ libBrand: true }), libPickUploads: () => this.setState({ libBrand: false }),
+      brandLib: BRAND.library.map(im => ({ name: im.name, on: !!(s.libSlot && d.images[s.libSlot] && d.images[s.libSlot].src === im.src), thStyle: { backgroundImage: "url(" + im.src + ")" }, pick: () => this.applyImage(s.libSlot, im) })),
+      uploads: s.uploads.map(im => ({ name: im.name, on: !!(s.libSlot && d.images[s.libSlot] && d.images[s.libSlot].src === im.src), thStyle: { backgroundImage: "url(" + im.src + ")" }, pick: () => this.applyImage(s.libSlot, im) })),
+      uploadCount: s.uploads.length, uploadError: s.uploadError, clearUploadError: () => this.setState({ uploadError: "" }),
+      libFile: this.onFileInput, dropOverClass: s.libOver ? "over" : "",
+      libDragOver: (e) => { e.preventDefault(); if (!s.libOver) this.setState({ libOver: true }); }, libDragLeave: () => this.setState({ libOver: false }), libDrop: (e) => { if (s.libSlot) this.dropTo(s.libSlot, e); },
+      cropOpen: !!s.crop, crop: s.crop || {},
+      cropBoxStyle: s.crop ? { aspectRatio: s.crop.boxW + " / " + s.crop.boxH, maxHeight: 420, width: s.crop.boxW >= s.crop.boxH ? "100%" : Math.round(420 * s.crop.boxW / s.crop.boxH) } : {},
+      cropImgStyle: s.crop ? { objectPosition: s.crop.x + "% " + s.crop.y + "%", transform: "scale(" + s.crop.zoom + ")", transformOrigin: s.crop.x + "% " + s.crop.y + "%" } : {},
+      cropZoomPct: s.crop ? Math.round(s.crop.zoom * 100) + "%" : "",
+      cropSoft: s.crop ? this.softAt(s.crop, s.crop.boxW, s.crop.boxH, s.crop.zoom) : false,
+      cropDown: this.cropDown, cropMove: this.cropMove, cropUp: this.cropUp, cropKeys: this.cropKeys, cropZoom: this.cropZoom, resetCrop: this.resetCrop, cancelCrop: this.cancelCrop, useCrop: this.useCrop
+    });
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+@import './components/fig-tokens.css';
+@import './components/fig-typography.css';
+@import './components/fig-assets.css';
+
+@font-face{font-family:"PP Neue Montreal";src:url("assets/fonts/neue-montreal-book.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"PP Neue Montreal";src:url("assets/fonts/neue-montreal-regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"PP Neue Montreal";src:url("assets/fonts/neue-montreal-medium.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"PP Neue Montreal";src:url("assets/fonts/neue-montreal-medium.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap}
+
+:root{
+  /* Potting Shed */
+  --ink:#171717; --paper:#F2F2F2;
+  --blue:#245FFF; --cyan:#12CDFF; --teal:#01FECD; --yellow:#FDE619;
+  --pink:#FF16A5; --red:#FE1658; --orange:#FF840A; --peach:#FFADA2;
+  --lime:#CEFF00; --green:#69FF46;
+  --grey:#6F6F6F; --grey-on-dark:#9A9A9A;
+  --font-sans:"PP Neue Montreal","Helvetica Neue",Helvetica,Arial,sans-serif;
+
+  /* TEKEX — read from the Figma board */
+  --tkx-ink:#141414;
+  --tkx-light:#E5E6E7;
+  --tkx-violet:#7824FF;
+  --tkx-magenta:#F824FF;
+  --tkx-mint:#81FFE7;
+  --tkx-lime:#D0FFBF;
+  --tkx-blue:#2F479D;
+  --tkx-navy:#0D183B;
+}
