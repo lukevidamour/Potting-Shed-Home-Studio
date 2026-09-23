@@ -59,7 +59,7 @@
         <div class="wschip"><span class="wsmark"><svg viewBox="0 0 879.658 181" role="img" aria-label="TEKEX"><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path><path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path><path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path><path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path></svg></span><div><b>TEKEX</b><span>Client workspace</span></div></div>
         <nav class="sidegrp" aria-label="Workspace">
           <div class="lbl">Workspace</div>
-          <button onClick="{{ goProjects }}" aria-current="{{ projectsCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Projects<span class="cnt">{{ projectCount }}</span></button>
+          <button onClick="{{ goProjects }}" aria-current="{{ projectsCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Drafts<span class="cnt">{{ projectCount }}</span></button>
           <button onClick="{{ goDesigns }}" aria-current="{{ designsCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>All designs<span class="cnt">{{ designCount }}</span></button>
           <button onClick="{{ goCalendar }}" aria-current="{{ calendarCurrent }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18M8 3v4M16 3v4M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>Calendar<span class="cnt">{{ scheduledCount }}</span></button>
         </nav>
@@ -233,7 +233,7 @@
       <sc-if value="{{ isProjects }}">
         <div class="page" style="padding-bottom:0">
           <div class="pagehead">
-            <div><div class="eyebrow">TEKEX workspace · Projects</div><h1 class="welcome">What are we making <em>today</em>?</h1><p class="lede">Start a new artwork straight away, or open a project to see what's in it. Anything not filed yet sits in Drafts.</p></div>
+            <div><div class="eyebrow">TEKEX workspace · Drafts</div><h1 class="welcome">What are we making <em>today</em>?</h1><p class="lede">Start a new artwork straight away, or open a project to see what's in it. Anything not filed in a project sits at the top.</p></div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
               <button class="btn lg" onClick="{{ openNewProject }}">New project</button>
               <button class="btn primary lg" onClick="{{ newArtwork }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New artwork</button>
@@ -278,7 +278,7 @@
       <!-- Project page -->
       <sc-if value="{{ isProject }}">
         <div class="page" style="padding-bottom:0">
-          <button class="btn sm quiet" onClick="{{ goProjects }}" style="margin-left:-14px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Projects</button>
+          <button class="btn sm quiet" onClick="{{ goProjects }}" style="margin-left:-14px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Drafts</button>
           <div class="projhead" style="margin-top:12px">
             <div class="top">
               <div style="flex:1 1 420px;min-width:0">
@@ -1722,7 +1722,7 @@ class Component extends DCLogic {
       if (!pjs.length && !des.length) boards.push({ isHeading: true, text: "Nothing matches “" + s.q.trim() + "”", sub: "Try a project name, a speaker or a headline." });
     } else if (view === "projects") {
       if (unassigned.length && s.pill === "active") {
-        boards.push({ isHeading: true, text: "Drafts", sub: unassigned.length + " not in a project yet" });
+        boards.push({ isHeading: true, text: "Not in a project yet", sub: unassigned.length + (unassigned.length === 1 ? " artwork" : " artworks") });
         familyCards(unassigned, false).forEach(b => boards.push(b));
         boards.push({ isHeading: true, text: "Projects", sub: "" });
       }
@@ -1893,7 +1893,7 @@ class Component extends DCLogic {
       saveLabel: s.saveState === "saving" ? "Saving…" : s.saveState === "saved" ? "Saved in this browser" : s.saveState === "error" ? "Couldn't save" : "Not saved yet",
       retrySave: this.retrySave,
       undo: this.undo, redo: this.redo, canUndo: s.past.length > 0, canRedo: s.future.length > 0,
-      backToProject: this.backToProject, backLabel: d.projectId && project ? "Back to " + project.name : "Back",
+      backToProject: this.backToProject, backLabel: d.projectId && project ? "Back to " + project.name : "Back to drafts",
       inProject: !!d.projectId, projChipLabel: d.projectId && project ? project.name : "Draft · add to a project", projChipClass: d.projectId ? "" : "draft",
       projMenuOpen: s.projMenuOpen, toggleProjMenu: (e) => { e.stopPropagation(); this.setState(st => ({ projMenuOpen: !st.projMenuOpen })); },
       projMenuItems: s.projects.filter(pj => !pj.archived).slice().sort((a, b) => b.updatedAt - a.updatedAt).map(pj => ({ name: pj.name, on: pj.id === d.projectId, pick: () => this.assignProject(pj.id) })),
