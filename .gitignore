@@ -2,3 +2,13 @@
 node_modules/
 .claude/serve.py
 *.log
+
+# Raw client asset drops live here for reference but are not committed; curated web versions go in assets/photos
+/-Stills/
+/Graphic assets/
+/Speaker images/
+/Tekex Health Innovation assets/
+/*.jpg
+/*.JPG
+/*.jpeg
+/*.png
