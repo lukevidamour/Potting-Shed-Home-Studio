@@ -35,7 +35,7 @@ input::placeholder,textarea::placeholder{color:#8A8A84}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .brand{align-items:center}
 /* Optical alignment: the centre of the "o" in the wordmark sits at 39.9% of the mark height, so the mark is nudged down until that point meets the keyline centre. */
-.brand .mark{width:176px;height:38px;flex:0 0 176px;background:#FF16A5;-webkit-mask:url(assets/ps-logo.svg) left center/contain no-repeat;mask:url(assets/ps-logo.svg) left center/contain no-repeat;transform:none}
+.brand .mark{width:176px;height:38px;flex:0 0 176px;background:var(--hs-logo,#FF16A5);-webkit-mask:url(assets/ps-logo.svg) left center/contain no-repeat;mask:url(assets/ps-logo.svg) left center/contain no-repeat;transform:none}
 .brand .prod{align-self:center;height:20px;display:inline-flex;align-items:center}
 .brand .prod{font-size:14px;line-height:20px;font-weight:500;padding-left:10px;border-left:1px solid var(--hs-rule);white-space:nowrap}
 .nav{display:flex;gap:4px;margin-left:8px}
@@ -551,10 +551,9 @@ details.guardian{padding:10px 12px}
 
 /* ---------- dark mode extras ---------- */
 :root[data-theme="dark"] select.input{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23F2F2F0' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")}
-:root[data-theme="dark"] .brand .mark{background:#FF16A5}
 :root[data-theme="dark"] .empty .illo rect:first-child{fill:var(--hs-lilac);fill-opacity:.9}
 :root[data-theme="dark"] .apprcard,:root[data-theme="dark"] .caption-box{background:var(--hs-surface-soft)}
 :root[data-theme="dark"] .weekcard .wart b,:root[data-theme="dark"] .chip .swatch{color:inherit}
-.themetog{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 12px;font-size:13px;line-height:18px;color:var(--hs-muted)}
-.themetog .viewtog button{width:34px;height:30px}
+.themetog{display:flex;align-items:center;justify-content:flex-start;gap:10px;padding:4px 4px 0;font-size:13px;line-height:18px;color:var(--hs-muted)}
+.themetog .viewtog button{width:36px;height:36px}
 .themetog .viewtog svg{width:16px;height:16px}

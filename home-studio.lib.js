@@ -352,9 +352,9 @@ function seedExamples(existing) {
   // 4 — active
   pj = P("Partner announcement · Rathbones", "Welcoming Rathbones as a founding partner. Brand announcement plus the refreshed partner wall.", 9);
   add(pj, [
-    D(pj, "lockup", "square", "Rathbones announcement · Square", { theme: 3, sched: "2026-09-26", copy: { body: "TEKEX welcomes Rathbones as a founding partner of the innovation community.", barLabel: "PARTNERS" } }),
+    D(pj, "lockup", "square", "Rathbones announcement · Square", { theme: 3, sched: "2026-09-26", family: "f-rathbones-" + pj.id, copy: { body: "TEKEX welcomes Rathbones as a founding partner of the innovation community.", barLabel: "PARTNERS" } }),
     D(pj, "partners", "landscape", "Partner wall · Landscape", { theme: 4, age: 1, copy: { headline: "TEKEX X Rathbones", barLabel: "PARTNERS" } }),
-    D(pj, "lockup", "story", "Rathbones announcement · Story", { theme: 3, age: 1, sched: "2026-09-26", copy: { body: "TEKEX welcomes Rathbones as a founding partner of the innovation community.", barLabel: "PARTNERS" } })
+    D(pj, "lockup", "story", "Rathbones announcement · Story", { theme: 3, age: 1, sched: "2026-09-26", family: "f-rathbones-" + pj.id, copy: { body: "TEKEX welcomes Rathbones as a founding partner of the innovation community.", barLabel: "PARTNERS" } })
   ]);
   // 5 — active
   pj = P("Autumn programme launch", "The full autumn calendar: talks, workshops and socials. One announcement in three sizes and a listing of what's on.", 2);

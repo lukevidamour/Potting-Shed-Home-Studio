@@ -72,3 +72,10 @@ test("every image area starts filled with TEKEX imagery", () => {
   const ex = lib.seedExamples([]);
   for (const d of ex.drafts) for (const sl of lib.slotsFor(d)) assert.ok(d.images[sl.id], d.title + " " + sl.id);
 });
+
+test("example artwork published in several sizes shares one size family", () => {
+  const ex = lib.seedExamples([]);
+  const rb = ex.drafts.filter(d => d.title.startsWith("Rathbones announcement"));
+  assert.equal(rb.length, 2);
+  assert.equal(rb[0].familyId, rb[1].familyId);
+});

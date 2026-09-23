@@ -3,15 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Home Studio</title>
+<title>Home Studio · TEKEX · Potting Shed</title>
+<meta name="description" content="Potting Shed Home Studio: on-brand TEKEX social artwork, scheduled and ready to download.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23FF16A5'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial' font-size='30' font-weight='700' text-anchor='middle' fill='white'%3Eps%3C/text%3E%3C/svg%3E">
 <script src="./support.js"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css">
-<script src="home-studio.lib.js?v=20260923d"></script>
-<link rel="stylesheet" href="home-studio.css?v=20260923d">
+<script src="home-studio.lib.js?v=20260923g"></script>
+<link rel="stylesheet" href="home-studio.css?v=20260923g">
 </helmet>
 
 <div class="app {{ viewClass }}">
@@ -66,8 +68,8 @@
           <button onClick="{{ openAsk }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>Ask Potting Shed</button>
           <button onClick="{{ openHelp }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/><path d="M12 17h.01"/></svg>How it works</button>
         </nav>
-        <div class="themetog"><span>Appearance</span><div class="viewtog" role="group" aria-label="Appearance"><button aria-pressed="{{ isLight }}" aria-label="Light mode" onClick="{{ setLight }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button><button aria-pressed="{{ isDark }}" aria-label="Dark mode" onClick="{{ setDark }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button></div></div>
         <div class="sidefoot"><b>Saved in this browser</b>Projects and designs stay on this device. Downloads are full-size PNG or JPG.</div>
+        <div class="themetog"><div class="viewtog" role="group" aria-label="Appearance"><button aria-pressed="{{ isLight }}" aria-label="Light mode" onClick="{{ setLight }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button><button aria-pressed="{{ isDark }}" aria-label="Dark mode" onClick="{{ setDark }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button></div><span>Appearance</span></div>
       </aside>
     </sc-if>
 
@@ -527,14 +529,15 @@
 
                   <!-- Meet the speakers -->
                   <sc-if value="{{ a.isListing }}">
-                    <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:{{ a.docGap }}px">
+                    <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:{{ a.listDir }};gap:{{ a.docGap }}px">
+                     <div style="flex:{{ a.listLeftFlex }};min-width:0;min-height:0;display:flex;flex-direction:column;gap:{{ a.docGap }}px">
                       <div data-fit="headline,body" style="flex:0 0 auto;display:flex;flex-direction:column;gap:{{ a.docGapS }}px;max-height:{{ a.listHeadMax }}px;overflow:hidden">
                         <span data-field="eyebrow" style="font-weight:600;letter-spacing:0.06em;line-height:1;font-size:{{ a.fsDocEyebrow }}px;text-transform:uppercase">{{ a.eyebrow }}</span>
                         <span data-field="headline" style="font-weight:600;letter-spacing:-0.03em;line-height:0.94;font-size:{{ a.fsDocTitle }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.headline }}</span>
                         <span data-field="body" style="font-weight:300;letter-spacing:-0.005em;line-height:1.36;font-size:{{ a.fsDocIntro }}px;max-width:{{ a.docTextMax }}px;text-wrap:pretty">{{ a.body }}</span>
                       </div>
                       <sc-if value="{{ a.showHero }}">
-                        <div style="flex:0 0 {{ a.heroH }}px;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor" data-slot="listing-hero">
+                        <div style="flex:{{ a.heroFlex }};min-height:0;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor" data-slot="listing-hero">
                           <sc-if value="{{ a.img1.has }}"><img sc-camel-src="{{ a.img1.src }}" alt="" style="{{ a.img1.style }}" /></sc-if>
                           <sc-if value="{{ !a.img1.has }}"><div class="ph" data-guide="1"><span>Header image</span></div></sc-if>
                         </div>
@@ -542,16 +545,17 @@
                       <div style="flex:0 0 auto;box-shadow:inset 0 0 0 2px currentColor;padding:{{ a.docRowPad }}px {{ a.docPad }}px">
                         <span data-field="date" style="font-weight:500;letter-spacing:-0.01em;line-height:1.2;font-size:{{ a.fsDocDate }}px">{{ a.dateLine }}</span>
                       </div>
-                      <div data-fit="speakers" style="flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start">
+                     </div>
+                      <div data-fit="speakers" style="flex:{{ a.listFlex }};min-width:0;min-height:0;overflow:hidden;display:grid;grid-template-columns:repeat({{ a.listCols }},minmax(0,1fr));column-gap:{{ a.docGap }}px;align-content:start;align-self:flex-start;width:100%;border-bottom:2px solid currentColor">
                         <sc-for list="{{ a.speakerList }}" as="sp">
-                          <div style="flex:0 0 auto;display:flex;align-items:center;gap:{{ a.docGap }}px;border-top:2px solid currentColor;padding:{{ a.docRowPad }}px 0">
+                          <div style="min-width:0;display:flex;align-items:center;gap:{{ a.docGap }}px;border-top:2px solid currentColor;padding:{{ a.listRowPad }}px 0">
                             <sc-if value="{{ a.showPortraits }}">
                               <div style="flex:0 0 auto;width:{{ a.thumb }}px;height:{{ a.thumb }}px;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor" data-slot="{{ sp.slotId }}">
                                 <sc-if value="{{ sp.img.has }}"><img sc-camel-src="{{ sp.img.src }}" alt="" style="{{ sp.img.style }}" /></sc-if>
                               </div>
                             </sc-if>
                             <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:{{ a.docGapXS }}px">
-                              <span style="font-weight:600;letter-spacing:-0.02em;line-height:1;font-size:{{ a.fsRowName }}px;{{ sp.nameStyle }}">{{ sp.displayName }}</span>
+                              <span style="font-weight:600;letter-spacing:-0.02em;line-height:1;font-size:{{ a.fsRowName }}px;overflow-wrap:anywhere;{{ sp.nameStyle }}">{{ sp.displayName }}</span>
                               <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:0 {{ a.docGapS }}px">
                                 <span style="font-weight:300;letter-spacing:-0.01em;line-height:1.2;font-size:{{ a.fsRowMeta }}px">{{ sp.role }}</span>
                                 <span style="font-weight:600;letter-spacing:-0.01em;line-height:1.2;font-size:{{ a.fsRowMeta }}px">{{ sp.company }}</span>
@@ -559,7 +563,6 @@
                             </div>
                           </div>
                         </sc-for>
-                        <div style="flex:0 0 2px;background:currentColor"></div>
                       </div>
                     </div>
                   </sc-if>
@@ -887,7 +890,13 @@ class Component extends DCLogic {
   };
 
   /* ---------- persistence (this browser only) ---------- */
-  applyTheme(t) { document.documentElement.setAttribute("data-theme", t); }
+  applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    const all = ["#245FFF", "#12CDFF", "#01FECD", "#FDE619", "#FF16A5", "#FE1658", "#FF840A", "#FFADA2", "#CEFF00", "#69FF46"];
+    const readable = t === "dark" ? all : ["#245FFF", "#12CDFF", "#FF16A5", "#FE1658", "#FF840A", "#FFADA2"];
+    if (!this._logo || readable.indexOf(this._logo) < 0) this._logo = readable[Math.floor(Math.random() * readable.length)];
+    document.documentElement.style.setProperty("--hs-logo", this._logo);
+  }
   setTheme(t) { this.applyTheme(t); try { localStorage.setItem("hs-theme", t); } catch (e) {} this.setState({ theme: t }); this.say(t === "dark" ? "Dark mode" : "Light mode"); }
   componentDidMount() {
     this.applyTheme(this.state.theme);
@@ -911,6 +920,16 @@ class Component extends DCLogic {
       drafts = drafts.map(d => { const images = fillImages(d); if (images !== d.images) { touched.push(d.id); return Object.assign({}, d, { images }); } return d; });
       if (touched.length) { const th = Store.get(THUMBS_KEY, {}); touched.forEach(id => delete th[id]); try { Store.set(THUMBS_KEY, th); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
       Store.flag("hs-fill-v1");
+    }
+    // One-time pass: artwork with the same name and template in a project, in different sizes, is one artwork in several sizes.
+    if (!Store.raw("hs-family-v1")) {
+      const base = (t) => String(t || "").replace(/( · (Square post|Portrait post|Story|Landscape|LinkedIn post|Square|Portrait|LinkedIn))+$/, "");
+      const groups = {};
+      drafts.forEach(d => { const k = (d.projectId || "-") + "|" + d.tpl + "|" + base(d.title).toLowerCase(); (groups[k] = groups[k] || []).push(d); });
+      const remap = {};
+      Object.values(groups).forEach(g => { const sizes = new Set(g.map(x => x.size)); if (g.length > 1 && sizes.size === g.length && new Set(g.map(x => x.familyId)).size > 1) { const fid = g[0].familyId || uid("f"); g.forEach(x => { remap[x.id] = fid; }); } });
+      if (Object.keys(remap).length) { drafts = drafts.map(d => remap[d.id] ? Object.assign({}, d, { familyId: remap[d.id] }) : d); try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
+      Store.flag("hs-family-v1");
     }
     if (drafts.some(d => !d.familyId)) { drafts = drafts.map(d => d.familyId ? d : Object.assign({}, d, { familyId: uid("f") })); try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
     // Thumbnails live in their own store; lift any that older drafts carried inline.
@@ -969,8 +988,10 @@ class Component extends DCLogic {
         // Children can spill out of the top (justify-content:flex-end) as well as the bottom, so compare
         // rendered boxes rather than scrollHeight. Both rects share the stage transform, so no unscaling needed.
         const br = el.getBoundingClientRect();
-        let spill = el.scrollWidth > el.clientWidth + 2;
-        Array.from(el.children).forEach(ch => { const r = ch.getBoundingClientRect(); if (r.top < br.top - 1 || r.bottom > br.bottom + 1) spill = true; });
+        // Tight display leading (0.9) lets the font box poke past its line; allow for that before calling it overflow.
+        const kids = Array.from(el.querySelectorAll("span")); const tol = Math.max(2, Math.max.apply(null, [0].concat(kids.map(ch => parseFloat(getComputedStyle(ch).fontSize) || 0))) * 0.3);
+        let spill = el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + tol;
+        Array.from(el.children).forEach(ch => { if (getComputedStyle(ch).display === "inline") return; const r = ch.getBoundingClientRect(); if (r.top < br.top - 1 || r.bottom > br.bottom + 1) spill = true; });
         if (!spill) return;
         const keys = el.getAttribute("data-fit").split(",");
         const culprits = keys.filter(k => LIMITS[k] && (copy[k] || "").length > LIMITS[k]);
@@ -1266,6 +1287,7 @@ class Component extends DCLogic {
     const title = d.title.indexOf(oldName) === 0 ? TPL[key].name + d.title.slice(oldName.length) : d.title;
     const patch = { tpl: key, title };
     if (key === "trio" && !d.copy.sessionTitle) patch.copy = Object.assign({}, d.copy, { sessionPrefix: EXAMPLE_COPY.sessionPrefix, sessionTitle: EXAMPLE_COPY.sessionTitle });
+    patch.images = fillImages(Object.assign({}, d, patch)); // new template, new image areas: start them filled too
     this.commit(patch);
   }
   backToProject = async () => { clearTimeout(this._saveT); await this.captureThumb(); const d = this.state.design; if (d) this.saveNow(); const pid = d && d.projectId; this.setState({ view: pid ? "project" : "projects", projectId: pid || null, reviewOpen: false, projMenuOpen: false }); };
@@ -1494,20 +1516,35 @@ class Component extends DCLogic {
   };
 
   /* ---------- drafts management ---------- */
-  duplicateDraft(id) { const d = this.state.drafts.find(x => x.id === id); if (!d) return; const copy = Object.assign({}, d, { id: uid("d"), title: d.title + " (copy)", updatedAt: Date.now() }); const drafts = this.upsertDraft(copy); try { this.persistDrafts(drafts); this.setState({ drafts }); this.showToast("Duplicated “" + d.title + "”."); } catch (e) { this.showToast("Couldn't duplicate — this browser is out of storage."); } }
-  openRename(id) { const d = this.state.drafts.find(x => x.id === id); if (!d) return; this.setState({ renameOpen: true, renameId: id, renameValue: d.title }); requestAnimationFrame(() => { const el = document.getElementById("rn-in"); if (el) { el.focus(); el.select(); } }); }
+  family(id) { const d = this.state.drafts.find(x => x.id === id); if (!d) return []; return d.familyId ? this.state.drafts.filter(x => x.familyId === d.familyId) : [d]; }
+  /* Duplicate every size of the artwork as a new, independent family. Dates and approval don't carry over. */
+  duplicateDraft(id) {
+    const fam = this.family(id); if (!fam.length) return;
+    const fid = uid("f"), now = Date.now();
+    const copies = fam.map((d, i) => { const c = Object.assign({}, d, { id: uid("d"), familyId: fid, title: this.baseTitle(d.title) + " (copy)" + (fam.length > 1 ? " · " + SIZES[d.size].label : ""), scheduledAt: "", approval: { status: "none" }, updatedAt: now - i }); delete c.thumb; return c; });
+    const drafts = copies.concat(this.state.drafts);
+    try { this.persistDrafts(drafts); this.setState({ drafts }); this.showToast("Duplicated “" + this.baseTitle(fam[0].title) + "”" + (fam.length > 1 ? " in all " + fam.length + " sizes." : ".")); } catch (e) { this.showToast("Couldn't duplicate — this browser is out of storage."); }
+  }
+  openRename(id) { const d = this.state.drafts.find(x => x.id === id); if (!d) return; const fam = this.family(id); this._renReturn = document.activeElement; this.setState({ renameOpen: true, renameId: id, renameValue: fam.length > 1 ? this.baseTitle(d.title) : d.title }); requestAnimationFrame(() => { const el = document.getElementById("rn-in"); if (el) { el.focus(); el.select(); } }); }
   closeRename = () => this.setState({ renameOpen: false, renameId: null });
-  applyRename = () => { const s = this.state; const drafts = s.drafts.map(d => d.id === s.renameId ? Object.assign({}, d, { title: s.renameValue.trim() || d.title }) : d); try { this.persistDrafts(drafts); } catch (e) {} this.setState({ drafts, renameOpen: false, renameId: null }); };
+  applyRename = () => {
+    const s = this.state; const name = s.renameValue.trim(); const fam = this.family(s.renameId); if (!name || !fam.length) return this.closeRename();
+    const ids = fam.map(x => x.id);
+    const drafts = s.drafts.map(d => ids.indexOf(d.id) < 0 ? d : Object.assign({}, d, { title: fam.length > 1 ? name + " · " + SIZES[d.size].label : name, updatedAt: Date.now() }));
+    try { this.persistDrafts(drafts); } catch (e) {}
+    this.setState({ drafts, renameOpen: false, renameId: null }); if (this._renReturn && this._renReturn.focus) this._renReturn.focus();
+  };
   openDelete(id) { this._delReturn = document.activeElement; this.setState({ deleteOpen: true, deleteId: id, deleteKind: "design" }); this.focusDialog(); }
   closeDelete = () => { this.setState({ deleteOpen: false, deleteId: null }); if (this._delReturn && this._delReturn.focus) this._delReturn.focus(); };
   applyDelete = () => {
     const s = this.state;
     if (s.deleteKind === "project") return this.deleteProject(s.deleteId);
-    const victim = s.drafts.find(d => d.id === s.deleteId); if (!victim) return this.closeDelete();
-    const drafts = s.drafts.filter(d => d.id !== s.deleteId);
+    const fam = this.family(s.deleteId); if (!fam.length) return this.closeDelete();
+    const ids = fam.map(x => x.id); const name = fam.length > 1 ? this.baseTitle(fam[0].title) : fam[0].title;
+    const drafts = s.drafts.filter(d => ids.indexOf(d.id) < 0);
     try { this.persistDrafts(drafts); } catch (e) {}
     this.setState({ drafts, deleteOpen: false, deleteId: null });
-    this.showToast("Deleted “" + victim.title + "”.", "Undo", () => { const back = this.upsertDraft(victim); try { this.persistDrafts(back); } catch (e) {} this.setState({ drafts: back, toast: null }); });
+    this.showToast("Deleted “" + name + "”" + (fam.length > 1 ? " in all " + fam.length + " sizes." : "."), "Undo", () => { const back = fam.concat(this.state.drafts); try { this.persistDrafts(back); } catch (e) {} this.setState({ drafts: back, toast: null }); });
   };
   say(text) { this.setState({ announce: "" }); requestAnimationFrame(() => this.setState({ announce: text })); }
   showToast(text, actionLabel, action) {
@@ -1530,6 +1567,22 @@ class Component extends DCLogic {
     const headline = d.tpl === "trio" ? c.sessionTitle : c.headline;
     const eyebrow = d.tpl === "speaker" ? composeEyebrow(c) : d.tpl === "trio" ? c.sessionPrefix : c.eyebrow;
     const dateLine = d.tpl === "trio" ? join([c.date, c.venue], ": ") : composeDateLine(c);
+    /* Speaker line-up: size rows to the space that is actually left, two columns of speakers on square, a side-by-side layout on wide formats. */
+    const lw = S.w / S.h >= 1.5;
+    const Lgap = r(20), LgapS = r(10), Lfs = { eb: r(24), title: r(fitSize(headline, 94, 0.55)), intro: r(26), date: r(26) };
+    const colW = lw ? (S.w - 2 * S.pad - Lgap) / 2 : S.w - 2 * S.pad;
+    const linesFor = (txt, fs, w) => Math.max(1, Math.ceil(((txt || "").length * fs * 0.52) / Math.max(1, w)));
+    const headH = Lfs.eb + LgapS + Lfs.title * 0.94 * linesFor(headline, Lfs.title, colW) + (c.body ? LgapS + Lfs.intro * 1.36 * linesFor(c.body, Lfs.intro, Math.min(colW, r(880))) : 0);
+    const innerH = S.h - 2 * S.pad - (r(32) + r(24)) - (d.showBar ? S.barH + r(24) : 0);
+    const heroPx = tall ? 420 : (S.key === "square" ? r(190) : r(240));
+    const baseRowPad = r(18 * dens), dateH = Lfs.date * 1.2 + 2 * baseRowPad;
+    const listAvail = lw ? innerH : innerH - headH - (d.showHero ? heroPx + Lgap : 0) - dateH - Lgap * 2;
+    const nRows = Math.max(1, nSpk);
+    let listCols = 1, rowH = Math.min(rowNatPx, (listAvail - 4) / nRows);
+    if (!lw && !tall && nRows >= 4 && rowH < 110) { listCols = 2; rowH = Math.min(rowNatPx, (listAvail - 4) / Math.ceil(nRows / 2)); }
+    rowH = Math.max(36, Math.floor(rowH));
+    const lRowPad = Math.max(4, Math.round(rowH * 0.11)), lThumb = Math.max(20, rowH - 2 * lRowPad - 2);
+    const lName = Math.round(Math.min(40 * k * dens, rowH * 0.3)), lMeta = Math.round(Math.min(26 * k * dens, rowH * 0.19));
     const logo = (src) => this.state.logoData[src] || src;
     const mask = (src, w, h) => ({ width: w, height: h, background: "currentColor", WebkitMaskImage: "url(\"" + logo(src) + "\")", maskImage: "url(\"" + logo(src) + "\")", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center", WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat" });
     const img = (id) => imgVals(d.images[id]);
@@ -1583,9 +1636,10 @@ class Component extends DCLogic {
       partners: partnersShown.map(p => ({ name: p.name, maskStyle: mask(p.src, "78%", "56%") })),
       speakerList: d.speakers.map(sp => ({ slotId: "listing-" + sp.id, displayName: sp.name || "Speaker name", role: sp.role, company: sp.company, nameStyle: sp.name ? "" : "opacity:0.4", img: img("listing-" + sp.id) })),
       docGap: r(20), docGapS: r(10), docGapXS: r(5), docPad: r(20), docRowPad: rowPadPx, docTextMax: r(880),
-      heroH: tall ? 420 : r(240), thumb: thumbPx, rowMax: Math.round(rowNatPx * 1.4),
+      heroH: heroPx, thumb: lThumb, rowMax: Math.round(rowNatPx * 1.4), listRowPad: lRowPad, listCols, listDir: lw ? "row" : "column",
+      listLeftFlex: lw ? "1 1 0" : "0 0 auto", heroFlex: lw ? "1 1 0" : "0 0 " + heroPx + "px", listFlex: lw ? "1 1 0" : "1 1 auto",
       fsDocEyebrow: r(24), fsDocTitle: r(fitSize(headline, 94, 0.55)), fsDocIntro: r(26), fsDocDate: r(26),
-      fsRowName: r(40 * dens), fsRowMeta: r(26 * dens)
+      fsRowName: lName, fsRowMeta: lMeta
     }, extra || {});
   }
 
@@ -1610,7 +1664,7 @@ class Component extends DCLogic {
     const latest = designs[0];
     const tags = Array.from(new Set(designs.map(d => TPL[d.tpl].name)));
     const formats = Array.from(new Set(designs.map(d => SIZES[d.size].label)));
-    const metas = [{ icon: ICON.layers, text: designs.length + (designs.length === 1 ? " design" : " designs") }];
+    const metas = [{ icon: ICON.layers, text: (n => n + (n === 1 ? " design" : " designs"))(new Set(designs.map(x => x.familyId || x.id)).size) }];
     metas.push({ icon: ICON.clock, text: "Edited " + fmtWhen(pj.updatedAt) });
     const open = () => this.openProject(pj.id);
     const keys = (e) => { if (e.target !== e.currentTarget) return; if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } };
@@ -1641,7 +1695,7 @@ class Component extends DCLogic {
 
     const project = (view === "editor" && d) ? (s.projects.find(x => x.id === d.projectId) || null) : this.currentProject();
     const projName = (id) => { const pj = s.projects.find(x => x.id === id); return pj ? pj.name : "Draft"; };
-    const designCard = (r, showProject, group) => { const g = group || this.familyGroups([r])[0]; const sched = g.members.map(m => m.scheduledAt).filter(Boolean).sort()[0]; return this.boardVals(r, "card", { title: g.members.length > 1 ? this.baseTitle(r.title) : r.title, desc: TPL[r.tpl].name + " · " + g.sizes.join(" · ") + (sched ? " · from " + fmtShort(sched) : "") + (showProject ? " · " + projName(r.projectId) : ""), hasTags: g.platforms.length > 0, tags: g.platforms.map(k => PLAT[k] ? PLAT[k].name : k), sizesText: g.members.length > 1 ? g.members.length + " sizes, edited together" : "", aria: "Open " + r.title, open: () => this.openDesign(r, false), keys: keyAct(() => this.openDesign(r, false)), isDraft: true, dup: (e) => { e.stopPropagation(); this.duplicateDraft(r.id); }, rename: (e) => { e.stopPropagation(); this.openRename(r.id); }, del: (e) => { e.stopPropagation(); this.openDelete(r.id); } }); };
+    const designCard = (r, showProject, group) => { const g = group || this.familyGroups([r])[0]; const sched = g.members.map(m => m.scheduledAt).filter(Boolean).sort()[0]; return this.boardVals(r, "card", { title: this.baseTitle(r.title), desc: TPL[r.tpl].name + " · " + g.sizes.join(" · ") + (sched ? " · from " + fmtShort(sched) : "") + (showProject ? " · " + projName(r.projectId) : ""), hasTags: g.platforms.length > 0, tags: g.platforms.map(k => PLAT[k] ? PLAT[k].name : k), sizesText: g.members.length > 1 ? g.members.length + " sizes, edited together" : "", aria: "Open " + r.title, open: () => this.openDesign(r, false), keys: keyAct(() => this.openDesign(r, false)), isDraft: true, dup: (e) => { e.stopPropagation(); this.duplicateDraft(r.id); }, rename: (e) => { e.stopPropagation(); this.openRename(r.id); }, del: (e) => { e.stopPropagation(); this.openDelete(r.id); } }); };
     const familyCards = (list, showProject) => this.familyGroups(list).sort((a, b) => list.indexOf(a.rep) - list.indexOf(b.rep)).map(g => designCard(g.rep, showProject, g));
     const sortBy = (arr, nameOf) => arr.slice().sort((a, b) => s.sortKey === "oldest" ? a.updatedAt - b.updatedAt : s.sortKey === "az" ? nameOf(a).localeCompare(nameOf(b)) : s.sortKey === "za" ? nameOf(b).localeCompare(nameOf(a)) : b.updatedAt - a.updatedAt);
     const activeProjects = s.projects.filter(pj => !pj.archived), archivedProjects = s.projects.filter(pj => pj.archived);
@@ -1657,7 +1711,7 @@ class Component extends DCLogic {
       const x = g.rep; const th = BRAND.themes[x.theme]; const pj = s.projects.find(y => y.id === x.projectId);
       const sizes = g.members.map(m => SIZES[m.size].label);
       const withThumb = g.members.find(m => s.thumbs[m.id]) || x;
-      return { title: g.members.length > 1 ? this.baseTitle(x.title) : x.title, sub: pj ? pj.name : "Draft", sizes: sizes.join(" · "), day: x.scheduledAt === todayIso ? "Today" : fmtShort(x.scheduledAt), thumb: s.thumbs[withThumb.id] || "", thumbFailed: () => this.dropThumb(withThumb.id), artStyle: { background: th.ground, color: th.accent }, aria: "Open " + this.baseTitle(x.title) + ", going out " + fmtShort(x.scheduledAt) + " as " + sizes.join(", "), open: () => this.openDesign(withThumb, false) };
+      return { title: this.baseTitle(x.title), sub: pj ? pj.name : "Draft", sizes: sizes.join(" · "), day: x.scheduledAt === todayIso ? "Today" : fmtShort(x.scheduledAt), thumb: s.thumbs[withThumb.id] || "", thumbFailed: () => this.dropThumb(withThumb.id), artStyle: { background: th.ground, color: th.accent }, aria: "Open " + this.baseTitle(x.title) + ", going out " + fmtShort(x.scheduledAt) + " as " + sizes.join(", "), open: () => this.openDesign(withThumb, false) };
     });
     const hit = (str) => (str || "").toLowerCase().indexOf(q) >= 0;
     if (view === "projects" && q) {
@@ -1696,7 +1750,7 @@ class Component extends DCLogic {
       calendarCurrent: view === "calendar" ? "page" : "false", goCalendar: this.goCalendar, scheduledCount: s.drafts.filter(x => x.scheduledAt).length,
       projectsCurrent: (view === "projects" || view === "project" || view === "templates" || view === "size") ? "page" : "false",
       designsCurrent: view === "designs" ? "page" : "false", libraryCurrent: view === "library" ? "page" : "false",
-      projectCount: s.projects.length, designCount: s.drafts.length, libraryCount: BRAND.library.length + s.uploads.length,
+      projectCount: s.projects.length, designCount: new Set(s.drafts.map(x => x.familyId || x.id)).size, libraryCount: BRAND.library.length + s.uploads.length,
       askOpen: s.askOpen, ask: s.ask, openAsk: this.openAsk, closeAsk: this.closeAsk,
       askTopics: ["A new template or layout", "A change to my artwork", "Brand or colour question", "Something isn't working", "Something else"],
       setAskTopic: (e) => this.setState(st => ({ ask: Object.assign({}, st.ask, { topic: e.target.value }) })), setAskBody: (e) => this.setState(st => ({ ask: Object.assign({}, st.ask, { body: e.target.value }) })),
@@ -1724,7 +1778,7 @@ class Component extends DCLogic {
       emptyProjectsMsg: s.pill === "active" ? "No active projects. Create one to start making designs." : "Nothing archived. Archive a project from its menu when it's finished.",
       openNewProject: this.openNewProject,
       project: project || { name: "", brief: "", due: "" },
-      projectDesignCount: projDesigns.length + (projDesigns.length === 1 ? " design" : " designs"),
+      projectDesignCount: (n => n + (n === 1 ? " design" : " designs"))(new Set(projDesigns.map(x => x.familyId || x.id)).size),
       projectNextText: (() => { if (!project) return ""; const today = isoDay(new Date()); const nx = projDesigns.map(x => x.scheduledAt).filter(x => x && x >= today).sort()[0]; return nx ? fmtShort(nx) : ""; })(),
       projectEditedText: project ? fmtWhen(project.updatedAt) : "",
       projectStatusText: project && project.archived ? "Archived" : "Active", projectStatusClass: project && project.archived ? "archived" : "",
@@ -1744,7 +1798,7 @@ class Component extends DCLogic {
       setProjDue: (e) => this.setState(st => ({ projDialog: Object.assign({}, st.projDialog, { due: e.target.value }) })),
       projDialogKeys: (e) => { if (e.key === "Enter" && e.target && e.target.tagName !== "TEXTAREA") { e.preventDefault(); return this.saveProjDialog(); } this.trapTab(e); },
       closeProjDialog: this.closeProjDialog, saveProjDialog: this.saveProjDialog,
-      deleteBody: s.deleteKind === "project" ? (delDesigns ? "This also deletes its " + delDesigns + " design" + (delDesigns > 1 ? "s" : "") + ". You can undo for a short while from the message that appears." : "You can undo this for a short while from the message that appears.") : "You can undo this for a short while from the message that appears.",
+      deleteBody: s.deleteKind === "project" ? (delDesigns ? "This also deletes its " + delDesigns + " design" + (delDesigns > 1 ? "s" : "") + ". You can undo for a short while from the message that appears." : "You can undo this for a short while from the message that appears.") : (delTarget && this.family(delTarget.id).length > 1 ? "All " + this.family(delTarget.id).length + " sizes go with it. You can undo for a short while from the message that appears." : "You can undo this for a short while from the message that appears."),
       /* calendar */
       calTitle: (() => { const [y, m] = s.calMonth.split("-").map(Number); return new Date(y, m - 1, 1).toLocaleDateString("en-GB", { month: "long", year: "numeric" }); })(),
       calPrev: () => this.setState(st => { const [y, m] = st.calMonth.split("-").map(Number); const d = new Date(y, m - 2, 1); return { calMonth: isoDay(d).slice(0, 7) }; }),
@@ -1805,7 +1859,7 @@ class Component extends DCLogic {
       sizeKeys: (e) => this.radioKeys(e, SIZE_ORDER, s.pendingSize, (k) => this.setState({ pendingSize: k })),
       startCreating: this.startCreating,
       renameOpen: s.renameOpen, renameValue: s.renameValue, setRenameValue: (e) => this.setState({ renameValue: e.target.value }), closeRename: this.closeRename, applyRename: this.applyRename,
-      deleteOpen: s.deleteOpen, deleteName: delTarget ? (delTarget.title || delTarget.name) : "", closeDelete: this.closeDelete, applyDelete: this.applyDelete,
+      deleteOpen: s.deleteOpen, deleteName: delTarget ? (s.deleteKind === "design" && this.family(delTarget.id).length > 1 ? this.baseTitle(delTarget.title) : (delTarget.title || delTarget.name)) : "", closeDelete: this.closeDelete, applyDelete: this.applyDelete,
       maxMb: MAX_UPLOAD_MB
     };
     if (!isEditor) return out;
