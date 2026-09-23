@@ -60,3 +60,15 @@ test("contrast ratio is symmetric and sane", () => {
   assert.ok(r > 2 && r < 3);
   assert.equal(r, lib.contrast("rgb(248,36,255)", "rgb(129,255,231)"));
 });
+
+test("every image area starts filled with TEKEX imagery", () => {
+  for (const tpl of ["speaker", "event", "trio", "listing"]) {
+    const d = lib.newDesign(tpl, "square", null);
+    const slots = lib.slotsFor(d);
+    assert.ok(slots.length > 0, tpl + " has slots");
+    for (const sl of slots) assert.ok(d.images[sl.id] && /^assets\//.test(d.images[sl.id].src), tpl + " slot " + sl.id + " filled");
+  }
+  assert.equal(lib.portraitFor("Nic Rose", "x").src, "assets/photos/nic-rose.webp");
+  const ex = lib.seedExamples([]);
+  for (const d of ex.drafts) for (const sl of lib.slotsFor(d)) assert.ok(d.images[sl.id], d.title + " " + sl.id);
+});

@@ -10,8 +10,8 @@
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css">
-<script src="home-studio.lib.js?v=20260923b"></script>
-<link rel="stylesheet" href="home-studio.css?v=20260923b">
+<script src="home-studio.lib.js?v=20260923c"></script>
+<link rel="stylesheet" href="home-studio.css?v=20260923c">
 </helmet>
 
 <div class="app {{ viewClass }}">
@@ -900,6 +900,13 @@ class Component extends DCLogic {
       try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); } catch (e) {}
     }
     if (drafts.some(d => !d.platforms || !d.caption)) { drafts = drafts.map(d => Object.assign({}, d, { platforms: d.platforms || (DEFAULT_PLATFORMS[d.size] || ["linkedin"]).slice(), caption: d.caption || { mode: "auto", variant: 0, text: {} } })); try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
+    // One-time pass: fill every empty image area in saved designs with TEKEX imagery, and refresh their thumbnails.
+    if (!Store.raw("hs-fill-v1")) {
+      const touched = [];
+      drafts = drafts.map(d => { const images = fillImages(d); if (images !== d.images) { touched.push(d.id); return Object.assign({}, d, { images }); } return d; });
+      if (touched.length) { const th = Store.get(THUMBS_KEY, {}); touched.forEach(id => delete th[id]); try { Store.set(THUMBS_KEY, th); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
+      Store.flag("hs-fill-v1");
+    }
     if (drafts.some(d => !d.familyId)) { drafts = drafts.map(d => d.familyId ? d : Object.assign({}, d, { familyId: uid("f") })); try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
     // Thumbnails live in their own store; lift any that older drafts carried inline.
     let thumbs = Store.get(THUMBS_KEY, {});

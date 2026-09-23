@@ -156,6 +156,23 @@ LIB.u8 = LIB["tk-iom-02"];
 LIB.u9 = LIB["tk-reel-13"];
 LIB.u10 = LIB["tk-event-10"];
 const LIB_GROUPS = ["Speakers", "Events", "Reel", "Graphics", "Team"];
+/* Default imagery: every image area starts filled with TEKEX photography, chosen from the design id so it is stable. */
+const PORTRAIT_IDS = ["tk-nic-rose", "tk-niraj-singh", "tk-lisa-mccabe", "tk-andrew-mcneill", "tk-jeff-macleod", "tk-guy-thompson", "tk-ian-rhodes", "tk-gabe-drogon", "tk-peter-o-brady", "tk-claire-trant", "tk-hannah-mellor", "tk-jake-schofield", "tk-oliver-le-brun", "tk-austin-gibbs", "tk-dr-omar", "tk-serena-guthrie"];
+const EVENT_IDS = ["tk-event-03", "tk-event-07", "tk-event-10", "tk-iom-02", "tk-iom-05", "tk-event-01", "tk-event-04", "tk-iom-08", "tk-event-12", "tk-reel-13", "tk-event-02", "tk-iom-11", "tk-event-08", "tk-reel-61", "tk-event-14", "tk-iom-03", "tk-event-06", "tk-reel-31", "tk-event-09", "tk-iom-07"];
+function hashStr(str) { let h = 0; for (let i = 0; i < String(str).length; i++) h = (h * 31 + String(str).charCodeAt(i)) >>> 0; return h; }
+function libImg(id, x, y) { const im = LIB[id]; if (!im) return null; return { src: im.src, name: im.name, x: x == null ? 50 : x, y: y == null ? 50 : y, zoom: 1 }; }
+function portraitFor(name, seed) { const s = slug(name || ""); const direct = PORTRAIT_IDS.find(id => id === "tk-" + s); return libImg(direct || PORTRAIT_IDS[hashStr(seed) % PORTRAIT_IDS.length], 50, 28); }
+function eventImageFor(seed) { return libImg(EVENT_IDS[hashStr(seed) % EVENT_IDS.length], 50, 50); }
+/* Fill any empty image area on a design. Returns a new images map (or the same one if nothing was missing). */
+function fillImages(d) {
+  const images = Object.assign({}, d.images || {}); let changed = false;
+  const put = (slot, im) => { if (!images[slot] && im) { images[slot] = im; changed = true; } };
+  if (d.tpl === "speaker") put("speaker-photo", portraitFor(d.copy && d.copy.name, d.id));
+  if (d.tpl === "event") put("event-image", eventImageFor(d.id));
+  if (d.tpl === "trio") (d.trio || []).forEach((t, i) => put("trio-" + (i + 1), portraitFor(t.name, d.id + i)));
+  if (d.tpl === "listing") { put("listing-hero", eventImageFor(d.id + "hero")); (d.speakers || []).forEach((sp, i) => put("listing-" + sp.id, portraitFor(sp.name, d.id + sp.id))); }
+  return changed ? images : (d.images || {});
+}
 
 const TEMPLATES = [
   { key: "speaker",  name: "Introduce a speaker",      desc: "One speaker portrait with their name, role and the event details.", required: ["name"] },
@@ -300,6 +317,7 @@ function seedExamples(existing) {
     if (o && o.speakers) d.speakers = o.speakers.map((sp, i) => Object.assign({ id: "s" + (i + 1) }, sp));
     if (o && o.trio) d.trio = o.trio;
     if (o && o.partnersOn) d.partnersOn = o.partnersOn;
+    d.images = fillImages(d);
     return d;
   };
   const add = (pj, list) => { if (have.has(pj.name)) return; projects.push(pj); list.forEach(d => drafts.push(d)); };
@@ -397,7 +415,7 @@ function fitSize(str, base, minRatio) {
   return Math.round(base * Math.max(r, minRatio));
 }
 function newDesign(tpl, size, projectId) {
-  return {
+  const d = {
     id: uid("d"), tpl, size, theme: 0, title: TPL[tpl].name, projectId: projectId || null, familyId: uid("f"), scheduledAt: "", thumb: "",
     platforms: (DEFAULT_PLATFORMS[size] || ["linkedin"]).slice(), caption: { mode: "auto", variant: 0, text: {} },
     copy: Object.assign({}, EXAMPLE_COPY),
@@ -407,6 +425,8 @@ function newDesign(tpl, size, projectId) {
     showBar: true, showPowered: true, showHero: true, showPortraits: true,
     updatedAt: Date.now()
   };
+  d.images = fillImages(d);
+  return d;
 }
 function slotsFor(d) {
   if (d.tpl === "speaker") return [{ id: "speaker-photo", label: "Speaker portrait" }];
@@ -470,4 +490,4 @@ function ensureShot() {
 }
 
 /* expose for tests (node) */
-if (typeof module !== 'undefined') module.exports = { SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort };
+if (typeof module !== 'undefined') module.exports = { SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
