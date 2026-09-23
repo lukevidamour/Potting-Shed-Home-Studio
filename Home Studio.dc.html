@@ -10,8 +10,8 @@
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css">
-<script src="home-studio.lib.js?v=20260922k"></script>
-<link rel="stylesheet" href="home-studio.css?v=20260922k">
+<script src="home-studio.lib.js?v=20260923a"></script>
+<link rel="stylesheet" href="home-studio.css?v=20260923a">
 </helmet>
 
 <div class="app {{ viewClass }}">
@@ -783,10 +783,23 @@
 
   <sc-if value="{{ schedOpen }}">
     <div class="scrim" data-chrome="1" onClick="{{ scrimClose }}">
-      <div class="dialog" style="width:440px" role="dialog" aria-modal="true" aria-labelledby="sc-title" onClick="{{ stop }}" onKeyDown="{{ dialogKeys }}">
-        <div class="dhead"><div><h2 id="sc-title">{{ sched.title }}</h2><p>{{ sched.sub }}</p></div><button class="btn icon" onClick="{{ closeSched }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
-        <div class="field"><label for="sc-date">Scheduled date</label><input class="input" id="sc-date" type="date" sc-camel-value="{{ sched.date }}" onChange="{{ setSchedDate }}" style="max-width:220px" /></div>
-        <div class="dactions"><button class="btn quiet" onClick="{{ unschedule }}" disabled="{{ !sched.date }}">Take off calendar</button><button class="btn" onClick="{{ openScheduled }}">Open design</button><button class="btn primary" onClick="{{ closeSched }}">Done</button></div>
+      <div class="dialog sched" role="dialog" aria-modal="true" aria-labelledby="sc-title" onClick="{{ stop }}" onKeyDown="{{ dialogKeys }}">
+        <button class="btn icon sclose" onClick="{{ closeSched }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <div class="sart" style="{{ schedArtStyle }}"><sc-if value="{{ schedThumb }}"><img sc-camel-src="{{ schedThumb }}" alt="" /></sc-if><sc-if value="{{ !schedThumb }}"><b>Aa</b></sc-if></div>
+        <div class="sbody">
+          <div><div class="eyebrow">{{ sched.sub }}</div><h2 id="sc-title" style="margin:4px 0 0;font-size:22px;line-height:28px;font-weight:400;letter-spacing:-.02em">{{ sched.title }}</h2></div>
+          <div class="pubrow"><label class="publabel" for="sc-date">Scheduled date</label><div class="pubctl"><input class="input" id="sc-date" type="date" sc-camel-value="{{ sched.date }}" onChange="{{ setSchedDate }}" /><sc-if value="{{ sched.date }}"><button class="btn icon" onClick="{{ unschedule }}" aria-label="Take off the calendar" title="Take off the calendar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></sc-if></div></div>
+          <sc-if value="{{ schedHasCopy }}">
+            <div class="pubrow"><span class="publabel">Post copy</span><sc-if value="{{ schedMulti }}"><div class="pchips small" role="group" aria-label="Platform"><sc-for list="{{ schedPlatforms }}" as="sp"><button class="pchip" aria-pressed="{{ sp.on }}" onClick="{{ sp.pick }}">{{ sp.name }}</button></sc-for></div></sc-if></div>
+            <div class="caption-box" style="max-height:120px;font-size:13px;line-height:18px">{{ schedCopy }}</div>
+          </sc-if>
+          <div class="sactions">
+            <button class="btn primary" onClick="{{ downloadSched }}" disabled="{{ schedBusy }}" aria-busy="{{ schedBusy }}">{{ schedDlLabel }}</button>
+            <sc-if value="{{ schedHasCopy }}"><button class="btn {{ copiedClass }}" onClick="{{ copySchedCopy }}">{{ schedCopyLabel }}</button></sc-if>
+            <button class="btn quiet" onClick="{{ openScheduled }}">Open design</button>
+          </div>
+          <sc-if value="{{ schedError }}"><div class="alert err" role="alert"><span>{{ schedError }}</span></div></sc-if>
+        </div>
       </div>
     </div>
   </sc-if>
@@ -1102,7 +1115,8 @@ class Component extends DCLogic {
     clearTimeout(this._movedT); this.setState({ movedId: id }); this._movedT = setTimeout(() => this.setState({ movedId: null }), 500);
     this.showToast(iso ? "“" + d.title + "” scheduled for " + fmtShort(iso) + "." : "“" + d.title + "” taken off the calendar.");
   }
-  openSched(id) { const d = this.state.drafts.find(x => x.id === id); if (!d) return; this._schedReturn = document.activeElement; this.setState({ sched: { id, title: d.title, sub: TPL[d.tpl].name + " · " + SIZES[d.size].label, date: d.scheduledAt || "" } }); this.focusLater("sc-date"); }
+  schedPlatform(d) { return d.platforms.indexOf(this.state.schedPlatformKey) >= 0 ? this.state.schedPlatformKey : d.platforms[0]; }
+  openSched(id) { const d = this.state.drafts.find(x => x.id === id); if (!d) return; this._schedReturn = document.activeElement; this.setState({ sched: { id, title: d.title, sub: TPL[d.tpl].name + " · " + SIZES[d.size].label, date: d.scheduledAt || "" }, schedError: "", schedBusy: false }); this.focusLater("sc-date"); }
   closeSched = () => { this.setState({ sched: null }); if (this._schedReturn && this._schedReturn.focus) this._schedReturn.focus(); };
   chipVals(d) {
     const th = BRAND.themes[d.theme];
@@ -1423,39 +1437,44 @@ class Component extends DCLogic {
 
   /* ---------- review / export ---------- */
   requiredMissing() { const d = this.state.design; return TPL[d.tpl].required.filter(k => !(d.copy[k] || "").trim()); }
-  defaultFileName() {
-    const d = this.state.design; const c = d.copy;
+  defaultFileName(design) {
+    const d = design || this.state.design; const c = d.copy;
     const subject = d.tpl === "speaker" ? c.name : d.tpl === "trio" ? c.sessionTitle : d.tpl === "lockup" ? "announcement" : c.headline;
     return join(["tekex", d.tpl === "speaker" ? "speaker" : slug(TPL[d.tpl].name), slug(subject), d.size], "-");
   }
   openReview = () => { this._reviewReturn = document.activeElement; this.setState(s => ({ reviewOpen: true, exportDone: false, exportError: "", fileName: s.fileName || this.defaultFileName() })); requestAnimationFrame(() => { const el = document.getElementById("rv-title"); if (el) { el.setAttribute("tabindex", "-1"); el.focus(); } }); };
   closeReview = () => { this.setState({ reviewOpen: false }); if (this._reviewReturn && this._reviewReturn.focus) this._reviewReturn.focus(); };
+  /* Render one design node at its exact export size and hand the file to the browser. Throws on failure. */
+  async exportDesign(d, node, format, fileName) {
+    const S = SIZES[d.size]; const th = BRAND.themes[d.theme];
+    let shot; try { shot = await ensureShot(); } catch (e) { throw new Error("The image renderer didn't load. Check your connection and try again."); }
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    const jpg = format === "jpg";
+    const blob = await shot.domToBlob(node, {
+      width: S.w, height: S.h, scale: 1,
+      type: jpg ? "image/jpeg" : "image/png", quality: 0.92,
+      backgroundColor: jpg ? th.ground : null,
+      style: { transform: "none", boxShadow: "none", margin: "0", position: "static" },
+      filter: (el) => !(el.getAttribute && el.getAttribute("data-guide"))
+    });
+    if (!blob || !blob.size) throw new Error("Empty image.");
+    const bmp = await createImageBitmap(blob);
+    const ok = bmp.width === S.w && bmp.height === S.h; bmp.close && bmp.close();
+    if (!ok) throw new Error("The rendered size didn't match " + S.dims + " px.");
+    const name = (slug(fileName) || this.defaultFileName(d)) + (jpg ? ".jpg" : ".png");
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    return { name, kb: Math.round(blob.size / 1024), dims: S.dims };
+  }
   download = async () => {
     const s = this.state; if (s.exporting) return;
-    const d = s.design; const S = SIZES[d.size]; const th = BRAND.themes[d.theme];
     const node = document.querySelector("[data-canvas='1']");
     if (!node) return this.setState({ exportError: "The artwork isn't on screen. Close any dialogs and try again." });
     this.setState({ exporting: true, exportError: "", exportDone: false }); this.say("Preparing your image");
     try {
-      let shot; try { shot = await ensureShot(); } catch (e) { throw new Error("The image renderer didn't load. Check your connection and try again."); }
-      if (document.fonts && document.fonts.ready) await document.fonts.ready;
-      const jpg = s.format === "jpg";
-      const blob = await shot.domToBlob(node, {
-        width: S.w, height: S.h, scale: 1,
-        type: jpg ? "image/jpeg" : "image/png", quality: 0.92,
-        backgroundColor: jpg ? th.ground : null,
-        style: { transform: "none", boxShadow: "none", margin: "0" },
-        filter: (el) => !(el.getAttribute && el.getAttribute("data-guide"))
-      });
-      if (!blob || !blob.size) throw new Error("Empty image.");
-      const bmp = await createImageBitmap(blob);
-      const ok = bmp.width === S.w && bmp.height === S.h; bmp.close && bmp.close();
-      if (!ok) throw new Error("The rendered size didn't match " + S.dims + " px.");
-      const name = (slug(s.fileName) || this.defaultFileName()) + (jpg ? ".jpg" : ".png");
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 4000);
-      this.setState({ exporting: false, exportDone: true, exportDoneDetail: name + " · " + S.dims + " px · " + Math.round(blob.size / 1024) + " KB" }); this.say("Your download has started: " + name);
+      const r = await this.exportDesign(s.design, node, s.format, s.fileName);
+      this.setState({ exporting: false, exportDone: true, exportDoneDetail: r.name + " · " + r.dims + " px · " + r.kb + " KB" }); this.say("Your download has started: " + r.name);
     } catch (e) {
       this.setState({ exporting: false, exportError: (e && e.message) ? "(" + e.message + ")" : "" });
     }
@@ -1501,35 +1520,35 @@ class Component extends DCLogic {
     const logo = (src) => this.state.logoData[src] || src;
     const mask = (src, w, h) => ({ width: w, height: h, background: "currentColor", WebkitMaskImage: "url(\"" + logo(src) + "\")", maskImage: "url(\"" + logo(src) + "\")", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center", WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat" });
     const img = (id) => imgVals(d.images[id]);
-    const isEdit = mode === "edit";
+    const isEdit = mode === "edit"; const isOff = mode === "offstage"; const live = isEdit || isOff;
     // Card previews: fixed 16:10 landscape box, artwork scaled to cover it and centred (tall formats crop top and bottom).
     const boxW = this.state.cardW || 380, boxH = Math.round(boxW * 10 / 16);
     const cover = Math.max(boxW / S.w, boxH / S.h);
     const offX = Math.round((boxW - S.w * cover) / 2), offY = Math.round((boxH - S.h * cover) / 2);
-    const scale = isEdit ? this.state.fitScale * this.state.zoom : cover;
+    const scale = isOff ? 1 : (isEdit ? this.state.fitScale * this.state.zoom : cover);
     const partnersShown = BRAND.partners.filter(p => d.partnersOn.indexOf(p.key) >= 0);
 
     const pCols = wide ? 4 : (partnersShown.length <= 4 ? 2 : 2);
 
-    const thumb = isEdit ? "" : (this.state.thumbs[d.id] || "");
+    const thumb = live ? "" : (this.state.thumbs[d.id] || "");
     return Object.assign({
-      hasArt: isEdit || !thumb, thumbUrl: thumb, noArt: false, designId: d.id,
+      hasArt: live || !thumb, thumbUrl: thumb, noArt: false, designId: d.id,
       thumbStyle: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" },
       thumbFailed: () => this.dropThumb(d.id),
       isProject: false, hasTags: false, hasMetas: false, canvasClick: isEdit ? this.canvasClick : null,
       apprChip: isEdit ? "" : this.apprLabel(d), apprChipClass: this.apprClass(d),
-      cardStyle: isEdit ? {} : { background: "color-mix(in srgb, " + th.ground + " 9%, #FFFFFF)" },
-      isCard: !isEdit, canvasFlag: isEdit ? "1" : "0",
-      wrapClass: isEdit ? "stage-item" : "card",
-      wrapRole: isEdit ? "group" : "button", tab: isEdit ? -1 : 0,
-      artWrapClass: isEdit ? "stage-item-wrap" : "art", artBoxStyle: isEdit ? {} : { aspectRatio: "16 / 10" },
+      cardStyle: live ? {} : { background: "color-mix(in srgb, " + th.ground + " 9%, #FFFFFF)" },
+      isCard: !live, canvasFlag: isOff ? "off" : (isEdit ? "1" : "0"),
+      wrapClass: live ? "stage-item" : "card",
+      wrapRole: live ? "group" : "button", tab: live ? -1 : 0,
+      artWrapClass: live ? "stage-item-wrap" : "art", artBoxStyle: live ? {} : { aspectRatio: "16 / 10" },
       canvasStyle: Object.assign({
         width: S.w, height: S.h, flex: "0 0 auto", boxSizing: "border-box",
         padding: S.pad, background: th.ground, color: th.accent,
         display: "flex", flexDirection: "column", overflow: "hidden",
         fontFamily: "'PP Neue Montreal','Helvetica Neue',Helvetica,Arial,sans-serif",
-        transform: "scale(" + scale + ")", transformOrigin: isEdit ? "center center" : "0 0"
-      }, isEdit ? {} : { position: "absolute", left: offX, top: offY }),
+        transform: isOff ? "none" : "scale(" + scale + ")", transformOrigin: isEdit ? "center center" : "0 0"
+      }, live ? {} : { position: "absolute", left: offX, top: offY }),
       isSpeaker: d.tpl === "speaker", isEvent: d.tpl === "event", isPartners: d.tpl === "partners",
       isLockup: d.tpl === "lockup", isListing: d.tpl === "listing", isTrio: d.tpl === "trio",
       eyebrow, name: c.name, role: c.role, company: c.company, headline, body: c.body, dateLine,
@@ -1647,6 +1666,9 @@ class Component extends DCLogic {
       TEMPLATES.forEach(t => boards.push(this.boardVals(this.exampleDesign(t.key), "card", { title: t.name, desc: t.desc, sizesText: "Square · Portrait · Story · Landscape", badge: "Example", aria: t.name + ". " + t.desc, open: () => this.pickTemplate(t.key), keys: keyAct(() => this.pickTemplate(t.key)) })));
     } else if (view === "designs") {
       familyCards(sortBy(s.drafts.filter(x => !q || hit(x.title) || hit(x.copy.name) || hit(x.copy.headline)), x => x.title), true).forEach(b => boards.push(b));
+    } else if (view === "calendar" && s.sched) {
+      const sd = s.drafts.find(x => x.id === s.sched.id);
+      if (sd) boards.push(this.boardVals(sd, "offstage", { open: null, keys: null, aria: "" }));
     } else if (isEditor) {
       boards.push(this.boardVals(d, "edit", { open: null, keys: null, aria: "Artwork preview" }));
     }
@@ -1673,7 +1695,7 @@ class Component extends DCLogic {
       bodyClass: isEditor ? "body" : "shell",
       mainClass: isEditor ? "stage-wrap" : "content",
       stageClass: isEditor ? "stage" : "",
-      boardsClass: isEditor ? "boards stage-boards" : (boards.length ? "page grid" + (s.layout === "list" ? " list" : "") : "sr"),
+      boardsClass: isEditor ? "boards stage-boards" : (view === "calendar" ? "boards offstage" : (boards.length ? "page grid" + (s.layout === "list" ? " list" : "") : "sr")),
       sortKey: s.sortKey, setSort: (e) => { this.setState({ sortKey: e.target.value }); this.say("Sorted " + e.target.options[e.target.selectedIndex].text.toLowerCase()); },
       q: s.q, setQ: (e) => this.setState({ q: e.target.value, menuId: null }), clearQ: () => this.setState({ q: "" }),
       isGrid: s.layout === "grid", pickGrid: () => { this.setState({ layout: "grid" }); this.say("Grid view"); }, pickList: () => { this.setState({ layout: "list" }); this.say("List view"); },
@@ -1739,6 +1761,22 @@ class Component extends DCLogic {
       trayOverClass: s.trayOver ? "over" : "",
       trayDragOver: (e) => { e.preventDefault(); if (!s.trayOver) this.setState({ trayOver: true }); }, trayDragLeave: () => { if (s.trayOver) this.setState({ trayOver: false }); }, trayDrop: (e) => this.dropOn("", e),
       schedOpen: !!s.sched, sched: s.sched || {}, closeSched: this.closeSched,
+      schedThumb: s.sched ? (s.thumbs[s.sched.id] || "") : "",
+      schedArtStyle: (() => { const sd = s.sched && s.drafts.find(x => x.id === s.sched.id); if (!sd) return {}; const th = BRAND.themes[sd.theme]; return { background: th.ground, color: th.accent }; })(),
+      schedHasCopy: (() => { const sd = s.sched && s.drafts.find(x => x.id === s.sched.id); return !!(sd && sd.platforms.length && this.captionFor(sd, this.schedPlatform(sd))); })(),
+      schedMulti: (() => { const sd = s.sched && s.drafts.find(x => x.id === s.sched.id); return !!(sd && sd.platforms.length > 1); })(),
+      schedPlatforms: (() => { const sd = s.sched && s.drafts.find(x => x.id === s.sched.id); return sd ? sd.platforms.map(k => ({ name: PLAT[k].name, on: this.schedPlatform(sd) === k, pick: () => this.setState({ schedPlatformKey: k }) })) : []; })(),
+      schedCopy: (() => { const sd = s.sched && s.drafts.find(x => x.id === s.sched.id); return sd ? this.captionFor(sd, this.schedPlatform(sd)) : ""; })(),
+      schedCopyLabel: s.copied ? "Copied ✓" : (() => { const sd = s.sched && s.drafts.find(x => x.id === s.sched.id); const k = sd && this.schedPlatform(sd); return "Copy " + (k && PLAT[k] ? PLAT[k].name + " " : "") + "copy"; })(),
+      copySchedCopy: () => { const sd = s.sched && s.drafts.find(x => x.id === s.sched.id); if (sd) this.copyText(this.captionFor(sd, this.schedPlatform(sd)), "Post copy"); },
+      schedBusy: !!s.schedBusy, schedDlLabel: s.schedBusy ? "Preparing…" : "Download PNG", schedError: s.schedError || "",
+      downloadSched: async () => {
+        const sd = s.sched && this.state.drafts.find(x => x.id === s.sched.id); const node = document.querySelector("[data-canvas='off']");
+        if (!sd || !node) return this.setState({ schedError: "The artwork isn't ready yet. Try again in a moment." });
+        this.setState({ schedBusy: true, schedError: "" });
+        try { const r = await this.exportDesign(sd, node, "png", this.defaultFileName(sd)); this.setState({ schedBusy: false }); this.showToast("Download started · " + r.name); }
+        catch (e) { this.setState({ schedBusy: false, schedError: "We couldn't prepare the image. " + (e && e.message ? e.message : "") }); }
+      },
       setSchedDate: (e) => s.sched && this.setSchedule(s.sched.id, e.target.value),
       unschedule: () => s.sched && this.setSchedule(s.sched.id, ""),
       openScheduled: () => { const d = s.sched && s.drafts.find(x => x.id === s.sched.id); if (d) { this.setState({ sched: null }); this.openDesign(d, false); } },
