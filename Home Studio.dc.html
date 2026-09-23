@@ -10,8 +10,8 @@
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css">
-<script src="home-studio.lib.js?v=20260923a"></script>
-<link rel="stylesheet" href="home-studio.css?v=20260923a">
+<script src="home-studio.lib.js?v=20260923b"></script>
+<link rel="stylesheet" href="home-studio.css?v=20260923b">
 </helmet>
 
 <div class="app {{ viewClass }}">
@@ -721,6 +721,7 @@
           <button class="tab" role="tab" aria-selected="{{ !libBrand }}" onClick="{{ libPickUploads }}">Your uploads<sc-if value="{{ uploadCount }}"> ({{ uploadCount }})</sc-if></button>
         </div>
         <sc-if value="{{ libBrand }}">
+          <div class="pchips small" role="group" aria-label="Filter"><sc-for list="{{ libGroupChips }}" as="g"><button class="pchip" aria-pressed="{{ g.on }}" onClick="{{ g.pick }}">{{ g.name }}</button></sc-for></div>
           <div class="lib-grid">
             <sc-for list="{{ brandLib }}" as="im">
               <button class="lib-card" role="radio" aria-checked="{{ im.on }}" onClick="{{ im.pick }}"><span class="th" style="{{ im.thStyle }}" role="img" aria-label="{{ im.name }}"></span><span class="nm">{{ im.name }}</span></button>
@@ -1913,7 +1914,8 @@ class Component extends DCLogic {
       download: this.download, exportError: s.exportError, exportDone: s.exportDone, exportDoneDetail: s.exportDoneDetail,
       libOpen: s.libOpen, closeLib: this.closeLib, libSlotLabel: s.libSlot ? this.slotLabel(s.libSlot) : "", libBrand: s.libBrand,
       libPickBrand: () => this.setState({ libBrand: true }), libPickUploads: () => this.setState({ libBrand: false }),
-      brandLib: BRAND.library.map(im => ({ name: im.name, on: !!(s.libSlot && d.images[s.libSlot] && d.images[s.libSlot].src === im.src), thStyle: { backgroundImage: "url(" + im.src + ")" }, pick: () => this.applyImage(s.libSlot, im) })),
+      libGroupChips: ["All"].concat(LIB_GROUPS).map(g => ({ name: g, on: (s.libGroup || "All") === g, pick: () => this.setState({ libGroup: g }) })),
+      brandLib: BRAND.library.filter(im => !s.libGroup || s.libGroup === "All" || im.group === s.libGroup).map(im => ({ name: im.name, on: !!(s.libSlot && d.images[s.libSlot] && d.images[s.libSlot].src === im.src), thStyle: { backgroundImage: "url(" + im.src + ")", backgroundColor: im.group === "Graphics" ? "#7824FF" : "" }, pick: () => this.applyImage(s.libSlot, im) })),
       uploads: s.uploads.map(im => ({ name: im.name, on: !!(s.libSlot && d.images[s.libSlot] && d.images[s.libSlot].src === im.src), thStyle: { backgroundImage: "url(" + im.src + ")" }, pick: () => this.applyImage(s.libSlot, im) })),
       uploadCount: s.uploads.length, uploadError: s.uploadError, clearUploadError: () => this.setState({ uploadError: "" }),
       libFile: this.onFileInput, dropOverClass: s.libOver ? "over" : "",
