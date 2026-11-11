@@ -7,7 +7,7 @@
 <meta name="description" content="Potting Shed Home Studio: on-brand TEKEX social artwork, scheduled and ready to download.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23FF16A5'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial' font-size='30' font-weight='700' text-anchor='middle' fill='white'%3Eps%3C/text%3E%3C/svg%3E">
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261111c"></script>
+<script src="home-studio.lib.js?v=20261111f"></script>
 </head>
 <body>
 <x-dc>
@@ -1047,7 +1047,7 @@ class Component extends DCLogic {
     if (WS_ID === DEFAULT_WS && !Store.raw("hs-seed-v2")) {
       const ex = seedExamples(projects);
       projects = projects.concat(ex.projects); drafts = drafts.concat(ex.drafts);
-      try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag("hs-seed-v2"); } catch (e) {}
+      try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag("hs-seed-v2"); Store.set("hs-redate-w", seedWeeks()); } catch (e) {}
     }
     if (drafts.some(d => !d.projectId)) {
       // Designs saved before projects existed: gather them into one project so nothing is lost.
@@ -1080,6 +1080,15 @@ class Component extends DCLogic {
     Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || v.indexOf("data:image/") !== 0 || v.length < 1500) delete thumbs[k]; });
     if (drafts.some(d => d.thumb)) { drafts.forEach(d => { if (d.thumb) thumbs[d.id] = d.thumb; }); drafts = drafts.map(d => { const c = Object.assign({}, d); delete c.thumb; return c; }); try { Store.set(THUMBS_KEY, thumbs); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
     drafts = drafts.map(x => BRAND.themes[x.theme] ? x : Object.assign({}, x, { theme: 0 }));
+    // Example content keeps itself current: fields nobody has edited move with today, the first time and then whenever they drift by four weeks.
+    if (WS_ID === DEFAULT_WS) {
+      const wNow = seedWeeks(), raw = Store.raw("hs-redate-w"), wWas = raw == null ? 0 : (parseInt(raw, 10) || 0);
+      if (raw == null || Math.abs(wNow - wWas) >= 4) {
+        const r = redateExamples(projects, drafts, wWas, wNow);
+        projects = r.projects; drafts = r.drafts; r.changed.forEach(id => delete thumbs[id]);
+        try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.set(THUMBS_KEY, thumbs); Store.set("hs-redate-w", wNow); } catch (e) {}
+      }
+    }
     // One-time pass: portraits still sitting at the old fixed position move to their face. Anything a person repositioned is left alone.
     if (!Store.raw("hs-focus-v1")) {
       const bySrc = {}; Object.keys(LIB).forEach(k => { const im = LIB[k]; if (im && im.fx != null) bySrc[im.src] = im; });

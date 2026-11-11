@@ -254,7 +254,7 @@ const EXAMPLE_COPY = {
   body: "TEKEX is the innovation community for the Crown Dependencies. We connect founders, investors, operators and policymakers.",
   eyebrow: "TEKEX #36 · Speaker line-up",
   sessionPrefix: "11.00am · Talks", sessionTitle: "Wellness and emerging therapies",
-  date: "Fri 22nd Aug", startTime: "2pm", endTime: "5pm", venue: "C5 Hub, Windward House",
+  date: (() => { const t = new Date(); t.setDate(t.getDate() + 14 + ((5 - t.getDay() + 7) % 7)); return "Fri " + t.getDate() + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][t.getMonth()]; })(), startTime: "2pm", endTime: "5pm", venue: "C5 Hub, Windward House",
   barLabel: "SPEAKERS", url: BRAND.url
 };
 const EXAMPLE_SPEAKERS = [
@@ -339,9 +339,19 @@ function newProject(name, brief, due) { return { id: uid("p"), name: name || "Un
 
 /* Example workspace content: six active and three archived projects, each with a few designs.
    Added once (flag hs-seed-v2), skipping any project whose name already exists. All deletable. */
-function seedExamples(existing) {
+function seedExamples(existing, opts) {
   const have = new Set(existing.map(pj => pj.name));
-  const DAY = 86400000, now = Date.now();
+  const DAY = 86400000, now = (opts && opts.now) || Date.now();
+  /* The examples were written as if today were Wed 23 Sep 2026. Every date below is given as written and moved by
+     whole weeks to sit the same distance from the real today, so weekdays stay true and the calendar is never stale. */
+  const weeks = opts && opts.weeks != null ? opts.weeks : seedWeeks(now);
+  const at = (base) => { const [y, m, d] = base.split("-").map(Number); return new Date(y, m - 1, d + weeks * 7); };
+  const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], MS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], ML = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const iso = (base) => isoDay(at(base));
+  const day = (base) => { const t = at(base); return WD[t.getDay()] + " " + t.getDate() + " " + MS[t.getMonth()]; };
+  const mon = (base) => ML[at(base).getMonth()], monS = (base) => MS[at(base).getMonth()], yr = (base) => at(base).getFullYear();
+  const season = (base) => ["Winter", "Winter", "Spring", "Spring", "Spring", "Summer", "Summer", "Summer", "Autumn", "Autumn", "Autumn", "Winter"][at(base).getMonth()];
+  const SP = season("2026-11-16"), SS = season("2026-06-18"), SR = season("2026-03-12"); // programme, social, roundtable
   const projects = [], drafts = [];
   const img = (id, x, y) => libImg(id, x, y);
   const P = (name, brief, daysAgo, archived) => { const pj = newProject(name, brief, ""); pj.example = true; pj.archived = !!archived; pj.createdAt = now - daysAgo * DAY; pj.updatedAt = now - Math.max(0, daysAgo - 3) * DAY; return pj; };
@@ -362,73 +372,106 @@ function seedExamples(existing) {
 
   let pj, fam;
   // 1 — active
-  pj = P("TEKEX #36 · Speaker campaign", "Social assets for the September speaker event. One card per speaker, plus the event announcement.", 6);
+  pj = P("TEKEX #36 · Speaker campaign", "Social assets for the " + mon("2026-10-02") + " speaker event. One card per speaker, plus the event announcement.", 6);
   fam = uid("f");
   add(pj, [
-    D(pj, "trio", "square", "Wellness sessions · Square", { theme: 4, sched: "2026-09-24", images: { "trio-1": img("tk-nic-rose", 50, 30), "trio-2": img("tk-niraj-singh", 50, 30), "trio-3": img("tk-lisa-mccabe", 50, 30) } }),
-    D(pj, "event", "portrait", "Event announcement · Portrait", { theme: 1, age: 1, sched: "2026-09-23", images: { "event-image": img("u1") } }),
-    D(pj, "speaker", "square", "Richard Tavernor · Square", { age: 2, family: fam, sched: "2026-09-29", images: { "speaker-photo": img("u5", 50, 30) } }),
-    D(pj, "speaker", "linkedin", "Richard Tavernor · LinkedIn post", { age: 2, family: fam, sched: "2026-09-29", images: { "speaker-photo": img("u5", 50, 30) } })
+    D(pj, "trio", "square", "Wellness sessions · Square", { theme: 4, sched: iso("2026-09-24"), copy: { date: day("2026-10-02") }, images: { "trio-1": img("tk-nic-rose", 50, 30), "trio-2": img("tk-niraj-singh", 50, 30), "trio-3": img("tk-lisa-mccabe", 50, 30) } }),
+    D(pj, "event", "portrait", "Event announcement · Portrait", { theme: 1, age: 1, sched: iso("2026-09-23"), copy: { date: day("2026-10-02") }, images: { "event-image": img("u1") } }),
+    D(pj, "speaker", "square", "Richard Tavernor · Square", { age: 2, family: fam, sched: iso("2026-09-29"), copy: { date: day("2026-10-02") }, images: { "speaker-photo": img("u5", 50, 30) } }),
+    D(pj, "speaker", "linkedin", "Richard Tavernor · LinkedIn post", { age: 2, family: fam, sched: iso("2026-09-29"), copy: { date: day("2026-10-02") }, images: { "speaker-photo": img("u5", 50, 30) } })
   ]);
   // 2 — active
   pj = P("Health Innovation Summit", "Two-day summit at the BDO/C5 Hub. Speaker cards for the keynote line-up and a partner wall for the sponsors.", 12);
   fam = uid("f");
   add(pj, [
-    D(pj, "listing", "portrait", "Keynote line-up · Portrait", { theme: 2, sched: "2026-10-02", copy: { eyebrow: "Health Innovation Summit · Day one", headline: "Meet the keynote speakers", body: "Clinicians, founders and investors on where health tech goes next.", date: "Thu 8 Oct", startTime: "9am", endTime: "5pm", venue: "BDO/C5 Hub, St Helier", barLabel: "TALKS" }, images: { "listing-hero": img("u3") }, speakers: [{ name: "Dr Niraj Singh", role: "Founder", company: "Ketamine Therapies" }, { name: "Lisa McCabe", role: "CEO", company: "The Wellbeing Co" }, { name: "Nic Rose", role: "Director", company: "iO-CO" }, { name: "Priya Nair", role: "CTO", company: "C5 Alliance" }] }),
-    D(pj, "speaker", "portrait", "Dr Niraj Singh · Portrait", { theme: 5, age: 1, family: fam, sched: "2026-10-05", copy: { eventNumber: "37", name: "Dr Niraj Singh", role: "Founder,", company: "Ketamine Therapies", date: "Thu 8 Oct", startTime: "9am", endTime: "5pm", venue: "BDO/C5 Hub, St Helier", barLabel: "TALKS" }, images: { "speaker-photo": img("tk-niraj-singh", 50, 25) } }),
-    D(pj, "speaker", "story", "Dr Niraj Singh · Story", { theme: 5, age: 1, family: fam, sched: "2026-10-06", copy: { eventNumber: "37", name: "Dr Niraj Singh", role: "Founder,", company: "Ketamine Therapies", date: "Thu 8 Oct", startTime: "9am", endTime: "5pm", venue: "BDO/C5 Hub, St Helier", barLabel: "TALKS" }, images: { "speaker-photo": img("tk-niraj-singh", 50, 25) } }),
+    D(pj, "listing", "portrait", "Keynote line-up · Portrait", { theme: 2, sched: iso("2026-10-02"), copy: { eyebrow: "Health Innovation Summit · Day one", headline: "Meet the keynote speakers", body: "Clinicians, founders and investors on where health tech goes next.", date: day("2026-10-08"), startTime: "9am", endTime: "5pm", venue: "BDO/C5 Hub, St Helier", barLabel: "TALKS" }, images: { "listing-hero": img("u3") }, speakers: [{ name: "Dr Niraj Singh", role: "Founder", company: "Ketamine Therapies" }, { name: "Lisa McCabe", role: "CEO", company: "The Wellbeing Co" }, { name: "Nic Rose", role: "Director", company: "iO-CO" }, { name: "Priya Nair", role: "CTO", company: "C5 Alliance" }] }),
+    D(pj, "speaker", "portrait", "Dr Niraj Singh · Portrait", { theme: 5, age: 1, family: fam, sched: iso("2026-10-05"), copy: { eventNumber: "37", name: "Dr Niraj Singh", role: "Founder,", company: "Ketamine Therapies", date: day("2026-10-08"), startTime: "9am", endTime: "5pm", venue: "BDO/C5 Hub, St Helier", barLabel: "TALKS" }, images: { "speaker-photo": img("tk-niraj-singh", 50, 25) } }),
+    D(pj, "speaker", "story", "Dr Niraj Singh · Story", { theme: 5, age: 1, family: fam, sched: iso("2026-10-06"), copy: { eventNumber: "37", name: "Dr Niraj Singh", role: "Founder,", company: "Ketamine Therapies", date: day("2026-10-08"), startTime: "9am", endTime: "5pm", venue: "BDO/C5 Hub, St Helier", barLabel: "TALKS" }, images: { "speaker-photo": img("tk-niraj-singh", 50, 25) } }),
     D(pj, "partners", "square", "Summit sponsors · Square", { theme: 3, age: 2, copy: { headline: "With thanks to our partners", barLabel: "PARTNERS" } })
   ]);
   // 3 — active
-  pj = P("Founders Breakfast · October", "Monthly founders breakfast. Announcement post, speaker card and a LinkedIn version for the host.", 4);
+  pj = P("Founders Breakfast · " + mon("2026-10-14"), "Monthly founders breakfast. Announcement post, speaker card and a LinkedIn version for the host.", 4);
   fam = uid("f");
   add(pj, [
-    D(pj, "event", "square", "Breakfast announcement · Square", { theme: 0, family: fam, sched: "2026-09-30", copy: { headline: "Founders Breakfast", body: "Coffee, pastries and honest conversation about building companies from the Channel Islands.", date: "Wed 14 Oct", startTime: "8am", endTime: "9.30am", venue: "Wild Peak, St Peter Port", barLabel: "COMMUNITY" }, images: { "event-image": img("u9") } }),
-    D(pj, "event", "linkedin", "Breakfast announcement · LinkedIn post", { theme: 0, family: fam, sched: "2026-10-01", copy: { headline: "Founders Breakfast", body: "Coffee, pastries and honest conversation about building companies from the Channel Islands.", date: "Wed 14 Oct", startTime: "8am", endTime: "9.30am", venue: "Wild Peak, St Peter Port", barLabel: "COMMUNITY" }, images: { "event-image": img("u9") } }),
-    D(pj, "speaker", "square", "Anna Le Page · Square", { theme: 1, age: 1, sched: "2026-10-09", copy: { eventNumber: "38", name: "Anna Le Page", role: "Partner,", company: "Rathbones", date: "Wed 14 Oct", startTime: "8am", endTime: "9.30am", venue: "Wild Peak, St Peter Port", barLabel: "COMMUNITY" }, images: { "speaker-photo": img("u4", 50, 30) } })
+    D(pj, "event", "square", "Breakfast announcement · Square", { theme: 0, family: fam, sched: iso("2026-09-30"), copy: { headline: "Founders Breakfast", body: "Coffee, pastries and honest conversation about building companies from the Channel Islands.", date: day("2026-10-14"), startTime: "8am", endTime: "9.30am", venue: "Wild Peak, St Peter Port", barLabel: "COMMUNITY" }, images: { "event-image": img("u9") } }),
+    D(pj, "event", "linkedin", "Breakfast announcement · LinkedIn post", { theme: 0, family: fam, sched: iso("2026-10-01"), copy: { headline: "Founders Breakfast", body: "Coffee, pastries and honest conversation about building companies from the Channel Islands.", date: day("2026-10-14"), startTime: "8am", endTime: "9.30am", venue: "Wild Peak, St Peter Port", barLabel: "COMMUNITY" }, images: { "event-image": img("u9") } }),
+    D(pj, "speaker", "square", "Anna Le Page · Square", { theme: 1, age: 1, sched: iso("2026-10-09"), copy: { eventNumber: "38", name: "Anna Le Page", role: "Partner,", company: "Rathbones", date: day("2026-10-14"), startTime: "8am", endTime: "9.30am", venue: "Wild Peak, St Peter Port", barLabel: "COMMUNITY" }, images: { "speaker-photo": img("u4", 50, 30) } })
   ]);
   // 4 — active
   pj = P("Partner announcement · Rathbones", "Welcoming Rathbones as a founding partner. Brand announcement plus the refreshed partner wall.", 9);
   add(pj, [
-    D(pj, "lockup", "square", "Rathbones announcement · Square", { theme: 3, sched: "2026-09-26", family: "f-rathbones-" + pj.id, copy: { body: "TEKEX welcomes Rathbones as a founding partner of the innovation community.", barLabel: "PARTNERS" } }),
+    D(pj, "lockup", "square", "Rathbones announcement · Square", { theme: 3, sched: iso("2026-09-26"), family: "f-rathbones-" + pj.id, copy: { body: "TEKEX welcomes Rathbones as a founding partner of the innovation community.", barLabel: "PARTNERS" } }),
     D(pj, "partners", "landscape", "Partner wall · Landscape", { theme: 4, age: 1, copy: { headline: "TEKEX X Rathbones", barLabel: "PARTNERS" } }),
-    D(pj, "lockup", "story", "Rathbones announcement · Story", { theme: 3, age: 1, sched: "2026-09-26", family: "f-rathbones-" + pj.id, copy: { body: "TEKEX welcomes Rathbones as a founding partner of the innovation community.", barLabel: "PARTNERS" } })
+    D(pj, "lockup", "story", "Rathbones announcement · Story", { theme: 3, age: 1, sched: iso("2026-09-26"), family: "f-rathbones-" + pj.id, copy: { body: "TEKEX welcomes Rathbones as a founding partner of the innovation community.", barLabel: "PARTNERS" } })
   ]);
   // 5 — active
-  pj = P("Autumn programme launch", "The full autumn calendar: talks, workshops and socials. One announcement in three sizes and a listing of what's on.", 2);
+  pj = P(SP + " programme launch", "The full " + SP.toLowerCase() + " calendar: talks, workshops and socials. One announcement in three sizes and a listing of what's on.", 2);
   fam = uid("f");
   add(pj, [
-    D(pj, "event", "portrait", "Autumn programme · Portrait", { theme: 2, family: fam, sched: "2026-10-12", copy: { headline: "Autumn at TEKEX", body: "Twelve events across ten weeks. Talks, workshops and socials for founders, investors and operators.", date: "From Mon 12 Oct", startTime: "", endTime: "", venue: "Across Jersey and Guernsey", barLabel: "EVENT" }, images: { "event-image": img("u10") } }),
-    D(pj, "event", "story", "Autumn programme · Story", { theme: 2, family: fam, sched: "2026-10-12", copy: { headline: "Autumn at TEKEX", body: "Twelve events across ten weeks. Talks, workshops and socials for founders, investors and operators.", date: "From Mon 12 Oct", startTime: "", endTime: "", venue: "Across Jersey and Guernsey", barLabel: "EVENT" }, images: { "event-image": img("u10") } }),
-    D(pj, "event", "landscape", "Autumn programme · Landscape", { theme: 2, family: fam, copy: { headline: "Autumn at TEKEX", body: "Twelve events across ten weeks. Talks, workshops and socials for founders, investors and operators.", date: "From Mon 12 Oct", startTime: "", endTime: "", venue: "Across Jersey and Guernsey", barLabel: "EVENT" }, images: { "event-image": img("u10") } }),
-    D(pj, "listing", "square", "What's on · Square", { theme: 0, age: 1, copy: { eyebrow: "Autumn 2026 · What's on", headline: "Twelve events, ten weeks", body: "Save the dates. Tickets open a fortnight before each event.", date: "Oct – Dec", startTime: "", endTime: "", venue: "", barLabel: "EVENT" }, speakers: [{ name: "Founders Breakfast", role: "Wed 14 Oct", company: "Wild Peak" }, { name: "Health Innovation Summit", role: "Thu 8 Oct", company: "BDO/C5 Hub" }, { name: "Investor roundtable", role: "Tue 3 Nov", company: "Rathbones" }, { name: "Winter social", role: "Thu 10 Dec", company: "Windward House" }] })
+    D(pj, "event", "portrait", SP + " programme · Portrait", { theme: 2, family: fam, sched: iso("2026-10-12"), copy: { headline: SP + " at TEKEX", body: "Twelve events across ten weeks. Talks, workshops and socials for founders, investors and operators.", date: "From " + day("2026-10-12"), startTime: "", endTime: "", venue: "Across Jersey and Guernsey", barLabel: "EVENT" }, images: { "event-image": img("u10") } }),
+    D(pj, "event", "story", SP + " programme · Story", { theme: 2, family: fam, sched: iso("2026-10-12"), copy: { headline: SP + " at TEKEX", body: "Twelve events across ten weeks. Talks, workshops and socials for founders, investors and operators.", date: "From " + day("2026-10-12"), startTime: "", endTime: "", venue: "Across Jersey and Guernsey", barLabel: "EVENT" }, images: { "event-image": img("u10") } }),
+    D(pj, "event", "landscape", SP + " programme · Landscape", { theme: 2, family: fam, copy: { headline: SP + " at TEKEX", body: "Twelve events across ten weeks. Talks, workshops and socials for founders, investors and operators.", date: "From " + day("2026-10-12"), startTime: "", endTime: "", venue: "Across Jersey and Guernsey", barLabel: "EVENT" }, images: { "event-image": img("u10") } }),
+    D(pj, "listing", "square", "What's on · Square", { theme: 0, age: 1, copy: { eyebrow: SP + " " + yr("2026-10-12") + " · What's on", headline: "Twelve events, ten weeks", body: "Save the dates. Tickets open a fortnight before each event.", date: monS("2026-10-12") + " – " + monS("2026-12-21"), startTime: "", endTime: "", venue: "", barLabel: "EVENT" }, speakers: [{ name: "Founders Breakfast", role: day("2026-10-14"), company: "Wild Peak" }, { name: "Health Innovation Summit", role: day("2026-10-08"), company: "BDO/C5 Hub" }, { name: "Investor roundtable", role: day("2026-11-03"), company: "Rathbones" }, { name: season("2026-12-10") + " social", role: day("2026-12-10"), company: "Windward House" }] })
   ]);
   // 6 — active
   pj = P("Jersey Innovation Week", "TEKEX's programme within Innovation Week. Session trio for the panel, speaker cards and a thank-you to partners.", 15);
   add(pj, [
-    D(pj, "trio", "square", "Future of finance panel · Square", { theme: 1, sched: "2026-10-16", copy: { sessionPrefix: "2.00pm · Panel", sessionTitle: "The future of finance in the islands", date: "Tue 20 Oct", venue: "Windward House, St Helier" }, trio: [{ name: "Sam Ozanne", company: "BDO" }, { name: "Anna Le Page", company: "Rathbones" }, { name: "Priya Nair", company: "C5 Alliance" }], images: { "trio-1": img("u5", 50, 30), "trio-2": img("u4", 50, 30), "trio-3": img("u6", 50, 30) } }),
-    D(pj, "speaker", "portrait", "Sam Ozanne · Portrait", { theme: 0, age: 1, sched: "2026-10-19", copy: { eventNumber: "39", name: "Sam Ozanne", role: "Director,", company: "BDO", date: "Tue 20 Oct", startTime: "2pm", endTime: "3.30pm", venue: "Windward House, St Helier" }, images: { "speaker-photo": img("u5", 50, 30) } }),
-    D(pj, "partners", "square", "Thank you partners · Square", { theme: 5, age: 2, sched: "2026-10-23", copy: { headline: "Thank you", barLabel: "PARTNERS" } })
+    D(pj, "trio", "square", "Future of finance panel · Square", { theme: 1, sched: iso("2026-10-16"), copy: { sessionPrefix: "2.00pm · Panel", sessionTitle: "The future of finance in the islands", date: day("2026-10-20"), venue: "Windward House, St Helier" }, trio: [{ name: "Sam Ozanne", company: "BDO" }, { name: "Anna Le Page", company: "Rathbones" }, { name: "Priya Nair", company: "C5 Alliance" }], images: { "trio-1": img("u5", 50, 30), "trio-2": img("u4", 50, 30), "trio-3": img("u6", 50, 30) } }),
+    D(pj, "speaker", "portrait", "Sam Ozanne · Portrait", { theme: 0, age: 1, sched: iso("2026-10-19"), copy: { eventNumber: "39", name: "Sam Ozanne", role: "Director,", company: "BDO", date: day("2026-10-20"), startTime: "2pm", endTime: "3.30pm", venue: "Windward House, St Helier" }, images: { "speaker-photo": img("u5", 50, 30) } }),
+    D(pj, "partners", "square", "Thank you partners · Square", { theme: 5, age: 2, sched: iso("2026-10-23"), copy: { headline: "Thank you", barLabel: "PARTNERS" } })
   ]);
   // 7 — archived
-  pj = P("TEKEX #35 · Summer social", "June rooftop social. Announcement and the two speaker cards that went out on the day.", 100, true);
+  pj = P("TEKEX #35 · " + SS + " social", mon("2026-06-18") + " rooftop social. Announcement and the two speaker cards that went out on the day.", 100, true);
   add(pj, [
-    D(pj, "event", "square", "Summer social · Square", { theme: 0, sched: "2026-06-10", copy: { headline: "Summer social", body: "Rooftop drinks with the TEKEX community. Bring a founder who hasn't been before.", date: "Thu 18 Jun", startTime: "6pm", endTime: "9pm", venue: "The Rooftop, St Helier", barLabel: "COMMUNITY" }, images: { "event-image": img("u2") } }),
-    D(pj, "speaker", "square", "Lisa McCabe · Square", { theme: 5, age: 1, sched: "2026-06-15", copy: { eventNumber: "35", name: "Lisa McCabe", role: "CEO,", company: "The Wellbeing Co", date: "Thu 18 Jun", startTime: "6pm", endTime: "9pm", venue: "The Rooftop, St Helier" }, images: { "speaker-photo": img("tk-lisa-mccabe", 50, 30) } })
+    D(pj, "event", "square", SS + " social · Square", { theme: 0, sched: iso("2026-06-10"), copy: { headline: SS + " social", body: "Rooftop drinks with the TEKEX community. Bring a founder who hasn't been before.", date: day("2026-06-18"), startTime: "6pm", endTime: "9pm", venue: "The Rooftop, St Helier", barLabel: "COMMUNITY" }, images: { "event-image": img("u2") } }),
+    D(pj, "speaker", "square", "Lisa McCabe · Square", { theme: 5, age: 1, sched: iso("2026-06-15"), copy: { eventNumber: "35", name: "Lisa McCabe", role: "CEO,", company: "The Wellbeing Co", date: day("2026-06-18"), startTime: "6pm", endTime: "9pm", venue: "The Rooftop, St Helier" }, images: { "speaker-photo": img("tk-lisa-mccabe", 50, 30) } })
   ]);
   // 8 — archived
   pj = P("2040 Accelerator pitch night", "Pitch night for the 2040 Accelerator cohort. Brand announcement and the cohort listing.", 130, true);
   add(pj, [
-    D(pj, "lockup", "square", "Pitch night · Square", { theme: 2, sched: "2026-05-14", copy: { body: "Eight founders. Five minutes each. One room full of people who can help.", barLabel: "EVENT" } }),
-    D(pj, "listing", "portrait", "Cohort listing · Portrait", { theme: 4, age: 1, sched: "2026-05-18", copy: { eyebrow: "2040 Accelerator · Cohort one", headline: "Meet the cohort", body: "Eight companies building from the Crown Dependencies.", date: "Thu 21 May", startTime: "6pm", endTime: "8.30pm", venue: "Digital Jersey Hub", barLabel: "SPEAKERS" }, speakers: [{ name: "Nic Rose", role: "Founder", company: "iO-CO" }, { name: "Priya Nair", role: "Co-founder", company: "Tideway" }, { name: "Sam Ozanne", role: "Founder", company: "Harbourline" }] })
+    D(pj, "lockup", "square", "Pitch night · Square", { theme: 2, sched: iso("2026-05-14"), copy: { body: "Eight founders. Five minutes each. One room full of people who can help.", barLabel: "EVENT" } }),
+    D(pj, "listing", "portrait", "Cohort listing · Portrait", { theme: 4, age: 1, sched: iso("2026-05-18"), copy: { eyebrow: "2040 Accelerator · Cohort one", headline: "Meet the cohort", body: "Eight companies building from the Crown Dependencies.", date: day("2026-05-21"), startTime: "6pm", endTime: "8.30pm", venue: "Digital Jersey Hub", barLabel: "SPEAKERS" }, speakers: [{ name: "Nic Rose", role: "Founder", company: "iO-CO" }, { name: "Priya Nair", role: "Co-founder", company: "Tideway" }, { name: "Sam Ozanne", role: "Founder", company: "Harbourline" }] })
   ]);
   // 9 — archived
-  pj = P("Spring investor roundtable", "Closed-door investor roundtable in March. Speaker card for the chair and the announcement.", 190, true);
+  pj = P(SR + " investor roundtable", "Closed-door investor roundtable in " + mon("2026-03-12") + ". Speaker card for the chair and the announcement.", 190, true);
   add(pj, [
-    D(pj, "speaker", "square", "Anna Le Page · Square", { theme: 3, sched: "2026-03-09", copy: { eventNumber: "33", name: "Anna Le Page", role: "Partner,", company: "Rathbones", date: "Thu 12 Mar", startTime: "12pm", endTime: "2pm", venue: "Rathbones, St Helier", barLabel: "TALKS" }, images: { "speaker-photo": img("u4", 50, 30) } }),
-    D(pj, "event", "linkedin", "Roundtable · LinkedIn post", { theme: 1, age: 1, sched: "2026-03-05", copy: { headline: "Investor roundtable", body: "An invitation-only conversation on early-stage capital in the islands.", date: "Thu 12 Mar", startTime: "12pm", endTime: "2pm", venue: "Rathbones, St Helier", barLabel: "TALKS" }, images: { "event-image": img("u8") } })
+    D(pj, "speaker", "square", "Anna Le Page · Square", { theme: 3, sched: iso("2026-03-09"), copy: { eventNumber: "33", name: "Anna Le Page", role: "Partner,", company: "Rathbones", date: day("2026-03-12"), startTime: "12pm", endTime: "2pm", venue: "Rathbones, St Helier", barLabel: "TALKS" }, images: { "speaker-photo": img("u4", 50, 30) } }),
+    D(pj, "event", "linkedin", "Roundtable · LinkedIn post", { theme: 1, age: 1, sched: iso("2026-03-05"), copy: { headline: "Investor roundtable", body: "An invitation-only conversation on early-stage capital in the islands.", date: day("2026-03-12"), startTime: "12pm", endTime: "2pm", venue: "Rathbones, St Helier", barLabel: "TALKS" }, images: { "event-image": img("u8") } })
   ]);
   return { projects, drafts };
+}
+/* How many whole weeks today is from the day the examples were written for. */
+function seedWeeks(now) { const t = new Date(now || Date.now()); return Math.round((new Date(t.getFullYear(), t.getMonth(), t.getDate()) - new Date(2026, 8, 23)) / (7 * 86400000)); }
+/* Move example content that nobody has touched from one week offset to another. A field is only changed if it still
+   holds exactly what the examples put there, so anything a person edited is left alone. Returns the ids that changed. */
+function redateExamples(projects, drafts, fromWeeks, toWeeks) {
+  const orig = seedExamples([], { weeks: fromWeeks }), fresh = seedExamples([], { weeks: toWeeks });
+  const LEGACY = ["Fri 22nd Aug", "Social assets for the September speaker event. One card per speaker, plus the event announcement."]; // what the first version of the examples said
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  const untouched = (cur, was) => same(cur, was) || LEGACY.indexOf(cur) >= 0;
+  const P2 = projects.slice(), D2 = drafts.slice(), changed = [];
+  orig.projects.forEach((op, i) => {
+    const np = fresh.projects[i], pi = P2.findIndex(p => p.example && p.name === op.name);
+    if (pi < 0) return;
+    const pj = P2[pi], pp = {};
+    if (np.name !== pj.name) pp.name = np.name;
+    if (untouched(pj.brief, op.brief) && np.brief !== pj.brief) pp.brief = np.brief;
+    if (Object.keys(pp).length) P2[pi] = Object.assign({}, pj, pp);
+    const od = orig.drafts.filter(d => d.projectId === op.id), nd = fresh.drafts.filter(d => d.projectId === np.id);
+    od.forEach((o, k) => {
+      const n = nd[k], di = D2.findIndex(d => d.projectId === pj.id && d.tpl === o.tpl && d.size === o.size && d.title === o.title);
+      if (di < 0 || !n) return;
+      const cur = D2[di], next = Object.assign({}, cur); let hit = false;
+      if (n.title !== cur.title) { next.title = n.title; hit = true; }
+      if (cur.scheduledAt === o.scheduledAt && n.scheduledAt !== cur.scheduledAt) { next.scheduledAt = n.scheduledAt; hit = true; }
+      const copy = Object.assign({}, cur.copy);
+      Object.keys(o.copy).forEach(key => { if (untouched(cur.copy[key], o.copy[key]) && !same(cur.copy[key], n.copy[key])) { copy[key] = n.copy[key]; hit = true; } });
+      next.copy = copy;
+      if (same(cur.speakers, o.speakers) && !same(cur.speakers, n.speakers)) { next.speakers = n.speakers; hit = true; }
+      if (hit) { D2[di] = next; changed.push(cur.id); }
+    });
+  });
+  return { projects: P2, drafts: D2, changed };
 }
 const UPLOADS_KEY = "hs-uploads-v1";
 const MAX_UPLOAD_MB = 15;
@@ -572,7 +615,7 @@ if (WS_ID !== DEFAULT_WS) {
   Object.assign(BRAND, blankBrand(meta.name || "New client", meta.primary, meta.secondary, meta.url));
   Object.keys(LIB).forEach(k => delete LIB[k]);
   PORTRAIT_IDS.length = 0; EVENT_IDS.length = 0;
-  Object.assign(EXAMPLE_COPY, { eventNumber: "", name: "Speaker name", role: "Job title,", company: "Company", headline: "Your headline", body: "One or two sentences about what is happening and why it matters.", eyebrow: BRAND.name + " · Line-up", sessionPrefix: "11.00am · Talks", sessionTitle: "Session title", date: "Fri 22nd Aug", startTime: "2pm", endTime: "5pm", venue: "Venue name", barLabel: "EVENT", url: BRAND.url });
+  Object.assign(EXAMPLE_COPY, { eventNumber: "", name: "Speaker name", role: "Job title,", company: "Company", headline: "Your headline", body: "One or two sentences about what is happening and why it matters.", eyebrow: BRAND.name + " · Line-up", sessionPrefix: "11.00am · Talks", sessionTitle: "Session title", startTime: "2pm", endTime: "5pm", venue: "Venue name", barLabel: "EVENT", url: BRAND.url });
 }
 applyBrand(Store.get(BRAND_KEY, null));
 const THUMBS_KEY = "hs-thumbs-v1";
@@ -585,4 +628,4 @@ function ensureShot() {
 }
 
 /* expose for tests (node) */
-if (typeof module !== 'undefined') module.exports = { FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
+if (typeof module !== 'undefined') module.exports = { seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };

@@ -117,3 +117,31 @@ test("editing the brand book changes what templates read", () => {
   lib.applyBrand({ themes: lib.BRAND_DEFAULT.themes, name: lib.BRAND_DEFAULT.name });
   assert.equal(lib.BRAND.themes[0].ground, before);
 });
+
+test("example content is dated relative to today and keeps its weekdays", () => {
+  const now = new Date(2027, 1, 10).getTime(); // Wed 10 Feb 2027, twenty weeks after the examples were written
+  const weeks = lib.seedWeeks(now);
+  assert.equal(weeks, 20);
+  const base = lib.seedExamples([], { weeks: 0 }), ex = lib.seedExamples([], { weeks, now });
+  assert.equal(base.projects[2].name, "Founders Breakfast · October");
+  const breakfast = ex.drafts.find(d => d.title.indexOf("Breakfast announcement") === 0);
+  assert.equal(breakfast.copy.date, "Wed 3 Mar");            // was Wed 14 Oct, twenty weeks on, still a Wednesday
+  assert.equal(breakfast.scheduledAt, "2027-02-17");         // was 2026-09-30
+  assert.equal(ex.projects[2].name, "Founders Breakfast · March");
+  ex.drafts.filter(d => d.scheduledAt && !ex.projects.find(p => p.id === d.projectId).archived).forEach(d => assert.ok(d.scheduledAt >= "2027-02-10", d.title + " is not in the past"));
+});
+
+test("re-dating only touches example fields nobody has edited", () => {
+  const base = lib.seedExamples([], { weeks: 0 });
+  const mine = base.drafts.map(d => Object.assign({}, d, { copy: Object.assign({}, d.copy) }));
+  const edited = mine.find(d => d.title === "Anna Le Page · Square" && d.copy.eventNumber === "38");
+  edited.copy.date = "Sat 1 Jan"; edited.scheduledAt = "2030-01-01";
+  const r = lib.redateExamples(base.projects, mine, 0, 20);
+  const after = r.drafts.find(d => d.id === edited.id);
+  assert.equal(after.copy.date, "Sat 1 Jan");
+  assert.equal(after.scheduledAt, "2030-01-01");
+  const other = r.drafts.find(d => d.title.indexOf("Breakfast announcement") === 0);
+  assert.equal(other.copy.date, "Wed 3 Mar");
+  assert.equal(r.projects[2].name, "Founders Breakfast · March");
+  assert.equal(lib.redateExamples(r.projects, r.drafts, 20, 20).changed.length, 0);
+});
