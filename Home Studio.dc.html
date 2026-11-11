@@ -7,14 +7,15 @@
 <meta name="description" content="Potting Shed Home Studio: on-brand TEKEX social artwork, scheduled and ready to download.">
 <link rel="icon" type="image/svg+xml" href="assets/ps-favicon.svg">
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
+<script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261111p"></script>
+<script src="home-studio.lib.js?v=20261111r"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261111w">
+<link rel="stylesheet" href="home-studio.css?v=20261111y">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -456,10 +457,23 @@
             </div>
           </section>
 
-          <section class="bbsec" aria-labelledby="bb-logo">
-            <h2 id="bb-logo">Logo<span>How it sits on every artwork.</span></h2>
+          <section class="bbsec" aria-labelledby="bb-strat">
+            <h2 id="bb-strat">Strategy<span>What the brand stands for, in the words to reuse.</span></h2>
             <div class="bbbody">
-              <div class="ctl"><span>Size in the footer</span><div class="segs" role="group" aria-label="Logo size"><sc-for list="{{ bbLogoSizes }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div>
+              <div class="field"><label for="bb-strap">Strapline</label><input class="input" id="bb-strap" value="{{ bbStrap }}" onChange="{{ bbSetStrap }}" placeholder="One line that sums it up" /></div>
+              <div class="field"><label for="bb-pos">Positioning</label><textarea class="input" id="bb-pos" value="{{ bbPositioning }}" onChange="{{ bbSetPositioning }}" placeholder="Where the brand sits and why it is different, in a few sentences."></textarea></div>
+              <div class="row2">
+                <div class="field"><label for="bb-msg">Key messages</label><textarea class="input tall" id="bb-msg" value="{{ bbMessages }}" onChange="{{ bbSetMessages }}" placeholder="One per line"></textarea></div>
+                <div class="field"><label for="bb-aud">Audiences</label><textarea class="input tall" id="bb-aud" value="{{ bbAudiences }}" onChange="{{ bbSetAudiences }}" placeholder="One per line"></textarea></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="bbsec" aria-labelledby="bb-logo">
+            <h2 id="bb-logo">Logo<span>{{ bbLogoNote }}</span></h2>
+            <div class="bbbody">
+              <sc-if value="{{ bbCore }}"><div class="ctl"><span>Size in the footer</span><div class="segs" role="group" aria-label="Logo size"><sc-for list="{{ bbLogoSizes }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div></sc-if>
+              <sc-if value="{{ bbHasMarks }}"><div class="marks"><sc-for list="{{ bbMarks }}" as="mk"><figure class="markt"><span class="markbox" style="{{ mk.box }}"><img sc-camel-src="{{ mk.src }}" alt="" /></span><figcaption><b>{{ mk.name }}</b><span class="meta">{{ mk.use }}</span></figcaption></figure></sc-for></div></sc-if>
             </div>
           </section>
 
@@ -503,19 +517,21 @@
             <h2 id="bb-type">Typography<span>Fonts are installed by Potting Shed.</span></h2>
             <div class="bbbody">
               <div class="types">
-                <div class="type"><span class="spec" style="{{ bbSpecStyle }}">Aa</span><div><b>PP Neue Montreal</b><span class="meta">Headlines, names and body copy</span></div></div>
-                <div class="type"><span class="spec acc">Aa</span><div><b>Quarto Italic</b><span class="meta">A single accent word, never a full line</span></div></div>
+                <div class="type"><span class="spec" style="{{ bbSpecStyle }}">Aa</span><div><b>{{ bbFontMain }}</b><span class="meta">Headlines, names and body copy</span></div></div>
+                <sc-if value="{{ bbHasAccentFont }}"><div class="type"><span class="spec acc">Aa</span><div><b>{{ bbFontAccent }}</b><span class="meta">A single accent word, never a full line</span></div></div></sc-if>
               </div>
-              <div class="ctl"><span>Heading weight</span><div class="segs" role="group" aria-label="Heading weight"><sc-for list="{{ bbWeights }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div>
+              <sc-if value="{{ bbCore }}"><div class="ctl"><span>Heading weight</span><div class="segs" role="group" aria-label="Heading weight"><sc-for list="{{ bbWeights }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div></sc-if>
             </div>
           </section>
 
           <section class="bbsec" aria-labelledby="bb-lay">
-            <h2 id="bb-lay">Layout and imagery<span>The few levers that change how every template is drawn.</span></h2>
+            <sc-if value="{{ bbCore }}"><h2 id="bb-lay">Layout and imagery<span>The few levers that change how every template is drawn.</span></h2></sc-if><sc-if value="{{ !bbCore }}"><h2 id="bb-lay">Imagery<span>What belongs in a picture for this brand.</span></h2></sc-if>
             <div class="bbbody">
+              <sc-if value="{{ bbCore }}">
               <div class="ctl"><span>Keylines</span><div class="segs" role="group" aria-label="Keylines"><sc-for list="{{ bbLines }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div>
               <div class="ctl"><span>Image corners</span><div class="segs" role="group" aria-label="Image corners"><sc-for list="{{ bbCorners }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div>
               <div class="ctl"><span>Photography</span><div class="segs" role="group" aria-label="Photography"><sc-for list="{{ bbPhotos }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div>
+              </sc-if>
               <div class="field"><label for="bb-img">Imagery guidance</label><textarea class="input" id="bb-img" value="{{ bbImagery }}" onChange="{{ bbSetImagery }}" placeholder="What good photography looks like for this brand, and what to avoid."></textarea></div>
             </div>
           </section>
@@ -531,6 +547,7 @@
             </div>
           </section>
 
+          <sc-if value="{{ bbCore }}">
           <section class="bbsec" aria-labelledby="bb-lab">
             <h2 id="bb-lab">Footer labels<span>The word beside the logo on each artwork.</span></h2>
             <div class="bbbody">
@@ -553,6 +570,7 @@
               <sc-if value="{{ bbPartnerError }}"><span class="ferr" role="alert">{{ bbPartnerError }}</span></sc-if>
             </div>
           </section>
+          </sc-if>
 
           <section class="bbsec" aria-labelledby="bb-voice">
             <h2 id="bb-voice">Voice<span>Used when post copy is drafted.</span></h2>
@@ -563,6 +581,26 @@
                 <div class="field"><label for="bb-dos">Do</label><textarea class="input tall" id="bb-dos" value="{{ bbDos }}" onChange="{{ bbSetDos }}" placeholder="One per line"></textarea></div>
                 <div class="field"><label for="bb-donts">Don't</label><textarea class="input tall" id="bb-donts" value="{{ bbDonts }}" onChange="{{ bbSetDonts }}" placeholder="One per line"></textarea></div>
               </div>
+            </div>
+          </section>
+
+          <sc-if value="{{ bbHasLib }}">
+          <section class="bbsec" aria-labelledby="bb-lib">
+            <h2 id="bb-lib">Image library<span>{{ bbLibCount }} approved images, by kind.</span></h2>
+            <div class="bbbody">
+              <sc-for list="{{ bbLibGroups }}" as="lg2">
+                <div class="libgrp"><div class="libhead"><b>{{ lg2.name }}</b><span class="meta">{{ lg2.count }}</span></div><div class="libstrip"><sc-for list="{{ lg2.pics }}" as="pc"><span class="libpic" style="{{ pc.style }}" role="img" aria-label="{{ pc.name }}"></span></sc-for></div></div>
+              </sc-for>
+            </div>
+          </section>
+          </sc-if>
+
+          <section class="bbsec" aria-labelledby="bb-comp">
+            <h2 id="bb-comp">Compliance<span>What must be said, and who signs it off.</span></h2>
+            <div class="bbbody">
+              <div class="field"><label for="bb-appr">Approval</label><input class="input" id="bb-appr" value="{{ bbApprover }}" onChange="{{ bbSetApprover }}" placeholder="Who approves marketing material" /></div>
+              <div class="field"><label for="bb-risk">Risk wording</label><textarea class="input tall" id="bb-risk" value="{{ bbWording }}" onChange="{{ bbSetWording }}" placeholder="The approved risk warning, exactly as written."></textarea></div>
+              <div class="field"><label for="bb-soc">Short line for social posts</label><input class="input" id="bb-soc" value="{{ bbSocialLine }}" onChange="{{ bbSetSocialLine }}" placeholder="Not supplied yet" /><sc-if value="{{ bbNoSocialLine }}"><span class="meta">No short risk line has been approved for social posts. Ask compliance for the wording before publishing anything that needs one.</span></sc-if></div>
             </div>
           </section>
 
@@ -617,6 +655,7 @@
               <sc-if value="{{ a.isCard }}"><sc-if value="{{ a.hasShelf }}"><div class="shelf"><sc-for list="{{ a.shelf }}" as="sh"><img class="thumbimg" sc-camel-src="{{ sh.url }}" alt="" style="{{ sh.style }}" /></sc-for></div></sc-if><sc-if value="{{ a.noArt }}"><div class="noart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M12 9v6M9 12h6"/></svg><span>No designs yet</span></div></sc-if><sc-if value="{{ a.thumbUrl }}"><img class="thumbimg" sc-camel-src="{{ a.thumbUrl }}" alt="" style="{{ a.thumbStyle }}" onError="{{ a.thumbFailed }}" /></sc-if></sc-if>
               <sc-if value="{{ a.hasArt }}">
               <div data-canvas="{{ a.canvasFlag }}" data-design="{{ a.designId }}" style="{{ a.canvasStyle }}" onClick="{{ a.canvasClick }}">
+                <sc-if value="{{ !a.isPack }}">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex:0 0 auto">
                   <div style="min-height:1px"></div>
                   <sc-if value="{{ a.url }}">
@@ -764,6 +803,8 @@
 
                 </div>
 
+                </sc-if>
+                <hs-pack-slot></hs-pack-slot>
                 <sc-if value="{{ a.showBar }}">
                   <div style="flex:0 0 {{ a.barH }}px;display:flex;gap:{{ a.gapS }}px;margin-top:{{ a.gap }}px">
                     <div style="flex:0 0 {{ a.barLeftW }}px;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;display:flex;align-items:center;justify-content:center;padding:0 {{ a.gapS }}px">
@@ -1156,6 +1197,14 @@ class Component extends DCLogic {
     let thumbs = Store.get(THUMBS_KEY, {});
     Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || v.indexOf("data:image/") !== 0 || v.length < 1500) delete thumbs[k]; });
     if (drafts.some(d => d.thumb)) { drafts.forEach(d => { if (d.thumb) thumbs[d.id] = d.thumb; }); drafts = drafts.map(d => { const c = Object.assign({}, d); delete c.thumb; return c; }); try { Store.set(THUMBS_KEY, thumbs); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
+    if (PACK && WS_ID === PACK.id && PACK.seed && !Store.raw("hs-seed-pack")) {
+      const ex = PACK.seed({
+        project: (name, brief) => { const p = newProject(name, brief, ""); p.example = true; return p; },
+        design: (p, tpl, title, theme, copy, pics) => { const d = newDesign(tpl, (TPL[tpl].sizes || ["square"])[0], p.id); d.title = title; d.theme = theme; d.copy = Object.assign({}, d.copy, copy || {}); d.images = {}; Object.keys(pics || {}).forEach(k => { const im = libImg(pics[k]); if (im) d.images[k] = im; }); d.images = fillImages(d); return d; }
+      });
+      projects = projects.concat(ex.projects); drafts = drafts.concat(ex.drafts);
+      try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag("hs-seed-pack"); } catch (e) {}
+    }
     drafts = drafts.map(x => BRAND.themes[x.theme] ? x : Object.assign({}, x, { theme: 0 }));
     // Example content keeps itself current: fields nobody has edited move with today, the first time and then whenever they drift by four weeks.
     if (WS_ID === DEFAULT_WS) {
@@ -1216,7 +1265,7 @@ class Component extends DCLogic {
     window.addEventListener("beforeunload", this._onLeave);
     if (typeof ResizeObserver !== "undefined") { this._ro = new ResizeObserver(() => this.measure()); }
     // Inline partner logos as data URLs so the export never depends on a fetch mid-render.
-    BRAND.partners.forEach(p => {
+    BRAND.partners.concat(PACK && WS_ID === PACK.id ? (PACK.preload || []).map(src => ({ src })) : []).forEach(p => {
       fetch(p.src).then(r => r.ok ? r.text() : "").then(svg => {
         if (!svg) return;
         const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg).replace(/[()'"]/g, ch => "%" + ch.charCodeAt(0).toString(16).toUpperCase());
@@ -1553,7 +1602,7 @@ class Component extends DCLogic {
         };
       }),
       bbAddWay: () => this.editBrand(b => { const g = palHex[0] || "#141414"; const a = palHex.slice().sort((x, y) => contrast(hexToRgb(y), hexToRgb(g)) - contrast(hexToRgb(x), hexToRgb(g)))[0] || "#FFFFFF"; b.themes.push({ name: "New colourway", ground: hexToRgb(g), accent: hexToRgb(a) }); }, "Colourways"),
-      bbTemplates: TEMPLATES.map(t => { const on = BRAND.templatesOn.indexOf(t.key) >= 0; return { name: t.name, desc: t.desc, on, locked: on && BRAND.templatesOn.length <= 1, toggle: () => this.editBrand(b => { b.templatesOn = TEMPLATES.map(x => x.key).filter(k => k === t.key ? !on : b.templatesOn.indexOf(k) >= 0); }, "Templates") }; }),
+      bbTemplates: TEMPLATES.filter(t => (t.set || "core") === (BRAND.templateSet || "core")).map(t => { const on = BRAND.templatesOn.indexOf(t.key) >= 0; return { name: t.name, desc: t.desc, on, locked: on && BRAND.templatesOn.length <= 1, toggle: () => this.editBrand(b => { b.templatesOn = TEMPLATES.filter(x => (x.set || "core") === (BRAND.templateSet || "core")).map(x => x.key).filter(k => k === t.key ? !on : b.templatesOn.indexOf(k) >= 0); }, "Templates") }; }),
       bbLabels: BRAND.barLabels.map((l, i) => ({ text: l, locked: BRAND.barLabels.length <= 1, removeLabel: "Remove " + l, remove: () => this.editBrand(b => { b.barLabels.splice(i, 1); }, "Footer labels") })),
       bbNewLabel: s.bbNewLabel, bbSetNewLabel: (e) => this.setState({ bbNewLabel: e.target.value.toUpperCase() }),
       bbNewLabelKeys: (e) => { if (e.key !== "Enter") return; e.preventDefault(); const v = s.bbNewLabel.trim(); if (v && BRAND.barLabels.indexOf(v) < 0) this.editBrand(b => { b.barLabels.push(v); }, "Footer labels"); this.setState({ bbNewLabel: "" }); },
@@ -1584,12 +1633,16 @@ class Component extends DCLogic {
         const seg = (opts, cur, set, what, restyle) => opts.map(o => ({ label: o[1], on: cur === o[0], pick: () => this.editBrand(b => set(b, o[0]), what, restyle) }));
         const T = BRAND.type || {}, ST = BRAND.style || {};
         const checks = [["a name", !!BRAND.name], ["a web address", !!BRAND.url], ["a logo", !!BRAND.logo || WS_ID === DEFAULT_WS], ["an about line", !!(BRAND.about || "").trim()], ["tone of voice", !!(BRAND.voice || "").trim()], ["hashtags", !!(BRAND.hashtags || "").trim()],
-          ["do and don't rules", (BRAND.dos || []).some(x => x.trim()) && (BRAND.donts || []).some(x => x.trim())], ["imagery guidance", !!(BRAND.imagery || "").trim()], ["legible colourways", BRAND.themes.every(t => contrast(t.ground, t.accent) >= 3)], ["partner logos", BRAND.partners.length > 1]];
+          ["do and don't rules", (BRAND.dos || []).some(x => x.trim()) && (BRAND.donts || []).some(x => x.trim())], ["imagery guidance", !!(BRAND.imagery || "").trim()], ["legible colourways", BRAND.themes.every(t => contrast(t.ground, t.accent) >= 3)], ["a strapline", !!(BRAND.strategy.strapline || "").trim()], ["key messages", (BRAND.strategy.messages || []).some(x => x.trim())], ["audiences", (BRAND.strategy.audiences || []).some(x => x.trim())]];
         const missing = checks.filter(c => !c[1]).map(c => c[0]);
-        const jump = [["Essentials", "bb-ess"], ["Logo", "bb-logo"], ["Colours", "bb-col"], ["Colourways", "bb-ways"], ["Type", "bb-type"], ["Layout", "bb-lay"], ["Templates", "bb-tpl"], ["Labels", "bb-lab"], ["Partners", "bb-par"], ["Voice", "bb-voice"], ["Team", "bb-team"]];
+        const core = (BRAND.templateSet || "core") === "core", marks = BRAND.marks || [], F = BRAND.fonts || {};
+        const jump = [["Essentials", "bb-ess"], ["Strategy", "bb-strat"], ["Logo", "bb-logo"], ["Colours", "bb-col"], ["Colourways", "bb-ways"], ["Type", "bb-type"], [core ? "Layout" : "Imagery", "bb-lay"], ["Templates", "bb-tpl"], core && ["Labels", "bb-lab"], core && ["Partners", "bb-par"], ["Voice", "bb-voice"], BRAND.library.length && ["Images", "bb-lib"], ["Compliance", "bb-comp"], ["Team", "bb-team"]].filter(Boolean);
         const prevTpl = BRAND.templatesOn.indexOf(s.bbPrevTpl) >= 0 ? s.bbPrevTpl : BRAND.templatesOn[0];
         return {
           bbScore: (checks.length - missing.length) + " of " + checks.length + " defined", bbMissing: missing.join(", "),
+          bbCore: core, bbHasLib: BRAND.library.length > 0, bbHasMarks: marks.length > 0, bbMarks: marks.map(m => ({ name: m.name, use: m.use || "", src: m.src, box: { background: m.ground || "#FFFFFF" } })),
+          bbLogoNote: core ? "How it sits on every artwork." : "The approved versions, and where each belongs.",
+          bbFontMain: F.display || "PP Neue Montreal", bbFontAccent: F.accent || "", bbHasAccentFont: !!F.accent && F.accent !== "None",
           bbJump: jump.map(j => ({ label: j[0], go: () => { const el = document.getElementById(j[1]); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); } })),
           bbLogoSizes: seg([["s", "Small"], ["m", "Medium"], ["l", "Large"]], BRAND.logoSize || "m", (b, v) => { b.logoSize = v; }, "Logo", true),
           bbWeights: seg([[400, "Regular"], [500, "Medium"], [600, "Semi-bold"]], T.headWeight || 600, (b, v) => { b.type = Object.assign({}, b.type, { headWeight: v }); }, "Typography", true),
@@ -1597,8 +1650,19 @@ class Component extends DCLogic {
           bbCorners: seg([[0, "Square"], [18, "Soft"], [44, "Round"]], ST.radius || 0, (b, v) => { b.style = Object.assign({}, b.style, { radius: v }); }, "Layout", true),
           bbPhotos: seg([["colour", "Colour"], ["mono", "Black and white"]], ST.photo || "colour", (b, v) => { b.style = Object.assign({}, b.style, { photo: v }); }, "Layout", true),
           bbSpecStyle: { fontWeight: T.headWeight || 600 },
+          bbStrap: BRAND.strategy.strapline || "", bbPositioning: BRAND.strategy.positioning || "", bbMessages: (BRAND.strategy.messages || []).join("\n"), bbAudiences: (BRAND.strategy.audiences || []).join("\n"),
+          bbSetStrap: (e) => { const v = e.target.value; this.editBrand(b => { b.strategy = Object.assign({}, b.strategy, { strapline: v }); }, "Strategy"); },
+          bbSetPositioning: (e) => { const v = e.target.value; this.editBrand(b => { b.strategy = Object.assign({}, b.strategy, { positioning: v }); }, "Strategy"); },
+          bbSetMessages: (e) => { const v = e.target.value.split("\n"); this.editBrand(b => { b.strategy = Object.assign({}, b.strategy, { messages: v }); }, "Strategy"); },
+          bbSetAudiences: (e) => { const v = e.target.value.split("\n"); this.editBrand(b => { b.strategy = Object.assign({}, b.strategy, { audiences: v }); }, "Strategy"); },
+          bbApprover: BRAND.compliance.approver || "", bbWording: BRAND.compliance.wording || "", bbSocialLine: BRAND.compliance.social || "",
+          bbSetApprover: (e) => { const v = e.target.value; this.editBrand(b => { b.compliance = Object.assign({}, b.compliance, { approver: v }); }, "Compliance"); },
+          bbSetWording: (e) => { const v = e.target.value; this.editBrand(b => { b.compliance = Object.assign({}, b.compliance, { wording: v }); }, "Compliance"); },
+          bbSetSocialLine: (e) => { const v = e.target.value; this.editBrand(b => { b.compliance = Object.assign({}, b.compliance, { social: v }); }, "Compliance"); },
+          bbNoSocialLine: !(BRAND.compliance.social || "").trim(), bbHasPartners: (BRAND.templateSet || "core") === "core",
+          bbLibGroups: Array.from(new Set(BRAND.library.map(im => im.group))).map(g => ({ name: g, count: BRAND.library.filter(im => im.group === g).length, pics: BRAND.library.filter(im => im.group === g).slice(0, 6).map(im => ({ style: { backgroundImage: "url(\"" + im.src + "\")" }, name: im.name })) })), bbLibCount: BRAND.library.length,
           bbImagery: BRAND.imagery || "", bbSetImagery: (e) => { const v = e.target.value; this.editBrand(b => { b.imagery = v; }, "Layout"); },
-          bbPrevTabs: TEMPLATES.filter(t => BRAND.templatesOn.indexOf(t.key) >= 0).map(t => ({ label: { speaker: "Speaker", event: "Event", listing: "Line-up", trio: "Sessions", partners: "Partners", lockup: "Logo" }[t.key], on: prevTpl === t.key, pick: () => this.setState({ bbPrevTpl: t.key }) }))
+          bbPrevTabs: TEMPLATES.filter(t => BRAND.templatesOn.indexOf(t.key) >= 0).map(t => ({ label: t.short || { speaker: "Speaker", event: "Event", listing: "Line-up", trio: "Sessions", partners: "Partners", lockup: "Logo" }[t.key] || t.name, on: prevTpl === t.key, pick: () => this.setState({ bbPrevTpl: t.key }) }))
         };
       })()
     };
@@ -1656,7 +1720,9 @@ class Component extends DCLogic {
   closeMake = () => { this.setState({ makeOpen: false }); const r = this._makeReturn; if (r && r.focus && document.body.contains(r)) r.focus(); };
   makeSend = (given) => {
     const text = String(given != null ? given : this.state.makeText).trim(); if (!text) return;
-    const r = readBrief(text), last = this._makeLast;
+    let r = readBrief(text); const last = this._makeLast;
+    const adjusting = !r.tpl && last && this.state.drafts.some(x => x.familyId === last) && (r.sizes.length || r.theme != null || r.nextTheme || r.remove || r.copy.date || r.copy.startTime || r.copy.venue);
+    if (PACK && WS_ID === PACK.id && PACK.fromBrief && !adjusting) r = PACK.fromBrief(r, text);
     const follow = !r.tpl && last && this.state.drafts.some(x => x.familyId === last) && (r.sizes.length || r.theme != null || r.nextTheme || r.remove || r.copy.date || r.copy.startTime || r.copy.venue);
     const reply = follow ? this.makeAdjust(r, last) : this.makeCreate(r, text);
     this.setState(st => ({ chat: st.chat.concat([{ who: "me", text }, reply]), makeText: "", makeOpen: true }), () => requestAnimationFrame(() => { const sc = document.querySelector(".makeover"); if (sc) sc.scrollTo({ top: sc.scrollHeight, behavior: "smooth" }); const el = document.getElementById("mk-input"); if (el) el.focus({ preventScroll: true }); }));
@@ -1675,16 +1741,18 @@ class Component extends DCLogic {
       // A named person only ever gets their own portrait. With none on file the frame is left empty rather than showing someone else.
       if (tpl === "speaker") { const pid = portraitMatch(d.copy.name); if (pid) d.images["speaker-photo"] = libImg(pid); else noFace = d.copy.name; }
       else d.images = fillImages(d);
+      if (packTpl(tpl) && d.copy.person && !d.images.portrait) noFace = d.copy.person;
       return d;
     });
     const drafts = made.concat(this.state.drafts);
     try { this.persistDrafts(drafts); } catch (e) {}
     this.setState({ drafts }); this._makeLast = fam;
-    const what = { speaker: "a speaker card", event: "an event announcement", listing: "a line-up", trio: "a sessions card", partners: "a partner wall", lockup: "a brand announcement" }[tpl];
+    const what = TPL[tpl].what || { speaker: "a speaker card", event: "an event announcement", listing: "a line-up", trio: "a sessions card", partners: "a partner wall", lockup: "a brand announcement" }[tpl];
+    const oneSize = (TPL[tpl].sizes || []).length === 1; // nothing to resize into, so those suggestions are not offered
     const missing = [];
     if (tpl === "speaker" || tpl === "event") { if (!r.copy.date) missing.push("a date"); if (!r.copy.venue) missing.push("a venue"); }
     const gaps = missing.length ? " You didn't give " + missing.join(" or ") + ", so " + (missing.length > 1 ? "those are" : "that is") + " a placeholder." : "";
-    return { who: "hs", text: "Here's " + what + (r.said.length ? ": " + r.said.join(" · ") : "") + "." + note + gaps + (noFace ? " There's no portrait of " + noFace + " in the library yet, so open it to add one." : ""), fam, chips: ["Also as a story", "All sizes", "Another colourway", "Open in the editor"] };
+    return { who: "hs", text: "Here's " + what + (r.said.length ? ": " + r.said.join(" · ") : "") + "." + note + gaps + (noFace ? " There's no portrait of " + noFace + " in the library yet, so open it to add one." : ""), fam, chips: oneSize ? ["Another colourway", "Open in the editor"] : ["Also as a story", "All sizes", "Another colourway", "Open in the editor"] };
   }
   makeAdjust(r, fam) {
     let drafts = this.state.drafts, thumbs = Object.assign({}, this.state.thumbs); const done = [];
@@ -1957,8 +2025,9 @@ class Component extends DCLogic {
   }
   openProject(id) { this.setState({ view: "project", projectId: id, reviewOpen: false, menuId: null }); }
   goProject = () => this.setState({ view: this.state.projectId ? "project" : "projects", reviewOpen: false });
-  goTemplates = () => { this.openDesign(newDesign("speaker", "square", this.state.projectId || null), true); };
-  newArtwork = () => { this.setState({ projectId: null }); this.openDesign(newDesign("speaker", "square", null), true); };
+  firstTpl() { return BRAND.templatesOn.indexOf("speaker") >= 0 ? "speaker" : BRAND.templatesOn[0]; }
+  goTemplates = () => { this.openDesign(newDesign(this.firstTpl(), "square", this.state.projectId || null), true); };
+  newArtwork = () => { this.setState({ projectId: null }); this.openDesign(newDesign(this.firstTpl(), "square", null), true); };
   assignProject(pid) {
     const d = this.state.design; if (!d) return;
     const ids = [d.id].concat(this.siblings(d).map(x => x.id));
@@ -1976,6 +2045,8 @@ class Component extends DCLogic {
     const oldName = TPL[d.tpl].name;
     const title = d.title.indexOf(oldName) === 0 ? TPL[key].name + d.title.slice(oldName.length) : d.title;
     const patch = { tpl: key, title };
+    if (TPL[key].sizes && TPL[key].sizes.indexOf(d.size) < 0) patch.size = TPL[key].sizes[0]; else if (!TPL[key].sizes && !SIZES[d.size].ratio) patch.size = "square";
+    if (!TPL[key].sizes && SIZE_ORDER.indexOf(d.size) < 0) patch.size = "square";
     if (key === "trio" && !d.copy.sessionTitle) patch.copy = Object.assign({}, d.copy, { sessionPrefix: EXAMPLE_COPY.sessionPrefix, sessionTitle: EXAMPLE_COPY.sessionTitle });
     patch.images = fillImages(Object.assign({}, d, patch)); // new template, new image areas: start them filled too
     this.commit(patch);
@@ -2291,7 +2362,7 @@ class Component extends DCLogic {
     const bodyLen = (c.body || "").length, bodyK = bodyLen <= 120 ? 1 : bodyLen <= 170 ? 0.86 : bodyLen <= 230 ? 0.74 : 0.64; // long intros step down a size instead of pushing the date off
     const textAvail = (wide ? (S.w - 2 * S.pad - gap) / 2 : S.w - 2 * S.pad) - 2 * panelPad; // inner width of the text panel
     const thumb = live ? "" : (this.state.thumbs[d.id] || "");
-    return Object.assign({
+    const out = Object.assign({
       hasArt: live || !thumb, thumbUrl: thumb, noArt: false, designId: d.id,
       thumbStyle: { position: "absolute", left: offX, top: offY, width: Math.round(S.w * cover), height: Math.round(S.h * cover), display: "block" },
       hasShelf: false, shelf: [], hasMenu: false, menuItems: [], menuOpen: false, menuToggle: null, menuLabel: "",
@@ -2341,6 +2412,12 @@ class Component extends DCLogic {
       fsDocEyebrow: r(24), fsDocTitle: r(fitSize(headline, 94, 0.55)), fsDocIntro: r(26), fsDocDate: r(26),
       fsRowName: lName, fsRowMeta: lMeta
     }, extra || {});
+    if (packTpl(d.tpl) && PACK.vals) {
+      const pv = PACK.vals(d, { S, r, th, img, mask, live, tw: (str, px, w, tr) => this.textW(str, px, w, tr) }), patch = pv.canvasPatch || {}; delete pv.canvasPatch;
+      Object.assign(out, pv, { isPack: true });
+      out.canvasStyle = Object.assign({}, out.canvasStyle, patch, { position: out.canvasStyle.position || "relative" });
+    }
+    return out;
   }
 
   /* Text width in px, measured on a canvas so labels can be sized to the space they have. */
@@ -2366,7 +2443,7 @@ class Component extends DCLogic {
 
   exampleDesign(tpl) {
     const d = newDesign(tpl, "square", null);
-    if (!LIB.u1) return d; // a client with no imagery yet: image areas stay empty
+    if (packTpl(tpl) || !LIB.u1) return d; // a pack fills its own; a client with no imagery yet keeps its image areas empty
     if (tpl === "speaker") d.images["speaker-photo"] = libImg("tk-jake-schofield");
     if (tpl === "event") d.images["event-image"] = { src: LIB.u1.src, name: LIB.u1.name, x: 50, y: 50, zoom: 1 };
     if (tpl === "trio") { d.images["trio-1"] = libImg("tk-nic-rose"); d.images["trio-2"] = libImg("tk-niraj-singh"); d.images["trio-3"] = libImg("tk-lisa-mccabe"); }
@@ -2716,7 +2793,7 @@ class Component extends DCLogic {
       toggleBar: () => this.toggleFlag("showBar"), togglePowered: () => this.toggleFlag("showPowered"), toggleHero: () => this.toggleFlag("showHero"), togglePortraits: () => this.toggleFlag("showPortraits"),
       openSizeDialog: this.openSizeDialog, closeSizeDialog: this.closeSizeDialog, sizeDialogOpen: s.sizeDialogOpen, applySize: this.applySize, pendingSizeLabel: SIZES[s.pendingSize].label,
       sizeStrip: [d].concat(this.siblings(d)).sort((a, b) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)).map(x => { const Z = SIZES[x.size]; const rr = Z.w / Z.h; return { label: Z.label, ratio: Z.ratio, dims: Z.dims, on: x.id === d.id, open: () => { if (x.id !== d.id) this.switchSize(x.id); }, glyph: { width: rr >= 1 ? 16 : Math.round(16 * rr), height: rr >= 1 ? Math.round(16 / rr) : 16 } }; }),
-      hasSiblings: this.siblings(d).length > 0, canAddSize: [d.size].concat(this.siblings(d).map(x => x.size)).length < SIZE_ORDER.length,
+      hasSiblings: this.siblings(d).length > 0, canAddSize: !TPL[d.tpl].sizes && [d.size].concat(this.siblings(d).map(x => x.size)).length < SIZE_ORDER.length,
       syncSizes: s.syncSizes, toggleSync: () => this.setState(st => ({ syncSizes: !st.syncSizes })),
       addSizeTiles: SIZE_ORDER.map(k => { const Z = SIZES[k]; const rr = Z.w / Z.h; const bw = rr >= 1 ? 48 : Math.round(48 * rr), bh = rr >= 1 ? Math.round(48 / rr) : 48; const added = [d.size].concat(this.siblings(d).map(x => x.size)).indexOf(k) >= 0; return { label: Z.label, ratio: Z.ratio, dims: Z.dims, added, on: !added && s.pendingSize === k, tab: s.pendingSize === k ? 0 : -1, pick: () => { if (!added) this.setState({ pendingSize: k }); }, ratioStyle: { width: bw, height: bh } }; }),
       addSizeKeys: (e) => { const free = SIZE_ORDER.filter(k => [d.size].concat(this.siblings(d).map(x => x.size)).indexOf(k) < 0); this.radioKeys(e, free, s.pendingSize, (k) => this.setState({ pendingSize: k })); },

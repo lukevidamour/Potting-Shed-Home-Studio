@@ -1354,3 +1354,21 @@ select.input[data-open]{border-color:var(--hs-ink)}
 .link{min-height:24px;display:inline-flex;align-items:center}
 .slot-card .acts .link{min-height:28px}
 .synccheck input,.check input{width:24px;height:24px}
+
+/* ---------- brand book: image library ---------- */
+.libgrp{display:flex;flex-direction:column;gap:8px}
+.libhead{display:flex;align-items:baseline;gap:10px}
+.libhead b{font-size:14px;line-height:20px;font-weight:500}
+.libstrip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.libpic{aspect-ratio:1;border-radius:3px;background:var(--hs-stage) center/cover no-repeat;outline:1px solid rgba(0,0,0,.08);outline-offset:-1px}
+@media (max-width:640px){.libstrip{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Brand book: the approved logo versions, each on the ground it is meant for. */
+.marks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.markt{margin:0;display:flex;flex-direction:column;gap:10px}
+.markbox{display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;padding:14% 18%;border-radius:3px;outline:1px solid rgba(0,0,0,.08);outline-offset:-1px}
+.markbox img{display:block;width:100%;height:100%;object-fit:contain}
+.markt figcaption{display:flex;flex-direction:column;gap:2px}
+.markt b{font-size:14px;line-height:20px;font-weight:500}
+[data-theme="dark"] .markbox{outline-color:rgba(255,255,255,.1)}
+@media (max-width:640px){.marks{grid-template-columns:repeat(2,minmax(0,1fr))}}

@@ -38,6 +38,8 @@ const BRAND = {
   style: { line: 2, radius: 0, photo: "colour" },  // keyline weight in px (0 = none) · image corner radius · "colour" or "mono"
   logoSize: "m",                                   // how large the logo sits in the footer: s · m · l
   imagery: "Mono cut-out portraits on a brand colour. Wide, well-lit room shots for events. No stock photography.",
+  strategy: { strapline: "", positioning: "", messages: ["The innovation community for the Crown Dependencies", "Founders, investors, operators and policymakers in one room", "Talks, socials and an annual summit"], audiences: ["Founders and operators", "Investors", "Policymakers", "Partners and sponsors"] },
+  compliance: { approver: "", wording: "", social: "" },
   templatesOn: ["speaker", "event", "listing", "trio", "partners", "lockup"],
   team: [
     { name: "Luke Vidamour", role: "Partner, Potting Shed", src: "assets/team/luke-vidamour.jpg" },
@@ -209,13 +211,17 @@ const EVENT_IDS = ["tk-event-03", "tk-event-10", "tk-event-01", "tk-event-02", "
 function hashStr(str) { let h = 0; for (let i = 0; i < String(str).length; i++) h = (h * 31 + String(str).charCodeAt(i)) >>> 0; return h; }
 function libImg(id, x, y) { const im = LIB[id]; if (!im) return null; const f = focusOf(im, x, y); const rec = { src: im.src, name: im.name, x: f.x, y: f.y, zoom: 1 }; if (im.cut) rec.cut = true; if (im.w) { rec.w = im.w; rec.h = im.h; } return rec; }
 /* The library portrait that belongs to a name, if there is one. Titles are ignored, so "Dr Niraj Singh" finds Niraj Singh. */
-function portraitMatch(name) { const s = slug(String(name || "").replace(/^(dr|prof|professor|sir|dame|mr|mrs|ms)\.?\s+/i, "")); return s ? (PORTRAIT_IDS.find(id => id === "tk-" + s || id === "ps-" + s) || null) : null; }
+function portraitMatch(name) {
+  const s = slug(String(name || "").replace(/^(dr|prof|professor|sir|dame|mr|mrs|ms)\.?\s+/i, "")); if (!s) return null;
+  return PORTRAIT_IDS.find(id => id === "tk-" + s || id === "staff-" + s) || PORTRAIT_IDS.find(id => LIB[id] && LIB[id].person && slug(LIB[id].person) === s) || null;
+}
 function portraitFor(name, seed) { return libImg(portraitMatch(name) || PORTRAIT_IDS[hashStr(seed) % PORTRAIT_IDS.length], 50, 28); }
 function eventImageFor(seed) { return libImg(EVENT_IDS[hashStr(seed) % EVENT_IDS.length], 50, 50); }
 /* Fill any empty image area on a design. Returns a new images map (or the same one if nothing was missing). */
 function fillImages(d) {
   const images = Object.assign({}, d.images || {}); let changed = false;
   const put = (slot, im) => { if (!images[slot] && im) { images[slot] = im; changed = true; } };
+  if (packTpl(d.tpl) && PACK.fill) { PACK.fill(d, put, libImg, portraitMatch); return changed ? images : (d.images || {}); }
   if (d.tpl === "speaker") put("speaker-photo", portraitFor(d.copy && d.copy.name, d.id));
   if (d.tpl === "event") put("event-image", eventImageFor(d.id));
   if (d.tpl === "trio") (d.trio || []).forEach((t, i) => put("trio-" + (i + 1), portraitFor(t.name, d.id + i)));
@@ -508,10 +514,11 @@ function fitSize(str, base, minRatio) {
   return Math.round(base * Math.max(r, minRatio));
 }
 function newDesign(tpl, size, projectId) {
+  if (TPL[tpl] && TPL[tpl].sizes && TPL[tpl].sizes.indexOf(size) < 0) size = TPL[tpl].sizes[0]; // a template that comes in fixed sizes
   const d = {
     id: uid("d"), tpl, size, theme: 0, title: TPL[tpl].name, projectId: projectId || null, familyId: uid("f"), scheduledAt: "", thumb: "",
     platforms: (DEFAULT_PLATFORMS[size] || ["linkedin"]).slice(), caption: { mode: "auto", variant: 0, text: {} },
-    copy: Object.assign({}, EXAMPLE_COPY),
+    copy: Object.assign({}, EXAMPLE_COPY, packTpl(tpl) && PACK.examples ? PACK.examples[tpl] : null),
     speakers: EXAMPLE_SPEAKERS.map(s => Object.assign({}, s)),
     trio: EXAMPLE_TRIO.map(t => Object.assign({}, t)),
     images: {}, partnersOn: BRAND.partners.map(p => p.key),
@@ -522,6 +529,7 @@ function newDesign(tpl, size, projectId) {
   return d;
 }
 function slotsFor(d) {
+  if (packTpl(d.tpl) && PACK.slots) { const ps = PACK.slots(d); if (ps) return ps; }
   if (d.tpl === "speaker") return [{ id: "speaker-photo", label: "Speaker portrait" }];
   if (d.tpl === "event")   return [{ id: "event-image", label: "Event image" }];
   if (d.tpl === "trio")    return d.trio.map((t, i) => ({ id: "trio-" + (i + 1), label: t.name || "Session " + (i + 1) }));
@@ -594,7 +602,7 @@ const Store = {
    A client is a workspace: its own brand book, projects, designs and uploads. The brand book is the single
    source every template reads from (BRAND), so editing it re-skins the artwork. Switching client reloads the page. */
 const WS_KEY = "hs-workspaces-v1", WS_CUR = "hs-ws-current", BRAND_KEY = "hs-brand-v1", DEFAULT_WS = "tekex";
-const BRAND_EDITABLE = ["powered", "speakerKicker", "type", "style", "logoSize", "imagery", "name", "url", "logo", "about", "voice", "dos", "donts", "hashtags", "palette", "themes", "barLabels", "partners", "templatesOn", "team", "log", "updatedAt", "updatedBy"];
+const BRAND_EDITABLE = ["powered", "speakerKicker", "type", "style", "logoSize", "imagery", "strategy", "compliance", "templateSet", "name", "url", "logo", "about", "voice", "dos", "donts", "hashtags", "palette", "themes", "barLabels", "partners", "templatesOn", "team", "log", "updatedAt", "updatedBy"];
 const BRAND_DEFAULT = JSON.parse(JSON.stringify(BRAND));
 function hexToRgb(hex) { const m = String(hex || "").trim().replace(/^#/, ""); const f = m.length === 3 ? m.split("").map(ch => ch + ch).join("") : m; const n = parseInt(f, 16); return /^[0-9a-fA-F]{6}$/.test(f) ? "rgb(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + ")" : "rgb(0,0,0)"; }
 function rgbToHex(rgb) { return "#" + parseRgb(rgb).map(v => v.toString(16).padStart(2, "0")).join("").toUpperCase(); }
@@ -613,13 +621,23 @@ function blankBrand(name, primary, secondary, url) {
     themes: [way("Primary", p, best(p)), way("Secondary", q, best(q)), way("Ink", ink, [p, q, paper].sort((a, b) => contrast(hexToRgb(b), hexToRgb(ink)) - contrast(hexToRgb(a), hexToRgb(ink)))[0])],
     barLabels: ["EVENT", "SPEAKERS", "PARTNERS", "NEWS"], partners: [{ key: "ps", name: "Potting Shed", src: "assets/ps-logo.svg" }], library: [],
     fonts: { display: "PP Neue Montreal", accent: "Quarto Italic" }, templatesOn: ["speaker", "event", "listing", "trio", "partners", "lockup"],
-    type: { headWeight: 500 }, style: { line: 2, radius: 0, photo: "colour" }, logoSize: "m", imagery: "",
+    type: { headWeight: 500 }, style: { line: 2, radius: 0, photo: "colour" }, logoSize: "m", imagery: "", strategy: { strapline: "", positioning: "", messages: [], audiences: [] }, compliance: { approver: "", wording: "", social: "" },
     team: JSON.parse(JSON.stringify(BRAND_DEFAULT.team)), log: [], studioEmail: BRAND_DEFAULT.studioEmail
   };
 }
 
 /* Built-in clients other than the first are described by presets: a function that returns a whole brand book. */
 const PRESETS = {};
+/* A client pack is a folder that holds one client's brand book, templates and imagery (see assets/<client>/pack.js).
+   The app loads it only when it is present, so a client's material can live outside this repository. */
+const PACK = (typeof window !== "undefined" && window.HS_PACK) || null;
+if (PACK) {
+  PRESETS[PACK.preset] = PACK.brand;
+  Object.assign(SIZES, PACK.sizes || {});
+  (PACK.templates || []).forEach(t => { if (!TPL[t.key]) { TEMPLATES.push(t); TPL[t.key] = t; } });
+  Object.assign(FIELDS, PACK.fields || {});
+}
+const packTpl = (key) => !!(PACK && TPL[key] && TPL[key].set === PACK.set);
 const RETIRED_WS = ["potting-shed"]; // clients that have been removed: dropped from the list, and their saved work cleared
 function wsList() { let l = null; try { l = JSON.parse(localStorage.getItem(WS_KEY) || "null"); } catch (e) {} const rest = (l || []).filter(w => w && w.id && w.id !== DEFAULT_WS); return [{ id: DEFAULT_WS, name: (wsBrandName(DEFAULT_WS) || BRAND_DEFAULT.name) }].concat(rest); }
 function wsBrandName(id) { try { const b = JSON.parse(localStorage.getItem((id === DEFAULT_WS ? "" : "hs-ws-" + id + ":") + BRAND_KEY) || "null"); return b && b.name; } catch (e) { return ""; } }
@@ -635,10 +653,17 @@ function applyBrand(saved) {
   if (!BRAND.type) BRAND.type = { headWeight: 600 };
   if (!BRAND.style) BRAND.style = { line: 2, radius: 0, photo: "colour" };
   if (!BRAND.logoSize) BRAND.logoSize = "m";
+  BRAND.strategy = Object.assign({ strapline: "", positioning: "", messages: [], audiences: [] }, BRAND.strategy || {});
+  BRAND.compliance = Object.assign({ approver: "", wording: "", social: "" }, BRAND.compliance || {});
+  // only templates that exist for this client can be switched on
+  BRAND.templatesOn = (BRAND.templatesOn || []).filter(k => TPL[k] && (TPL[k].set || "core") === (BRAND.templateSet || "core"));
+  if (!BRAND.templatesOn.length) BRAND.templatesOn = TEMPLATES.filter(t => (t.set || "core") === (BRAND.templateSet || "core")).map(t => t.key);
   BRAND.workspace = BRAND.name;
   return BRAND;
 }
 try {
+  // A pack's client joins the list the first time the pack is seen.
+  if (PACK && !localStorage.getItem("hs-pack-" + PACK.id)) { const l0 = JSON.parse(localStorage.getItem(WS_KEY) || "[]"); if (!l0.some(w => w.id === PACK.id)) l0.unshift({ id: PACK.id, name: PACK.name, preset: PACK.preset, primary: PACK.primary, createdAt: Date.now() }); localStorage.setItem(WS_KEY, JSON.stringify(l0)); localStorage.setItem("hs-pack-" + PACK.id, "1"); }
   const l = JSON.parse(localStorage.getItem(WS_KEY) || "[]");
   if (l.some(w => RETIRED_WS.indexOf(w.id) >= 0)) {
     localStorage.setItem(WS_KEY, JSON.stringify(l.filter(w => RETIRED_WS.indexOf(w.id) < 0)));
@@ -655,9 +680,10 @@ if (WS_ID !== DEFAULT_WS) {
   Object.assign(BRAND, PRESETS[meta.preset] ? PRESETS[meta.preset]() : blankBrand(meta.name || "New client", meta.primary, meta.secondary, meta.url));
   Object.keys(LIB).forEach(k => delete LIB[k]);
   PORTRAIT_IDS.length = 0; EVENT_IDS.length = 0;
-  (BRAND.library || []).forEach(im => { LIB[im.id] = im; if (im.group === "Team") PORTRAIT_IDS.push(im.id); else EVENT_IDS.push(im.id); });
+  (BRAND.library || []).forEach(im => { LIB[im.id] = im; if (im.group === "Team" || im.group === "Staff") PORTRAIT_IDS.push(im.id); else EVENT_IDS.push(im.id); });
   LIB_GROUPS.length = 0; Array.from(new Set((BRAND.library || []).map(im => im.group))).forEach(g => LIB_GROUPS.push(g));
   Object.assign(EXAMPLE_COPY, { eventNumber: "", name: "Speaker name", role: "Job title,", company: "Company", headline: "Your headline", body: "One or two sentences about what is happening and why it matters.", eyebrow: BRAND.name + " · Line-up", sessionPrefix: "11.00am · Talks", sessionTitle: "Session title", startTime: "2pm", endTime: "5pm", venue: "Venue name", barLabel: (BRAND.barLabels || ["EVENT"])[0], url: BRAND.url });
+  if (PACK && meta.preset === PACK.preset && PACK.exampleCopy) Object.assign(EXAMPLE_COPY, PACK.exampleCopy);
 }
 applyBrand(Store.get(BRAND_KEY, null));
 const THUMBS_KEY = "hs-thumbs-v1";
@@ -745,4 +771,4 @@ function ensureGsap() {
 }
 
 /* expose for tests (node) */
-if (typeof module !== 'undefined') module.exports = { portraitMatch, readBrief, PRESETS, imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
+if (typeof module !== 'undefined') module.exports = { portraitMatch, readBrief, PRESETS, PACK, packTpl, imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
