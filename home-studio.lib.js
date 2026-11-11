@@ -208,7 +208,9 @@ const PORTRAIT_IDS = ["tk-nic-rose", "tk-niraj-singh", "tk-lisa-mccabe", "tk-and
 const EVENT_IDS = ["tk-event-03", "tk-event-10", "tk-event-01", "tk-event-02", "tk-event-06", "tk-event-04", "tk-event-07", "tk-event-09", "tk-event-05", "tk-iom-02", "tk-iom-07", "tk-iom-06", "tk-iom-09", "tk-event-extra-01", "tk-event-12", "tk-event-14"];
 function hashStr(str) { let h = 0; for (let i = 0; i < String(str).length; i++) h = (h * 31 + String(str).charCodeAt(i)) >>> 0; return h; }
 function libImg(id, x, y) { const im = LIB[id]; if (!im) return null; const f = focusOf(im, x, y); const rec = { src: im.src, name: im.name, x: f.x, y: f.y, zoom: 1 }; if (im.cut) rec.cut = true; if (im.w) { rec.w = im.w; rec.h = im.h; } return rec; }
-function portraitFor(name, seed) { const s = slug(name || ""); const direct = PORTRAIT_IDS.find(id => id === "tk-" + s); return libImg(direct || PORTRAIT_IDS[hashStr(seed) % PORTRAIT_IDS.length], 50, 28); }
+/* The library portrait that belongs to a name, if there is one. Titles are ignored, so "Dr Niraj Singh" finds Niraj Singh. */
+function portraitMatch(name) { const s = slug(String(name || "").replace(/^(dr|prof|professor|sir|dame|mr|mrs|ms)\.?\s+/i, "")); return s ? (PORTRAIT_IDS.find(id => id === "tk-" + s || id === "ps-" + s) || null) : null; }
+function portraitFor(name, seed) { return libImg(portraitMatch(name) || PORTRAIT_IDS[hashStr(seed) % PORTRAIT_IDS.length], 50, 28); }
 function eventImageFor(seed) { return libImg(EVENT_IDS[hashStr(seed) % EVENT_IDS.length], 50, 50); }
 /* Fill any empty image area on a design. Returns a new images map (or the same one if nothing was missing). */
 function fillImages(d) {
@@ -730,6 +732,71 @@ function ensureShot() {
   return __shotP;
 }
 
+/* ---------- make by describing ----------
+   Reads a plain-English brief and works out what to make. Rule-based: no model and no network, so it is instant and
+   private, and it only claims what it can actually read: who, what, when, where, which sizes and which colourway. */
+const MK_MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+const MK_ROLE = "(?:Managing |Creative |Senior |Executive |Studio |Account |Project |Co-)?(?:Partner|Founder|founder|CEO|CTO|COO|CFO|Director|Manager|Designer|Developer|Chair|Lead|President|Officer|Investor|Author|Head of [A-Z][a-z]+)";
+function readBrief(text, now) {
+  const raw = String(text || "").replace(/\s+/g, " ").trim(), low = " " + raw.toLowerCase() + " ";
+  const out = { tpl: null, copy: {}, sizes: [], theme: null, nextTheme: false, remove: false, speakers: [], title: "", said: [] };
+  if (!raw) return out;
+  // sizes
+  if (/\ball (the )?sizes\b|every size/.test(low)) out.sizes = SIZE_ORDER.slice();
+  else [["square", /\bsquare\b|1:1/], ["portrait", /\bportrait\b|4:5/], ["story", /\bstor(y|ies)\b|9:16/], ["landscape", /\blandscape\b|16:9/], ["linkedin", /\blinkedin\b/]].forEach(([k, re]) => { if (re.test(low)) out.sizes.push(k); });
+  // colourway: a full name ("lime & violet") or its first word ("in pink")
+  BRAND.themes.forEach((th, i) => { const n = th.name.toLowerCase(); if (out.theme == null && low.indexOf(" " + n + " ") >= 0 || out.theme == null && low.indexOf(" " + n.replace(/ & /g, " and ") + " ") >= 0) out.theme = i; });
+  if (out.theme == null) { const m = low.match(/\b(?:in|use|try|make it) (?:the )?([a-z]+)\b/g) || []; m.forEach(x => { const w = x.split(" ").pop(); const i = BRAND.themes.findIndex(th => th.name.toLowerCase().split(/[ &]+/)[0] === w); if (i >= 0 && out.theme == null) out.theme = i; }); }
+  out.nextTheme = /another colou?r|different colou?r|other colou?r|change (the )?colou?r/.test(low);
+  out.remove = /^(undo|delete( that| it)?|remove( that| it)?|scrap( that| it)?)\.?$/i.test(raw);
+  // when
+  const dm = raw.match(/\b(?:(?:mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun)[a-z]*,? )?(\d{1,2})(?:st|nd|rd|th)? (?:of )?(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b/i);
+  if (dm) {
+    const t = new Date(now || Date.now()), mi = MK_MONTHS.indexOf(dm[2].toLowerCase().slice(0, 3));
+    let d = new Date(t.getFullYear(), mi, +dm[1]); if (d < new Date(t.getFullYear(), t.getMonth(), t.getDate() - 30)) d = new Date(t.getFullYear() + 1, mi, +dm[1]);
+    out.copy.date = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()] + " " + d.getDate() + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][mi];
+    out.said.push(out.copy.date);
+  }
+  const tm = raw.match(/\b(\d{1,2}(?:[:.]\d{2})?) ?(am|pm)(?: ?(?:-|–|to|until|til) ?(\d{1,2}(?:[:.]\d{2})?) ?(am|pm))?/i);
+  if (tm) { out.copy.startTime = tm[1] + tm[2].toLowerCase(); out.copy.endTime = tm[3] ? tm[3] + tm[4].toLowerCase() : ""; out.said.push(out.copy.startTime + (out.copy.endTime ? " – " + out.copy.endTime : "")); }
+  // who: a role and a company, then people
+  const rc = raw.match(new RegExp("(" + MK_ROLE + ")(?:,| at| of| from)? ([A-Z][A-Za-z0-9&'.-]*(?: [A-Z][A-Za-z0-9&'.-]*){0,3})"));
+  const company = rc ? rc[2] : "";
+  const names = []; const nre = /\b((?:Dr|Prof|Sir|Dame)\.? )?([A-Z][a-z'’-]+(?: (?:de |le |van |von )?[A-Z][a-z'’-]+){1,2})\b/g; let nm;
+  while ((nm = nre.exec(raw))) names.push({ name: (nm[1] || "") + nm[2], at: nm.index });
+  // where: the last "at / in / @ Place" that is not the company and not a date
+  let venue = ""; const vre = /(?:\bat|\bin|@) (?:the )?([A-Z][A-Za-z0-9'&/.-]*(?:,? (?:[A-Z0-9][A-Za-z0-9'&/.-]*|St|of|the))*)/g; let vm;
+  while ((vm = vre.exec(raw))) { const v = vm[1].replace(/[,. ]+$/, ""); if (v !== company && !/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/.test(v)) venue = v; }
+  if (venue) { out.copy.venue = venue; out.said.push(venue); }
+  const brandWords = (BRAND.name || "").toLowerCase();
+  const isPlace = (n) => n === venue || venue.indexOf(n) >= 0 || n === company || company.indexOf(n) >= 0 || n.toLowerCase() === brandWords;
+  const personCue = /\b(speak(s|ing|er)?|talk(s|ing)?|keynote|joins?|joining|meet|introduc\w+|welcom\w+|hosted by|with|chair(s|ed|ing)?)\b/.test(low);
+  const eventCue = /\b(announc\w+|event|breakfast|lunch|dinner|social|summit|launch\w*|workshop|meet-?up|roundtable|party|evening|night|conference|programme|festival|open day|webinar)\b/.test(low);
+  const quoted = (raw.match(/["“]([^"”]{3,80})["”]/) || [])[1] || "";
+  const people = names.filter(n => !isPlace(n.name) && !/^(The|Our|Thank|Meet|Announce|Introducing|Join|Welcome|Founders Breakfast)$/.test(n.name.split(" ")[0] === "Founders" ? "Founders Breakfast" : n.name.split(" ")[0]) && !/(Breakfast|Summit|Social|Week|Night|Launch|Roundtable|Session|Sessions|Programme|Awards|Conference|Festival)$/.test(n.name));
+  // what
+  if (/\b(partners?|sponsors?)\b/.test(low) && /\b(thank|thanks|wall|logos?|showcase|supported by)\b/.test(low)) { out.tpl = "partners"; out.copy.headline = quoted || (/thank/.test(low) ? "Thank you" : "With thanks to our partners"); out.copy.barLabel = pickLabel("PARTNERS"); }
+  else if (/\bline-?up\b|\bagenda\b|\bspeakers:/.test(low) || people.length >= 4) { out.tpl = "listing"; out.speakers = people.map(x => ({ name: x.name, role: "", company: "" })); out.copy.headline = quoted || "Meet the speakers"; }
+  else if ((/\bpanel\b|\bsessions?\b|\bthree\b/.test(low) && people.length >= 2) || people.length === 3) { out.tpl = "trio"; out.speakers = people.slice(0, 3).map(x => ({ name: x.name, company: "" })); out.copy.sessionTitle = quoted || "In conversation"; out.copy.sessionPrefix = out.copy.startTime ? out.copy.startTime + " · Panel" : "Panel"; }
+  else if (people.length && (personCue || rc) && !(eventCue && !personCue && !rc)) {
+    out.tpl = "speaker"; out.copy.name = people[0].name; out.said.unshift(people[0].name);
+    if (rc) { out.copy.role = rc[1].replace(/^founder$/, "Founder") + ","; out.copy.company = company; out.said.splice(1, 0, rc[1] + ", " + company); } else { out.copy.role = ""; out.copy.company = ""; }
+    out.copy.eventNumber = (raw.match(/#(\d{1,3})\b/) || [])[1] || "";
+    out.title = people[0].name;
+  }
+  else if (eventCue) {
+    out.tpl = "event";
+    let head = quoted;
+    if (!head) { const m = raw.match(/(?:announc\w+|launch\w*|introducing|join us (?:for|at)|come to)? ?(?:the |our |a |an )?([A-Z][^,.;:!?]*?)(?= (?:on|at|from|this|next|in) |,|\.|;|:|!|\?|$)/); head = m ? m[1].trim() : ""; }
+    if (!head || head.length < 3) head = raw.split(/[,.;]/)[0];
+    out.copy.headline = head.replace(/^(Announce|Announcing|Launch|Launching)\s+(the\s+|our\s+)?/i, "").slice(0, 60);
+    const rest = raw.split(/(?<=[.!?])\s+/).slice(1).join(" "); out.copy.body = rest && rest.length > 12 ? rest.slice(0, 220) : "";
+    out.copy.barLabel = pickLabel("EVENT"); out.title = out.copy.headline; out.said.unshift(out.copy.headline);
+  }
+  return out;
+}
+function pickLabel(want) { const l = BRAND.barLabels || []; return l.indexOf(want) >= 0 ? want : (l[0] || want); }
+
 /* GSAP is only needed for the sign-in intro, so it is fetched when that plays. */
 let __gsapP = null;
 function ensureGsap() {
@@ -739,4 +806,4 @@ function ensureGsap() {
 }
 
 /* expose for tests (node) */
-if (typeof module !== 'undefined') module.exports = { pottingShedBrand, seedPottingShed, PS_WS, imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
+if (typeof module !== 'undefined') module.exports = { portraitMatch, readBrief, pottingShedBrand, seedPottingShed, PS_WS, imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };

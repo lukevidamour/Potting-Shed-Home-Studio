@@ -8,13 +8,13 @@
 <link rel="icon" type="image/svg+xml" href="assets/ps-favicon.svg">
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261111l"></script>
+<script src="home-studio.lib.js?v=20261111n"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261111n">
+<link rel="stylesheet" href="home-studio.css?v=20261111o">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -72,6 +72,7 @@
           </sc-if>
         </div>
           <div class="gtabs">
+            <button class="gtab" onClick="{{ goMake }}" aria-current="{{ makeCurrent }}">Make</button>
             <button class="gtab" onClick="{{ goProjects }}" aria-current="{{ projectsCurrent }}">Drafts</button>
             <button class="gtab" onClick="{{ goDesigns }}" aria-current="{{ designsCurrent }}">All designs</button>
             <button class="gtab" onClick="{{ goCalendar }}" aria-current="{{ calendarCurrent }}">Calendar</button>
@@ -243,7 +244,9 @@
       <sc-if value="{{ isProjects }}">
         <div class="page" style="padding-bottom:0">
           <div class="pagehead">
-            <div><h1 class="welcome">What are we making <em>today</em>?</h1></div>
+            <div class="askwrap"><h1 class="welcome">What are we making <em>today</em>?</h1>
+              <form class="mkfield" onSubmit="{{ makeSubmit }}"><input value="{{ makeText }}" onChange="{{ makeSetText }}" placeholder="{{ makeHint }}" aria-label="Describe what to make" autoComplete="off" /><button class="go" type="submit" aria-label="Make it"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button></form>
+            </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
               <button class="btn lg" onClick="{{ openNewProject }}">New project</button>
               <button class="btn primary lg" onClick="{{ newArtwork }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New artwork</button>
@@ -390,6 +393,32 @@
           </div>
         </div>
       </sc-if>
+      <!-- Make: describe it, get it -->
+      <sc-if value="{{ isMake }}">
+        <div class="page make">
+          <sc-if value="{{ makeEmpty }}">
+            <div class="mkintro"><h1 class="welcome">Describe it, <em>get it</em>.</h1><p class="lede">Say who, what, when and where. Home Studio picks the template and makes it on brand. Then ask for other sizes or colours.</p></div>
+          </sc-if>
+          <div class="thread" role="log" aria-live="polite" aria-label="Conversation">
+            <sc-for list="{{ makeMsgs }}" as="mm">
+              <div class="msg {{ mm.cls }}">
+                <p>{{ mm.text }}</p>
+                <sc-if value="{{ mm.hasArt }}">
+                  <div class="mkart"><sc-for list="{{ mm.art }}" as="ar"><button class="mktile" style="{{ ar.style }}" onClick="{{ ar.open }}" aria-label="{{ ar.aria }}"><sc-if value="{{ ar.thumb }}"><img sc-camel-src="{{ ar.thumb }}" alt="" /></sc-if><span>{{ ar.size }}</span></button></sc-for></div>
+                </sc-if>
+                <sc-if value="{{ mm.hasChips }}">
+                  <div class="mkchips"><sc-for list="{{ mm.chips }}" as="ch"><button onClick="{{ ch.go }}">{{ ch.label }}</button></sc-for></div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <form class="composer" onSubmit="{{ makeSubmit }}">
+            <sc-if value="{{ makeEmpty }}"><div class="mkchips start"><sc-for list="{{ makeIdeas }}" as="idea"><button type="button" onClick="{{ idea.go }}">{{ idea.label }}</button></sc-for></div></sc-if>
+            <div class="mkfield"><input id="mk-input" value="{{ makeText }}" onChange="{{ makeSetText }}" placeholder="{{ makeHint }}" aria-label="Describe what to make" autoComplete="off" /><button class="go" type="submit" aria-label="Make it"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button></div>
+          </form>
+        </div>
+      </sc-if>
+
       <!-- Brand book -->
       <sc-if value="{{ isBrand }}">
         <div class="page bb">
@@ -1060,7 +1089,7 @@ class Component extends DCLogic {
     tab: "content",
     zoom: 1, fitScale: 1, cardW: 0,
     gate: (typeof window !== "undefined" && window.__gate) ? (window.__gate.lift ? "lift" : "open") : null, gateColor: (typeof window !== "undefined" && window.__gate) ? window.__gate.c : "#245FFF", arriving: false, userMenuOpen: false,
-    bbPrevTpl: "speaker", bbPrevWay: 0,
+    bbPrevTpl: "speaker", bbPrevWay: 0, chat: [], makeText: "",
     wsMenuOpen: false, bbMenuOpen: false, clientDialog: null, confirm: null, brandRev: 0, bbHex: {}, bbNewLabel: "", bbLogoError: "", bbPartnerError: "",
     saveState: "idle", savedAt: 0,
     past: [], future: [],
@@ -1532,6 +1561,17 @@ class Component extends DCLogic {
       gateOpen: !!s.gate, gateClass: s.gate === "open" ? "is-intro" : "is-down", gateStyle: { "--gate-c": s.gateColor },
       enterApp: this.enterApp,
       userMenuOpen: s.userMenuOpen, toggleUserMenu: this.toggleUserMenu, signOut: this.signOut, logoTap: this.logoTap,
+      isMake: view === "make", makeCurrent: view === "make" ? "page" : null, goMake: this.goMake, makeEmpty: s.chat.length === 0,
+      makeText: s.makeText, makeSetText: (e) => this.setState({ makeText: e.target.value }), makeSubmit: (e) => { e.preventDefault(); this.makeSend(); },
+      makeHint: WS_ID === PS_WS ? "Meet Abbie Morton, Designer at Potting Shed" : WS_ID === DEFAULT_WS ? "Anna Le Page, Partner at Rathbones, is speaking Wed 2 Dec, 8am at Wild Peak" : "Describe it: who, what, when and where",
+      makeIdeas: (WS_ID === PS_WS ? ["Meet Silvie Grant, Senior Designer at Potting Shed", "Announce our studio open evening on 10 December, 6pm at Trinity Square", "Thank our partners"] : ["Dr Niraj Singh, Founder at Ketamine Therapies, is speaking Thu 26 Nov, 9am at the BDO Hub", "Announce the Founders Breakfast on 2 December, 8am at Wild Peak. As a square and a story.", "Thank our partners"]).map(t => ({ label: t, go: () => this.makeSend(t) })),
+      makeMsgs: s.chat.map(m => {
+        const fam = m.fam ? s.drafts.filter(x => x.familyId === m.fam).sort((a, b) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)) : [];
+        return { cls: m.who === "me" ? "me" : "hs", text: m.text, hasArt: fam.length > 0,
+          art: fam.map(x => { const Z = SIZES[x.size], th = BRAND.themes[x.theme] || BRAND.themes[0]; return { thumb: s.thumbs[x.id] || "", size: Z.label, style: { aspectRatio: Z.w + " / " + Z.h, background: th.ground, color: th.accent }, aria: "Open " + x.title, open: () => this.openDesign(x, false) }; }),
+          hasChips: !!(m.chips && m.chips.length) && m === s.chat[s.chat.length - 1],
+          chips: (m.chips || []).map(c => ({ label: c, go: () => { if (c === "Open in the editor") { const x = fam[0]; if (x) this.openDesign(x, false); } else this.makeSend(c); } })) };
+      }),
       ...(() => {
         const seg = (opts, cur, set, what, restyle) => opts.map(o => ({ label: o[1], on: cur === o[0], pick: () => this.editBrand(b => set(b, o[0]), what, restyle) }));
         const T = BRAND.type || {}, ST = BRAND.style || {};
@@ -1554,6 +1594,57 @@ class Component extends DCLogic {
         };
       })()
     };
+  }
+
+  /* ---------- make by describing ---------- */
+  goMake = () => { this.setState({ view: "make", reviewOpen: false, menuId: null }); this.focusLater("mk-input"); };
+  makeSend = (given) => {
+    const text = String(given != null ? given : this.state.makeText).trim(); if (!text) return;
+    const r = readBrief(text), last = this._makeLast;
+    const follow = !r.tpl && last && this.state.drafts.some(x => x.familyId === last) && (r.sizes.length || r.theme != null || r.nextTheme || r.remove || r.copy.date || r.copy.startTime || r.copy.venue);
+    const reply = follow ? this.makeAdjust(r, last) : this.makeCreate(r, text);
+    this.setState(st => ({ chat: st.chat.concat([{ who: "me", text }, reply]), makeText: "", view: "make" }), () => requestAnimationFrame(() => { window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" }); const el = document.getElementById("mk-input"); if (el) el.focus({ preventScroll: true }); }));
+  };
+  makeCreate(r, text) {
+    let tpl = r.tpl, note = "";
+    if (!tpl) { tpl = "lockup"; r.copy.body = text.replace(/\s+/g, " ").slice(0, 140); note = " I couldn't find a person or an event in that, so I set it as a brand announcement."; }
+    if (BRAND.templatesOn.indexOf(tpl) < 0) return { who: "hs", text: "“" + TPL[tpl].name + "” is switched off in the " + BRAND.name + " brand book, so I can't make that one. Turn it on there, or describe something else.", ids: [] };
+    const sizes = r.sizes.length ? r.sizes : ["square"], fam = uid("f"), base = r.title || TPL[tpl].name; let noFace = "";
+    const made = sizes.map(size => {
+      const d = newDesign(tpl, size, null);
+      d.familyId = fam; d.copy = Object.assign({}, d.copy, r.copy); if (r.theme != null) d.theme = r.theme;
+      if (tpl === "listing" && r.speakers.length) d.speakers = r.speakers.map((sp, i) => Object.assign({ id: "s" + (i + 1) }, sp));
+      if (tpl === "trio" && r.speakers.length) d.trio = r.speakers.concat(d.trio.slice(r.speakers.length)).slice(0, 3);
+      d.title = base + " · " + SIZES[size].label; d.images = {};
+      // A named person only ever gets their own portrait. With none on file the frame is left empty rather than showing someone else.
+      if (tpl === "speaker") { const pid = portraitMatch(d.copy.name); if (pid) d.images["speaker-photo"] = libImg(pid); else noFace = d.copy.name; }
+      else d.images = fillImages(d);
+      return d;
+    });
+    const drafts = made.concat(this.state.drafts);
+    try { this.persistDrafts(drafts); } catch (e) {}
+    this.setState({ drafts }); this._makeLast = fam;
+    const what = { speaker: "a speaker card", event: "an event announcement", listing: "a line-up", trio: "a sessions card", partners: "a partner wall", lockup: "a brand announcement" }[tpl];
+    const missing = [];
+    if (tpl === "speaker" || tpl === "event") { if (!r.copy.date) missing.push("a date"); if (!r.copy.venue) missing.push("a venue"); }
+    const gaps = missing.length ? " You didn't give " + missing.join(" or ") + ", so " + (missing.length > 1 ? "those are" : "that is") + " a placeholder." : "";
+    return { who: "hs", text: "Here's " + what + (r.said.length ? ": " + r.said.join(" · ") : "") + "." + note + gaps + (noFace ? " There's no portrait of " + noFace + " in the library yet, so open it to add one." : ""), fam, chips: ["Also as a story", "All sizes", "Another colourway", "Open in the editor"] };
+  }
+  makeAdjust(r, fam) {
+    let drafts = this.state.drafts, thumbs = Object.assign({}, this.state.thumbs); const done = [];
+    const mine = () => drafts.filter(x => x.familyId === fam);
+    if (r.remove) { const ids = mine().map(x => x.id); drafts = drafts.filter(x => x.familyId !== fam); ids.forEach(id => delete thumbs[id]); try { this.persistDrafts(drafts); Store.set(THUMBS_KEY, thumbs); } catch (e) {} this.setState({ drafts, thumbs }); this._makeLast = null; return { who: "hs", text: "Removed. What next?", ids: [] }; }
+    const touch = (fn, label) => { drafts = drafts.map(x => { if (x.familyId !== fam) return x; delete thumbs[x.id]; return Object.assign({}, fn(x), { updatedAt: Date.now() }); }); done.push(label); };
+    if (r.theme != null) touch(x => Object.assign({}, x, { theme: r.theme }), "set the colourway to " + BRAND.themes[r.theme].name);
+    else if (r.nextTheme) { const cur = mine()[0].theme, nx = (cur + 1) % BRAND.themes.length; touch(x => Object.assign({}, x, { theme: nx }), "switched to " + BRAND.themes[nx].name); }
+    const patch = {}; ["date", "startTime", "endTime", "venue"].forEach(k => { if (r.copy[k] != null && (k !== "endTime" || r.copy.startTime)) patch[k] = r.copy[k]; });
+    if (Object.keys(patch).length) touch(x => Object.assign({}, x, { copy: Object.assign({}, x.copy, patch) }), "updated " + Object.keys(patch).filter(k => k !== "endTime").map(k => ({ date: "the date", startTime: "the time", venue: "the venue" }[k])).join(" and "));
+    const have = mine().map(x => x.size), add = r.sizes.filter(z => have.indexOf(z) < 0);
+    if (add.length) { const b0 = mine()[0], name = this.baseTitle(b0.title); const extra = add.map(size => Object.assign({}, b0, { id: uid("d"), size, title: name + " · " + SIZES[size].label, platforms: (DEFAULT_PLATFORMS[size] || ["linkedin"]).slice(), scheduledAt: "", updatedAt: Date.now() })); drafts = extra.concat(drafts); done.push("added " + listNames(add.map(z => SIZES[z].label.toLowerCase()))); }
+    else if (r.sizes.length) done.push("it's already in " + (r.sizes.length > 1 ? "those sizes" : "that size"));
+    try { this.persistDrafts(drafts); Store.set(THUMBS_KEY, thumbs); } catch (e) {}
+    this._thumbTried = new Set(); this.setState({ drafts, thumbs });
+    const s0 = done.join(", "); return { who: "hs", text: s0 ? "Done: " + s0 + "." : "I didn't catch a change in that. Try a size, a colourway, a date or a venue.", fam, chips: ["Another colourway", "All sizes", "Open in the editor"] };
   }
 
   /* The live artwork beside the brand book: one example piece, redrawn as the book changes. */
@@ -2356,7 +2447,7 @@ class Component extends DCLogic {
       bodyClass: isEditor ? "body" : "shell",
       mainClass: isEditor ? "stage-wrap" : "content",
       stageClass: isEditor ? "stage" : "",
-      boardsClass: isEditor ? "boards stage-boards" : (view === "brand" ? "boards bbpreview" : view === "calendar" ? "boards offstage" : (realBoards ? "page grid" + (s.layout === "list" ? " list" : "") : "sr")),
+      boardsClass: isEditor ? "boards stage-boards" : (view === "brand" ? "boards bbpreview" : view === "calendar" || view === "make" ? "boards offstage" : (realBoards ? "page grid" + (s.layout === "list" ? " list" : "") : "sr")),
       sortKey: s.sortKey, setSort: (e) => { this.setState({ sortKey: e.target.value }); this.say("Sorted " + e.target.options[e.target.selectedIndex].text.toLowerCase()); },
       q: s.q, setQ: (e) => this.setState({ q: e.target.value, menuId: null }), clearQ: () => this.setState({ q: "" }),
       isGrid: s.layout === "grid", pickGrid: () => { this.setState({ layout: "grid" }); this.say("Grid view"); }, pickList: () => { this.setState({ layout: "list" }); this.say("List view"); },

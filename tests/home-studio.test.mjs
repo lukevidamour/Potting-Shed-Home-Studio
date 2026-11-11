@@ -156,3 +156,36 @@ test("cut-out portraits stand in their frame and are never stretched across it",
   const photo = lib.imgVals(lib.libImg("tk-event-03"));
   assert.equal(photo.style.objectFit, "cover");
 });
+
+test("a plain-English brief becomes the right template with its details", () => {
+  const now = new Date(2026, 10, 11).getTime();
+  const a = lib.readBrief("Anna Le Page, Partner at Rathbones, is speaking Wed 2 Dec, 8am to 9.30am at Wild Peak, St Peter Port", now);
+  assert.equal(a.tpl, "speaker");
+  assert.equal(a.copy.name, "Anna Le Page");
+  assert.equal(a.copy.role, "Partner,");
+  assert.equal(a.copy.company, "Rathbones");
+  assert.equal(a.copy.date, "Wed 2 Dec");
+  assert.equal(a.copy.startTime, "8am");
+  assert.equal(a.copy.endTime, "9.30am");
+  assert.equal(a.copy.venue, "Wild Peak, St Peter Port");
+  const b = lib.readBrief("Announce the Founders Breakfast on 14 January at 8am at Wild Peak. Coffee, pastries and honest conversation. As a story and a square.", now);
+  assert.equal(b.tpl, "event");
+  assert.equal(b.copy.headline, "Founders Breakfast");
+  assert.equal(b.copy.date, "Thu 14 Jan");
+  assert.deepEqual(b.sizes, ["square", "story"]);
+  const c = lib.readBrief("Thank our partners", now);
+  assert.equal(c.tpl, "partners");
+  const d = lib.readBrief("also as a story, in lime", now);
+  assert.equal(d.tpl, null);
+  assert.deepEqual(d.sizes, ["story"]);
+  assert.equal(lib.BRAND.themes[d.theme].name, "Lime & violet");
+  const e = lib.readBrief("Panel with Sam Ozanne, Anna Le Page and Priya Nair on Tue 8 Dec at Windward House", now);
+  assert.equal(e.tpl, "trio");
+  assert.deepEqual(e.speakers.map(x => x.name), ["Sam Ozanne", "Anna Le Page", "Priya Nair"]);
+});
+
+test("a named speaker gets their own portrait or none", () => {
+  assert.equal(lib.portraitMatch("Dr Niraj Singh"), "tk-niraj-singh");
+  assert.equal(lib.portraitMatch("Lisa McCabe"), "tk-lisa-mccabe");
+  assert.equal(lib.portraitMatch("Somebody Else"), null);
+});
