@@ -1240,3 +1240,14 @@ p,.lede,.desc,.meta{text-wrap:pretty}
 .mkclose:hover{background:var(--hs-ink);color:var(--hs-on-ink)}
 @media (prefers-reduced-motion:reduce){.makeover{animation:none}}
 @media (max-width:860px){.fab{right:16px;bottom:16px}.makeover .page.make{padding:56px 20px 0}}
+
+/* The field behind artwork is pure white in light mode. Hover still fills it with the accent. */
+:root:not([data-theme="dark"]) .card .art,
+:root:not([data-theme="dark"]) .card .art:has(.thumbimg),
+:root:not([data-theme="dark"]) .card .art:has([data-canvas]),
+:root:not([data-theme="dark"]) .card .art:has(.noart),
+:root:not([data-theme="dark"]) .card .art:has(.shelf),
+:root:not([data-theme="dark"]) .weekcard{background:#FFFFFF}
+:root:not([data-theme="dark"]) .card:hover .art,
+:root:not([data-theme="dark"]) .weekcard:hover{background:var(--accent)}
+:root:not([data-theme="dark"]) .bbcard .art,:root:not([data-theme="dark"]) .bbcard:hover .art{background:none}
