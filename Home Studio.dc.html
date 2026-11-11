@@ -14,7 +14,7 @@
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261111t">
+<link rel="stylesheet" href="home-studio.css?v=20261111w">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -1604,6 +1604,24 @@ class Component extends DCLogic {
     };
   }
 
+  /* A view cascades in the first time it is seen in a session. After that it is simply there: an entrance that replays
+     on every visit stops reading as a welcome and starts reading as a delay. */
+  freshView(view) {
+    if (!this._seenViews) { this._seenViews = new Set(); this._freshT = {}; }
+    if (this._seenViews.has(view)) return false;
+    if (!this._freshT[view]) this._freshT[view] = setTimeout(() => this._seenViews.add(view), 1100);
+    return true;
+  }
+  /* Opening a design carries its tile across: the artwork grows from where it sat on the wall into the editor. */
+  openWithMove(d, el) {
+    const card = el && el.closest ? el.closest(".card, .mktile, .weekcard") : null, src = card && (card.querySelector(".art, .wart") || card);
+    const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!document.startViewTransition || !src || still) return this.openDesign(d, false);
+    src.style.viewTransitionName = "hs-art";
+    let vt; try { vt = document.startViewTransition(() => new Promise(res => { this.openDesign(d, false); setTimeout(res, 140); })); } catch (e) { src.style.viewTransitionName = ""; return this.openDesign(d, false); }
+    const clear = () => { src.style.viewTransitionName = ""; }; vt.finished.then(clear, clear);
+  }
+
   /* A dropdown list drawn by the app: the same ink menu as everywhere else, anchored to its field. The real <select>
      stays in place underneath, so forms, labels and screen readers keep working; choosing writes back to it. */
   openSelectMenu(sel) {
@@ -2402,7 +2420,7 @@ class Component extends DCLogic {
       const b = this.boardVals(r, "card", {
         title: this.baseTitle(r.title),
         desc: join([TPL[r.tpl].name, g.members.length > 1 ? g.members.length + " sizes" : SIZES[r.size].label, showProject ? projName(r.projectId) : "", appr], " · "),
-        aria: "Open " + r.title, open: () => this.openDesign(r, false), keys: keyAct(() => this.openDesign(r, false)), isDraft: true,
+        aria: "Open " + r.title, open: (e) => this.openWithMove(r, e && e.currentTarget), keys: keyAct(() => this.openDesign(r, false)), isDraft: true,
         hasMenu: true, menuLabel: "Options for " + this.baseTitle(r.title), menuOpen: s.menuId === r.id, menuToggle: (e) => { e.stopPropagation(); this.setState(st => ({ menuId: st.menuId === r.id ? null : r.id, wsMenuOpen: false })); },
         menuItems: [{ label: "Duplicate", cls: "", act: act(() => this.duplicateDraft(r.id)) }, { label: "Rename", cls: "", act: act(() => this.openRename(r.id)) }, { label: "Delete", cls: "danger", act: act(() => this.openDelete(r.id)) }]
       });
@@ -2464,7 +2482,7 @@ class Component extends DCLogic {
     const delTarget = s.deleteKind === "project" ? s.projects.find(x => x.id === s.deleteId) : s.drafts.find(x => x.id === s.deleteId);
     const delDesigns = s.deleteKind === "project" && delTarget ? this.projectDesigns(delTarget.id).length : 0;
     const out = {
-      viewClass: (isEditor ? "is-editor" : "is-" + view) + (s.arriving ? " is-arriving" : "") + (s.gate ? " is-gated" : ""),
+      viewClass: (isEditor ? "is-editor" : "is-" + view) + (s.arriving ? " is-arriving" : "") + (s.gate ? " is-gated" : "") + (this.freshView(view) ? " is-fresh" : ""),
       appStyle: isEditor && d ? { "--stage-tint": (BRAND.themes[d.theme] || BRAND.themes[0]).ground } : {},
       isProjects: view === "projects", isProject: view === "project" && !!project, isTemplates: view === "templates" && !!project,
       isDesigns: view === "designs", isLibrary: view === "library", isCalendar: view === "calendar", isSize: view === "size", isEditor,

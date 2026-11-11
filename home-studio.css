@@ -496,7 +496,6 @@ details.sect.more .moreb{display:flex;flex-direction:column;gap:12px;padding-top
 .chip{transition:transform var(--hs-t),box-shadow var(--hs-t)}
 .chip:hover{transform:translateY(-1px);box-shadow:0 6px 16px var(--hs-shadow)}
 .calcell .chip:hover img{max-height:120px}
-.calcell .chip img{transition:max-height var(--hs-tp)}
 .section-head,.pagehead{gap:32px}
 
 /* ---------- batch 4: account chip, live region ---------- */
@@ -977,10 +976,9 @@ h1.welcome{font-size:clamp(40px,5vw,58px);line-height:1;letter-spacing:-.03em}
   .gnav .wschip .wsname{font-size:15px}
   .gtabs{gap:0;padding:26px 0 0}
   .gtab{height:auto;padding:5px 0;border-radius:0;background:none;font-size:28px;line-height:34px;font-weight:400;letter-spacing:-.03em;color:var(--quiet);display:flex;align-items:center;gap:0;transition:color .3s var(--ease),gap .5s var(--spring),scale .5s var(--spring-bouncy);transform-origin:left center}
-  .gtab::before{content:"";width:0;height:10px;border-radius:999px;background:var(--accent);transition:width .5s var(--spring)}
+  .gtab::before{content:"";width:10px;height:10px;border-radius:999px;background:var(--accent)}
   .gtab:hover{background:none;color:var(--hs-ink)}
   .gtab[aria-current="page"]{background:none;color:var(--hs-ink);gap:10px}
-  .gtab[aria-current="page"]::before{width:10px}
   .gfoot{justify-content:flex-start;gap:8px;padding-top:0}
 }
 .bead{background:none;border:.5px solid var(--key)}
@@ -1093,9 +1091,7 @@ p,.lede,.desc,.meta{text-wrap:pretty}
 .card .art{transition:background-color var(--t) var(--out),scale var(--t) var(--out)}
 .card:active .art{scale:.985;transition-duration:var(--t-fast)}
 .card .art>.thumbimg,.card .shelf{transition:scale 420ms var(--out)}
-.switch:active::after{width:24px}
 .switch:checked:active::after{transform:translateX(12px)}
-.switch::after{transition:transform var(--t) var(--out),width var(--t-fast) var(--out)}
 /* small targets keep a 40px reach */
 .card .kebab .btn.icon,.chipx button,.ptile .prow .btn.icon{position:relative}
 .card .kebab .btn.icon::after,.chipx button::after,.ptile .prow .btn.icon::after{content:"";position:absolute;inset:50% auto auto 50%;width:40px;height:40px;translate:-50% -50%}
@@ -1139,7 +1135,6 @@ p,.lede,.desc,.meta{text-wrap:pretty}
 .toast{animation:toast-in 280ms var(--out)}
 @keyframes toast-in{from{opacity:0;translate:-50% 10px}}
 .gtab{transition:color var(--t) var(--out),gap 360ms var(--spring),scale var(--t) var(--out)}
-.gtab::before{transition:width 360ms var(--spring)}
 .pill[aria-selected="true"]::before{animation:dot-in 360ms var(--spring) backwards}
 @keyframes dot-in{from{scale:0}}
 .bead svg,.btn.icon svg{transition:rotate 360ms var(--spring),scale var(--t) var(--out)}
@@ -1284,3 +1279,78 @@ select.input{cursor:pointer;transition:border-color var(--t) var(--out),color va
 select.input[data-open]{border-color:var(--hs-ink)}
 .filters select.input{font-weight:500}
 .filters select.input:hover{color:var(--hs-ink);text-decoration:underline;text-underline-offset:4px}
+
+/* =============================================================================
+   v7 — review fixes (measured): small-text contrast, phones, targets, motion.
+   ============================================================================= */
+/* Small grey text now clears 4.5:1 on the page (#6E6E6E on #F2F2F2 is 4.6:1; it was 3.0:1). */
+:root{--quiet:#6E6E6E}
+:root[data-theme="dark"]{--quiet:#A3A3A3}
+.gtab{color:#8B8B8B}
+:root[data-theme="dark"] .gtab{color:#7A7A7A}
+.gtab:hover,.gtab[aria-current="page"]{color:var(--hs-ink)}
+.meta,.card .desc,.pill,.segs button,.bbjump button,.bbprevtabs button,.mkfield input::placeholder{color:var(--quiet)}
+.pill[aria-selected="true"],.segs button[aria-pressed="true"]{color:var(--hs-ink)}
+.segs button[aria-pressed="true"]{color:var(--hs-on-ink)}
+
+/* Small links in the editor keep a comfortable reach. */
+.slot-card .link{min-height:28px;display:inline-flex;align-items:center}
+.synccheck input,.check input{width:22px;height:22px}
+
+/* Phones: nothing runs off the side. */
+@media (max-width:640px){
+  .page{padding:28px 16px 56px}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .card{min-width:0}
+  .card .kebab{margin-right:0}
+  .row2,.types,.people{grid-template-columns:minmax(0,1fr)}
+  .bb{padding-right:16px}
+  .bb .pagehead{flex-wrap:nowrap;gap:12px}
+  .bbsec{grid-template-columns:minmax(0,1fr);gap:14px}
+  .bbbody,.field,.field .input{min-width:0;max-width:100%}
+  .bblogo{flex-wrap:wrap}
+  .bblogo .tile{width:100%;flex:1 1 100%}
+  .palrow{grid-template-columns:44px minmax(0,1fr) 92px 36px;gap:6px}
+  .wayrow{grid-template-columns:52px minmax(0,1fr) 36px}
+  .wayrow>.mini{grid-row:auto}
+  .wayrow>input.input{grid-column:2/3}
+  .wayrow>select.input{grid-column:1/-1}
+  .wayrow .verdict{grid-column:1/-1}
+  .ctl{flex-direction:column;align-items:flex-start;gap:8px}
+  .segs{max-width:100%;overflow-x:auto}
+  .partners{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .chips .input{width:100%}
+  .toolrow,.filters{flex-wrap:wrap;min-width:0}
+  .search,.search input.input{width:100%}
+  h1.welcome{font-size:clamp(34px,10vw,48px)}
+}
+
+/* Cascades run the first time a view is seen in a session, not on every return. */
+.app:not(.is-fresh) .page>*,.app:not(.is-fresh) .pagehead>*,.app:not(.is-fresh) .welcome-wrap>*,.app:not(.is-fresh) .grid>.card:not(.offcard),.app:not(.is-fresh) .weekstrip>.weekcard,.app:not(.is-fresh) .bb .bbsec,.app:not(.is-fresh) .boards.bbpreview,.app:not(.is-fresh) .bbprevtabs{animation:none}
+
+/* Nothing animates layout: the nav dot and the switch knob move with transforms. */
+@media (min-width:861px){
+  .gtab{position:relative;gap:0;transition:color var(--t) var(--out),translate 360ms var(--spring),scale var(--t) var(--out)}
+  .gtab[aria-current="page"]{gap:0;translate:20px 0}
+  .gtab::before{position:absolute;left:-20px;top:50%;width:10px;height:10px;margin-top:-5px;scale:0;transition:scale 360ms var(--spring)}
+  .gtab[aria-current="page"]::before{width:10px;scale:1}
+}
+.switch::after{transition:transform var(--t) var(--out)}
+.switch:active::after{width:20px;transform:scaleX(1.18);transform-origin:left center}
+.switch:checked:active::after{width:20px;transform:translateX(16px) scaleX(1.18);transform-origin:right center}
+.calcell .chip img{transition:none}
+
+/* Tile to editor: one continuous move. */
+.boards.stage-boards [data-canvas]{view-transition-name:hs-art}
+::view-transition-group(hs-art){animation-duration:440ms;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-old(hs-art),::view-transition-new(hs-art){height:100%;object-fit:contain}
+::view-transition-old(root),::view-transition-new(root){animation-duration:240ms;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+
+/* Narrow navigation: readable grey, and the current page reads on its ink pill. */
+@media (max-width:860px){.gtab{color:var(--quiet)}.gtab[aria-current="page"]{color:var(--hs-on-ink)}.gtab::before{display:none}}
+.toolbar,.toolbar .btn{color:var(--hs-ink)}
+.toolbar .zoomv,.toolbar .synccheck{color:var(--hs-ink)}
+.link{min-height:24px;display:inline-flex;align-items:center}
+.slot-card .acts .link{min-height:28px}
+.synccheck input,.check input{width:24px;height:24px}
