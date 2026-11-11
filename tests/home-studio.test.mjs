@@ -191,3 +191,16 @@ test("a named speaker gets their own portrait or none", () => {
   assert.equal(lib.portraitMatch("Lisa McCabe"), "tk-lisa-mccabe");
   assert.equal(lib.portraitMatch("Somebody Else"), null);
 });
+
+test("a set of images is zipped as one valid, uncompressed archive", () => {
+  const { zipStore, crc32 } = lib;
+  assert.equal(crc32(new TextEncoder().encode("123456789")), 0xCBF43926); // the standard check value
+  const a = new TextEncoder().encode("first"), b = new TextEncoder().encode("second file");
+  const parts = zipStore([{ name: "01-cover.png", bytes: a }, { name: "02-intro.png", bytes: b }], new Date(2026, 10, 11, 12, 0, 0));
+  const all = Buffer.concat(parts.map(p => Buffer.from(p)));
+  assert.equal(all.readUInt32LE(0), 0x04034b50);                       // starts with a local file header
+  const end = all.length - 22; assert.equal(all.readUInt32LE(end), 0x06054b50);
+  assert.equal(all.readUInt16LE(end + 10), 2);                         // two entries
+  const cdOffset = all.readUInt32LE(end + 16); assert.equal(all.readUInt32LE(cdOffset), 0x02014b50);
+  assert.ok(all.includes(Buffer.from("02-intro.png")) && all.includes(Buffer.from("second file")));
+});

@@ -1452,3 +1452,6 @@ select.input[data-open]{border-color:var(--hs-ink)}
 @media (max-width:860px){
   .gtabs{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);padding-right:28px;scroll-padding-right:28px}
 }
+
+/* A whole project being drawn for download: one quiet line where the grid was. */
+.batchnote{margin:28px 0 0;font-size:15px;line-height:22px;color:var(--quiet);animation:fade 200ms var(--out)}

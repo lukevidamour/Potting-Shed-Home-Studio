@@ -9,13 +9,13 @@
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261111t"></script>
+<script src="home-studio.lib.js?v=20261112a"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261112d">
+<link rel="stylesheet" href="home-studio.css?v=20261112e">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -307,6 +307,7 @@
                 <div class="projmeta" style="margin-top:8px"><span>{{ projectDesignCount }} · Edited {{ projectEditedText }}<sc-if value="{{ projectArchived }}"> · Archived</sc-if></span></div>
               </div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <sc-if value="{{ canDownloadAll }}"><button class="btn lg" onClick="{{ downloadAll }}" disabled="{{ batchOn }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>{{ downloadAllLabel }}</button></sc-if>
                 <button class="btn primary lg" onClick="{{ goTemplates }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New artwork</button>
                 <span class="kebab" onClick="{{ stop }}">
                   <button class="btn icon" style="border-color:var(--hs-rule)" onClick="{{ toggleProjectPageMenu }}" aria-label="Project options" aria-haspopup="menu" aria-expanded="{{ projectPageMenuOpen }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg></button>
@@ -315,6 +316,7 @@
               </div>
             </div>
           </div>
+          <sc-if value="{{ batchOn }}"><p class="batchnote" role="status">{{ batchNote }}</p></sc-if>
           <sc-if value="{{ !projectEmpty }}"><div class="toolrow" style="margin-top:8px"><span></span><div class="filters">
               <select class="input" aria-label="Sort" value="{{ sortKey }}" onChange="{{ setSort }}"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="az">A to Z</option><option value="za">Z to A</option></select>
               <div class="viewtog" role="group" aria-label="Layout">
@@ -908,7 +910,7 @@
               <sc-for list="{{ checks }}" as="ck"><div class="ck"><span class="cdot" style="{{ ck.dot }}"></span><span>{{ ck.label }}</span></div></sc-for>
             </div>
             <div class="pubrow appr">
-              <sc-if value="{{ apprNone }}"><span class="meta">Approval is optional.</span><button class="btn sm quiet" onClick="{{ submitApproval }}">Send to Potting Shed</button></sc-if>
+              <sc-if value="{{ apprNone }}"><span class="meta">{{ apprHint }}</span><button class="btn sm quiet" onClick="{{ submitApproval }}">Send to Potting Shed</button></sc-if>
               <sc-if value="{{ !apprNone }}"><span class="status {{ apprClass }}">{{ apprLabel }}</span><span class="meta" style="flex:1 1 auto">{{ apprWhen }}</span><sc-if value="{{ apprSubmitted }}"><button class="btn sm quiet" onClick="{{ withdrawApproval }}">Withdraw</button></sc-if><sc-if value="{{ apprResubmit }}"><button class="btn sm quiet" onClick="{{ submitApproval }}">Resubmit</button></sc-if></sc-if>
             </div>
             <sc-if value="{{ apprGuardianNote }}"><p class="meta" style="margin:0">Guardian: “{{ apprGuardianNote }}”</p></sc-if>
@@ -1155,7 +1157,7 @@ class Component extends DCLogic {
     tab: "content",
     zoom: 1, fitScale: 1, cardW: 0,
     gate: (typeof window !== "undefined" && window.__gate) ? (window.__gate.lift ? "lift" : "open") : null, gateColor: (typeof window !== "undefined" && window.__gate) ? window.__gate.c : "#245FFF", arriving: false, userMenuOpen: false,
-    bbPrevTpl: "speaker", bbPrevWay: 0, chat: [], makeText: "", makeOpen: false, makePending: false,
+    batch: null, bbPrevTpl: "speaker", bbPrevWay: 0, chat: [], makeText: "", makeOpen: false, makePending: false,
     wsMenuOpen: false, bbMenuOpen: false, clientDialog: null, confirm: null, brandRev: 0, bbHex: {}, bbNewLabel: "", bbLogoError: "", bbPartnerError: "",
     saveState: "idle", savedAt: 0,
     past: [], future: [],
@@ -1750,7 +1752,28 @@ class Component extends DCLogic {
   closeMake = () => { this.setState({ makeOpen: false }); const r = this._makeReturn; if (r && r.focus && document.body.contains(r)) r.focus(); };
   makeSend = (given) => {
     const text = String(given != null ? given : this.state.makeText).trim(); if (!text) return;
-    let r = readBrief(text); const last = this._makeLast;
+    const last = this._makeLast;
+    // "Change the headline to …": a plain edit to the piece just made.
+    const edit = last && text.match(/^(?:please\s+)?(?:change|make|set|update)\s+(?:the\s+)?(headline|title|label|strapline|summary|body|text|button|date)\s+(?:to|say|read)\s*:?\s*["“']?(.+?)["”']?$/i);
+    const editOn = edit && this.state.drafts.find(x => x.familyId === last || x.setId === last);
+    if (edit && editOn && !(edit[1].toLowerCase() === "date" && !packTpl(editOn.tpl))) { // other clients' dates go through the brief reader, which knows their date row
+      const key = { headline: "headline", title: "headline", label: "eyebrow", strapline: "body", summary: "body", body: "body", text: "body", button: "cta", date: "date" }[edit[1].toLowerCase()];
+      const mine = this.state.drafts.filter(x => x.familyId === last || x.setId === last); let reply;
+      if (mine.length > 1 && mine[0].setId === last) reply = { who: "hs", text: "That set has " + mine.length + " pieces, each with its own words. Open the one you mean and change it there.", fam: last, chips: ["Open in the editor"] };
+      else if (!mine.length || !fieldsFor(mine[0]).some(f => f.key === key)) reply = { who: "hs", text: "This layout has no " + edit[1].toLowerCase() + " to change.", fam: last, chips: ["Open in the editor"] };
+      else {
+        const val = key === "eyebrow" || key === "date" ? (packTpl(mine[0].tpl) ? edit[2].toUpperCase() : edit[2]) : edit[2], thumbs = Object.assign({}, this.state.thumbs);
+        const drafts = this.state.drafts.map(x => { if (x.familyId !== last) return x; delete thumbs[x.id]; return Object.assign({}, x, { copy: Object.assign({}, x.copy, { [key]: val }), updatedAt: Date.now() }); });
+        try { this.persistDrafts(drafts); Store.set(THUMBS_KEY, thumbs); } catch (e) {}
+        this._thumbTried = new Set(); this.setState({ drafts, thumbs });
+        reply = { who: "hs", text: "Done: the " + edit[1].toLowerCase() + " now reads “" + val + "”.", fam: last, chips: ["Another colourway", "Open in the editor"] };
+      }
+      const settle0 = () => requestAnimationFrame(() => { const sc = document.querySelector(".mkscroll"); if (sc) sc.scrollTo({ top: sc.scrollHeight, behavior: "smooth" }); const el = document.getElementById("mk-input"); if (el) { this.growComposer(el); el.focus({ preventScroll: true }); } });
+      this.setState(st => ({ chat: st.chat.concat([{ who: "me", text }]), makeText: "", makePending: true }), settle0);
+      clearTimeout(this._makeT); this._makeT = setTimeout(() => this.setState(st => ({ chat: st.chat.concat([reply]), makePending: false }), settle0), 480);
+      return;
+    }
+    let r = readBrief(text);
     const adjusting = !r.tpl && last && this.state.drafts.some(x => x.familyId === last || x.setId === last) && (r.sizes.length || r.theme != null || r.nextTheme || r.remove || r.copy.date || r.copy.startTime || r.copy.venue);
     // A brief that plainly asks for something new is never read as a change to the last piece.
     const fresh = PACK && WS_ID === PACK.id && PACK.startsNew && PACK.startsNew(text);
@@ -1767,9 +1790,12 @@ class Component extends DCLogic {
   makeCreate(r, text) {
     let tpl = r.tpl, note = "";
     if (r.set && r.set.length) {
+      const off = r.set.map(sl => sl.tpl).filter((k, i, a) => a.indexOf(k) === i && BRAND.templatesOn.indexOf(k) < 0);
+      if (off.length) return { who: "hs", text: "A carousel needs “" + off.map(k => TPL[k].name).join("” and “") + "”, switched off in the " + BRAND.name + " brand book. Turn " + (off.length > 1 ? "them" : "it") + " on there to make one.", ids: [] };
       // Several designs that belong together (a carousel): one project, each slide its own design, in order.
       const setId = uid("s"), now = Date.now(), proj = newProject(r.title || "Carousel", "", "");
-      const made = r.set.map((sl, i) => { const d = newDesign(sl.tpl, (TPL[sl.tpl].sizes || ["square"])[0], proj.id); d.layout = sl.layout || 0; d.setId = setId; d.title = sl.title; d.copy = Object.assign({}, d.copy, sl.copy); d.images = {}; d.images = fillImages(d); d.updatedAt = now - i; return d; });
+      let shared = null; // one company, one photograph: every slide that shows it uses the same picture
+      const made = r.set.map((sl, i) => { const d = newDesign(sl.tpl, (TPL[sl.tpl].sizes || ["square"])[0], proj.id); d.layout = sl.layout || 0; d.setId = setId; d.title = sl.title; d.copy = Object.assign({}, d.copy, sl.copy); if (sl.ph && sl.ph.length) { d.placeholder = {}; sl.ph.forEach(k => { d.placeholder[k] = String(d.copy[k] || ""); }); } d.images = {}; d.images = fillImages(d); if (sl.tpl === r.tpl && d.images.photo) { if (shared) d.images = Object.assign({}, d.images, { photo: Object.assign({}, shared) }); else shared = d.images.photo; } d.updatedAt = now - i; return d; });
       const drafts = made.concat(this.state.drafts), projects = [proj].concat(this.state.projects);
       try { this.persistDrafts(drafts); this.persistProjects(projects); } catch (e) {}
       this.setState({ drafts, projects }); this._makeLast = setId;
@@ -2327,11 +2353,45 @@ class Component extends DCLogic {
     const ok = bmp.width === S.w && bmp.height === S.h; bmp.close && bmp.close();
     if (!ok) throw new Error("The rendered size didn't match " + S.dims + " px.");
     const name = (String(fileName || "").trim() ? slug(fileName) : this.defaultFileName(d)) + (jpg ? ".jpg" : ".png");
+    if (fileName !== false) this.saveBlob(blob, name);
+    return { name, kb: Math.round(blob.size / 1024), dims: S.dims, blob };
+  }
+  saveBlob(blob, name) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
-    return { name, kb: Math.round(blob.size / 1024), dims: S.dims };
   }
+  /* Copy that came from a scaffold and has not been rewritten. Exporting it would publish instructions, so it is held back. */
+  placeholders(d) { const ph = d && d.placeholder; if (!ph) return []; return fieldsFor(d).filter(f => ph[f.key] && String(d.copy[f.key] || "") === ph[f.key]).map(f => f.label); }
+  /* The off-screen, full-size drawing of one design, once its pictures have loaded. */
+  async offNode(id) {
+    for (let i = 0; i < 100; i++) {
+      await new Promise(r => setTimeout(r, 60));
+      const n = document.querySelector("[data-canvas='off']");
+      if (n && n.getAttribute("data-design") === id && Array.from(n.querySelectorAll("img")).every(im => im.complete && im.naturalWidth)) { await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); return n; }
+    }
+    throw new Error("The artwork didn't finish loading.");
+  }
+  /* Every piece in a project, drawn at full size and handed over as one file, in order. */
+  downloadAll = async () => {
+    const s = this.state; if (s.batch) return;
+    const project = s.projects.find(p => p.id === s.projectId); if (!project) return;
+    const all = s.drafts.filter(x => x.projectId === project.id).sort((a, b) => String(a.title).localeCompare(String(b.title), undefined, { numeric: true }));
+    const ready = all.filter(d => !TPL[d.tpl].required.some(k => !(d.copy[k] || "").trim()) && !this.placeholders(d).length), held = all.length - ready.length;
+    if (!ready.length) return this.showToast("Nothing is ready to download yet. Open a piece to finish its copy.");
+    const files = [], used = {};
+    try {
+      for (let i = 0; i < ready.length; i++) {
+        const d = ready[i]; this.setState({ batch: { id: d.id, i: i + 1, n: ready.length } });
+        const node = await this.offNode(d.id), r = await this.exportDesign(d, node, "png", false);
+        let name = r.name.replace(/\.png$/, ""); used[name] = (used[name] || 0) + 1; if (used[name] > 1) name += "-" + used[name];
+        files.push({ name: name + ".png", bytes: new Uint8Array(await r.blob.arrayBuffer()) });
+      }
+      this.saveBlob(new Blob(zipStore(files), { type: "application/zip" }), slug(project.name) + ".zip");
+      this.showToast("Download started · " + files.length + (files.length === 1 ? " image" : " images") + " in " + slug(project.name) + ".zip" + (held ? " · " + held + " held back with unfinished copy" : ""));
+    } catch (e) { this.showToast("We couldn't prepare the set. " + (e && e.message ? e.message : "")); }
+    this.setState({ batch: null });
+  };
   download = async () => {
     const s = this.state; if (s.exporting) return;
     const node = document.querySelector("[data-canvas='1']");
@@ -2601,6 +2661,9 @@ class Component extends DCLogic {
         boards.push({ isHeading: true, text: "Projects", sub: "" });
       }
       shownProjects.forEach(pj => boards.push(this.projectBoard(pj)));
+    } else if (view === "project" && project && s.batch) {
+      const bd = s.drafts.find(x => x.id === s.batch.id);
+      if (bd) boards.push(this.boardVals(bd, "offstage", { open: null, keys: null, aria: "" }));
     } else if (view === "project" && project) {
       familyCards(projDesigns, false).forEach(b => boards.push(b));
     } else if (view === "templates") {
@@ -2647,7 +2710,7 @@ class Component extends DCLogic {
       bodyClass: isEditor ? "body" : "shell",
       mainClass: isEditor ? "stage-wrap" : "content",
       stageClass: isEditor ? "stage" : "",
-      boardsClass: isEditor ? "boards stage-boards" : (view === "brand" ? "boards bbpreview" : view === "calendar" ? "boards offstage" : (realBoards ? "page grid" + (s.layout === "list" ? " list" : "") : "sr")),
+      boardsClass: isEditor ? "boards stage-boards" : (view === "brand" ? "boards bbpreview" : view === "calendar" || (view === "project" && s.batch) ? "boards offstage" : (realBoards ? "page grid" + (s.layout === "list" ? " list" : "") : "sr")),
       sortKey: s.sortKey, setSort: (e) => { this.setState({ sortKey: e.target.value }); this.say("Sorted " + e.target.options[e.target.selectedIndex].text.toLowerCase()); },
       q: s.q, setQ: (e) => this.setState({ q: e.target.value, menuId: null }), clearQ: () => this.setState({ q: "" }),
       isGrid: s.layout === "grid", pickGrid: () => { this.setState({ layout: "grid" }); this.say("Grid view"); }, pickList: () => { this.setState({ layout: "list" }); this.say("List view"); },
@@ -2662,6 +2725,9 @@ class Component extends DCLogic {
       emptyProjectsMsg: s.pill === "active" ? "No active projects. Create one to start making designs." : "Nothing archived. Archive a project from its menu when it's finished.",
       openNewProject: this.openNewProject,
       project: project || { name: "", brief: "", due: "" },
+      canDownloadAll: view === "project" && projDesigns.length > 1, batchOn: !!s.batch, downloadAll: this.downloadAll,
+      downloadAllLabel: s.batch ? "Preparing " + s.batch.i + " of " + s.batch.n : "Download all",
+      batchNote: s.batch ? "Drawing each piece at full size. " + s.batch.i + " of " + s.batch.n + "." : "",
       projectDesignCount: (n => n + (n === 1 ? " design" : " designs"))(new Set(projDesigns.map(x => x.familyId || x.id)).size),
       projectNextText: (() => { if (!project) return ""; const today = isoDay(new Date()); const nx = projDesigns.map(x => x.scheduledAt).filter(x => x && x >= today).sort()[0]; return nx ? fmtShort(nx) : ""; })(),
       projectEditedText: project ? fmtWhen(project.updatedAt) : "",
@@ -2769,8 +2835,9 @@ class Component extends DCLogic {
     const slots = slotsFor(d);
     const fieldsDef = fieldsFor(d);
     const ratio = contrast(th.ground, th.accent);
-    const blocked = missing.length > 0 || over.length > 0;
-    const blockedMsg = missing.length ? "Add " + (fieldsDef.find(f => f.key === missing[0]) || { label: missing[0] }).label.toLowerCase().replace(/^a /, "") + " to continue." : "Some text doesn't fit this layout yet. Shorten it or choose another size.";
+    const stale = this.placeholders(d);
+    const blocked = missing.length > 0 || over.length > 0 || stale.length > 0;
+    const blockedMsg = stale.length && !missing.length ? "Replace the placeholder " + stale[0].toLowerCase() + " to continue." : missing.length ? "Add " + (fieldsDef.find(f => f.key === missing[0]) || { label: missing[0] }).label.toLowerCase().replace(/^a /, "") + " to continue." : "Some text doesn't fit this layout yet. Shorten it or choose another size.";
     const checks = [];
     checks.push(missing.length ? { level: "fail", label: "Required content missing: " + missing.map(k => (fieldsDef.find(f => f.key === k) || { label: k }).label).join(", ") } : { level: "pass", label: "All required content is in" });
     checks.push(over.length ? { level: "fail", label: "Text overflows the layout: " + overLabels.join(", ") } : { level: "pass", label: "All text fits the layout" });
@@ -2780,6 +2847,8 @@ class Component extends DCLogic {
     if (soft.length) checks.push({ level: "warn", label: "May look soft: " + soft.map(x => x.label).join(", ") });
     checks.push({ level: ratio >= 4.5 ? "pass" : "warn", label: th.name + " · " + ratio.toFixed(1) + ":1 contrast" });
     const ap = this.appr(d); if (ap.status !== "none") checks.push({ level: ap.status === "approved" ? "pass" : "warn", label: "Approval: " + this.apprLabel(d).toLowerCase() });
+    if (stale.length) checks.unshift({ level: "fail", label: "Placeholder copy still in: " + stale.join(", ") });
+    const approver = ((BRAND.compliance || {}).approver || "").trim(); if (approver) checks.push({ level: "warn", label: "Before posting: " + approver });
     const dotColor = (l) => l === "pass" ? "var(--hs-success)" : l === "warn" ? "var(--hs-warning)" : "var(--hs-error)";
     const fieldErr = (k) => missing.indexOf(k) >= 0 ? (LABELS[k] ? "Add a " + LABELS[k].toLowerCase() + " to continue." : "This is needed.") : (over.indexOf(k) >= 0 ? "This is too long for this layout. Shorten it or choose another size." : "");
 
@@ -2797,6 +2866,7 @@ class Component extends DCLogic {
       tplName: tplDef.name, sizeLabel: S.label, sizeDims: S.dims, themeName: th.name,
       templateTiles: TEMPLATES.filter(t => BRAND.templatesOn.indexOf(t.key) >= 0 || d.tpl === t.key).map(t => ({ name: t.name, on: d.tpl === t.key, pick: () => this.switchTemplate(t.key) })),
       hasLayouts: (tplDef.layouts || []).length > 1, layoutTiles: (tplDef.layouts || []).map((name, i) => ({ name, on: (d.layout || 0) === i, pick: () => this.setLayout(i) })),
+      apprHint: ((BRAND.compliance || {}).approver || "").trim() ? "A Potting Shed design check is optional." : "Approval is optional.",
       apprNone: this.appr(d).status === "none", apprSubmitted: this.appr(d).status === "submitted", apprResubmit: ["changes", "changed"].indexOf(this.appr(d).status) >= 0,
       apprLabel: this.apprLabel(d), apprClass: this.apprClass(d), apprNote: this.appr(d).note || "", apprGuardianNote: this.appr(d).guardianNote || "",
       apprWhen: (() => { const a = this.appr(d); if (a.status === "submitted") return "Sent " + fmtWhen(new Date(a.at).getTime()) + " · " + a.ref; if (a.decidedAt) return fmtWhen(new Date(a.decidedAt).getTime()) + " · " + a.ref; return a.ref || ""; })(),
