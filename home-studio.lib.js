@@ -33,6 +33,11 @@ const BRAND = {
     { name: "Light",   value: "#E5E6E7" }
   ],
   fonts: { display: "PP Neue Montreal", accent: "Quarto Italic" },
+  /* How the templates are drawn. These are the levers a designer would reach for; everything else is fixed by the layout. */
+  type: { headWeight: 600 },                       // 400 Regular · 500 Medium · 600 Semi-bold, for names, headlines and labels
+  style: { line: 2, radius: 0, photo: "colour" },  // keyline weight in px (0 = none) · image corner radius · "colour" or "mono"
+  logoSize: "m",                                   // how large the logo sits in the footer: s · m · l
+  imagery: "Mono cut-out portraits on a brand colour. Wide, well-lit room shots for events. No stock photography.",
   templatesOn: ["speaker", "event", "listing", "trio", "partners", "lockup"],
   team: [
     { name: "Luke Vidamour", role: "Partner, Potting Shed", src: "assets/team/luke-vidamour.jpg" },
@@ -534,9 +539,10 @@ function imgVals(im) {
     style: { position: "absolute", left: "50%", bottom: 0, top: "auto", right: "auto", height: (100 * z) + "%", width: "auto", maxWidth: (170 * z) + "%", display: "block", objectFit: "contain", objectPosition: "50% 100%", // in a tall, narrow frame the figure is capped at 1.7 frame widths so it stays a figure, not a face fragment
              transform: "translate(-" + x + "%, " + ((1 - y / 100) * (z - 1) / z * 100).toFixed(2) + "%)" }
   };
+  const mono = BRAND.style && BRAND.style.photo === "mono";
   return {
     has: true, src: im.src,
-    style: { position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", objectFit: "cover",
+    style: { filter: mono ? "grayscale(1) contrast(1.06)" : "none", position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", objectFit: "cover",
              objectPosition: x + "% " + y + "%", transform: "scale(" + z + ")", transformOrigin: x + "% " + y + "%" }
   };
 }
@@ -586,7 +592,7 @@ const Store = {
    A client is a workspace: its own brand book, projects, designs and uploads. The brand book is the single
    source every template reads from (BRAND), so editing it re-skins the artwork. Switching client reloads the page. */
 const WS_KEY = "hs-workspaces-v1", WS_CUR = "hs-ws-current", BRAND_KEY = "hs-brand-v1", DEFAULT_WS = "tekex";
-const BRAND_EDITABLE = ["powered", "speakerKicker", "name", "url", "logo", "about", "voice", "dos", "donts", "hashtags", "palette", "themes", "barLabels", "partners", "templatesOn", "team", "log", "updatedAt", "updatedBy"];
+const BRAND_EDITABLE = ["powered", "speakerKicker", "type", "style", "logoSize", "imagery", "name", "url", "logo", "about", "voice", "dos", "donts", "hashtags", "palette", "themes", "barLabels", "partners", "templatesOn", "team", "log", "updatedAt", "updatedBy"];
 const BRAND_DEFAULT = JSON.parse(JSON.stringify(BRAND));
 function hexToRgb(hex) { const m = String(hex || "").trim().replace(/^#/, ""); const f = m.length === 3 ? m.split("").map(ch => ch + ch).join("") : m; const n = parseInt(f, 16); return /^[0-9a-fA-F]{6}$/.test(f) ? "rgb(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + ")" : "rgb(0,0,0)"; }
 function rgbToHex(rgb) { return "#" + parseRgb(rgb).map(v => v.toString(16).padStart(2, "0")).join("").toUpperCase(); }
@@ -605,6 +611,7 @@ function blankBrand(name, primary, secondary, url) {
     themes: [way("Primary", p, best(p)), way("Secondary", q, best(q)), way("Ink", ink, [p, q, paper].sort((a, b) => contrast(hexToRgb(b), hexToRgb(ink)) - contrast(hexToRgb(a), hexToRgb(ink)))[0])],
     barLabels: ["EVENT", "SPEAKERS", "PARTNERS", "NEWS"], partners: [{ key: "ps", name: "Potting Shed", src: "assets/ps-logo.svg" }], library: [],
     fonts: { display: "PP Neue Montreal", accent: "Quarto Italic" }, templatesOn: ["speaker", "event", "listing", "trio", "partners", "lockup"],
+    type: { headWeight: 500 }, style: { line: 2, radius: 0, photo: "colour" }, logoSize: "m", imagery: "",
     team: JSON.parse(JSON.stringify(BRAND_DEFAULT.team)), log: [], studioEmail: BRAND_DEFAULT.studioEmail
   };
 }
@@ -656,6 +663,7 @@ function pottingShedBrand() {
       {"id": "ps-work-gravity-defying-gravity", "name": "Gravity - Defying Gravity", "src": "assets/ps/work/gravity-defying-gravity.jpg", "group": "Work", "w": 1600, "h": 1066}
     ],
     fonts: { display: "PP Neue Montreal", accent: "Quarto Italic" }, templatesOn: ["speaker", "event", "listing", "trio", "partners", "lockup"],
+    type: { headWeight: 400 }, style: { line: 0, radius: 0, photo: "colour" }, logoSize: "m", imagery: "", // guidelines p.18: Regular weight, hierarchy through scale; p.12: no holding shapes
     team: [{"name": "Abbie Morton", "role": "Designer", "src": "assets/ps/team/abbie-morton.jpg"}, {"name": "Al Mitchell", "role": "Partner", "src": "assets/ps/team/al-mitchell.jpg"}, {"name": "Ed Prow", "role": "Partner", "src": "assets/ps/team/ed-prow.jpg"}, {"name": "Emily Devon", "role": "Senior Designer", "src": "assets/ps/team/emily-devon.jpg"}, {"name": "Harry Torode", "role": "Designer", "src": "assets/ps/team/harry-torode.jpg"}, {"name": "Jamie Dodds", "role": "Developer", "src": "assets/ps/team/jamie-dodds.jpg"}, {"name": "Jayne White", "role": "Accountant", "src": "assets/ps/team/jayne-white.jpg"}, {"name": "Keelie Chadwick", "role": "Account Manager", "src": "assets/ps/team/keelie-chadwick.jpg"}, {"name": "Luke Vidamour", "role": "Partner", "src": "assets/ps/team/luke-vidamour.jpg"}, {"name": "Marike Visagie", "role": "Project Manager", "src": "assets/ps/team/marike-visagie.jpg"}, {"name": "Nat Whitty", "role": "Studio Director", "src": "assets/ps/team/nat-whitty.jpg"}, {"name": "Scarlett Mauger", "role": "Project Manager", "src": "assets/ps/team/scarlett-mauger.jpg"}, {"name": "Silvie Grant", "role": "Senior Designer", "src": "assets/ps/team/silvie-grant.jpg"}, {"name": "Tom Langford", "role": "Partner", "src": "assets/ps/team/tom-langford.jpg"}],
     log: [], studioEmail: BRAND_DEFAULT.studioEmail
   };
@@ -691,6 +699,9 @@ function applyBrand(saved) {
   BRAND_EDITABLE.forEach(k => { if (saved[k] !== undefined) BRAND[k] = JSON.parse(JSON.stringify(saved[k])); });
   if (!BRAND.themes || !BRAND.themes.length) BRAND.themes = JSON.parse(JSON.stringify(BRAND_DEFAULT.themes));
   if (!BRAND.templatesOn || !BRAND.templatesOn.length) BRAND.templatesOn = TEMPLATES.map(t => t.key);
+  if (!BRAND.type) BRAND.type = { headWeight: 600 };
+  if (!BRAND.style) BRAND.style = { line: 2, radius: 0, photo: "colour" };
+  if (!BRAND.logoSize) BRAND.logoSize = "m";
   BRAND.workspace = BRAND.name;
   return BRAND;
 }

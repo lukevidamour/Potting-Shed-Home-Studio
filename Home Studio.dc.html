@@ -8,13 +8,13 @@
 <link rel="icon" type="image/svg+xml" href="assets/ps-favicon.svg">
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261111k"></script>
+<script src="home-studio.lib.js?v=20261111l"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261111m">
+<link rel="stylesheet" href="home-studio.css?v=20261111n">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -56,10 +56,10 @@
     <sc-if value="{{ !isEditor }}">
       <header class="navwrap" data-chrome="1">
         <nav class="gnav glass" aria-label="Workspace navigation">
-          <button class="bead logo" onClick="{{ goProjects }}" aria-label="Potting Shed Home Studio, home"><span class="mark" aria-hidden="true"></span></button>
+          <button class="bead logo" onClick="{{ logoTap }}" aria-label="Potting Shed Home Studio, home"><span class="mark" aria-hidden="true"></span></button>
 <div class="kebab wsswitch" onClick="{{ stop }}">
           <button class="wschip" onClick="{{ toggleWsMenu }}" aria-haspopup="menu" aria-expanded="{{ wsMenuOpen }}" aria-label="Client: {{ wsName }}. Switch client">
-            <span class="wsmark" style="{{ wsMarkStyle }}"><sc-if value="{{ wsBuiltInLogo }}"><svg viewBox="0 0 879.658 181" role="img" aria-label="TEKEX"><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path><path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path><path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path><path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path></svg></sc-if><sc-if value="{{ wsLogoMask }}"><i style="{{ wsLogoMaskStyle }}"></i></sc-if><sc-if value="{{ wsLogoText }}"><b>{{ wsInitials }}</b></sc-if></span>
+            <span class="wsmark" style="{{ wsMarkStyle }}" data-i="{{ wsInitials }}"><sc-if value="{{ wsBuiltInLogo }}"><svg viewBox="0 0 879.658 181" role="img" aria-label="TEKEX"><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path><path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path><path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path><path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path></svg></sc-if><sc-if value="{{ wsLogoMask }}"><i style="{{ wsLogoMaskStyle }}"></i></sc-if><sc-if value="{{ wsLogoText }}"><b>{{ wsInitials }}</b></sc-if></span>
             <span class="wsname">{{ wsName }}</span>
             <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4-4 4 4M8 14l4 4 4-4"/></svg>
           </button>
@@ -79,6 +79,7 @@
           </div>
           <span class="navgap"></span>
           <div class="gfoot">
+          <button class="bead round themebtn" onClick="{{ toggleTheme }}" aria-label="{{ themeToggleLabel }}" title="{{ themeToggleLabel }}"><sc-if value="{{ isDark }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></sc-if><sc-if value="{{ isLight }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if></button>
           <button class="bead round" onClick="{{ openAsk }}" aria-label="Ask Potting Shed" title="Ask Potting Shed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></button>
           <button class="bead round" onClick="{{ openHelp }}" aria-label="How it works" title="How it works"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/><path d="M12 17h.01"/></svg></button>
           <div class="kebab" onClick="{{ stop }}">
@@ -400,6 +401,10 @@
             </span>
           </div>
 
+          <div class="bbtop"><span class="bbscore">{{ bbScore }}</span><sc-if value="{{ bbMissing }}"><span class="meta">Still to define: {{ bbMissing }}</span></sc-if></div>
+          <nav class="bbjump" aria-label="Sections"><sc-for list="{{ bbJump }}" as="jp"><button onClick="{{ jp.go }}">{{ jp.label }}</button></sc-for></nav>
+          <div class="bbprevtabs" role="group" aria-label="Preview template"><sc-for list="{{ bbPrevTabs }}" as="pv"><button aria-pressed="{{ pv.on }}" onClick="{{ pv.pick }}">{{ pv.label }}</button></sc-for></div>
+
           <section class="bbsec" aria-labelledby="bb-ess">
             <h2 id="bb-ess">Essentials</h2>
             <div class="bbbody">
@@ -418,6 +423,13 @@
                   </div>
                 </div>
               </div>
+            </div>
+          </section>
+
+          <section class="bbsec" aria-labelledby="bb-logo">
+            <h2 id="bb-logo">Logo<span>How it sits on every artwork.</span></h2>
+            <div class="bbbody">
+              <div class="ctl"><span>Size in the footer</span><div class="segs" role="group" aria-label="Logo size"><sc-for list="{{ bbLogoSizes }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div>
             </div>
           </section>
 
@@ -443,7 +455,7 @@
             <div class="bbbody">
               <div class="ways">
                 <sc-for list="{{ bbWays }}" as="w">
-                  <div class="wayrow">
+                  <div class="wayrow {{ w.prevClass }}" onMouseEnter="{{ w.preview }}">
                     <span class="mini" style="{{ w.miniStyle }}" aria-hidden="true"><b>Aa</b><i style="{{ w.barStyle }}"></i></span>
                     <input class="input" value="{{ w.name }}" onChange="{{ w.setName }}" aria-label="Colourway name" />
                     <select class="input" value="{{ w.groundHex }}" onChange="{{ w.setGround }}" aria-label="{{ w.groundLabel }}"><sc-for list="{{ w.options }}" as="o"><option value="{{ o.value }}">{{ o.name }}</option></sc-for></select>
@@ -461,9 +473,20 @@
             <h2 id="bb-type">Typography<span>Fonts are installed by Potting Shed.</span></h2>
             <div class="bbbody">
               <div class="types">
-                <div class="type"><span class="spec">Aa</span><div><b>PP Neue Montreal</b><span class="meta">Headlines, names and body copy</span></div></div>
+                <div class="type"><span class="spec" style="{{ bbSpecStyle }}">Aa</span><div><b>PP Neue Montreal</b><span class="meta">Headlines, names and body copy</span></div></div>
                 <div class="type"><span class="spec acc">Aa</span><div><b>Quarto Italic</b><span class="meta">A single accent word, never a full line</span></div></div>
               </div>
+              <div class="ctl"><span>Heading weight</span><div class="segs" role="group" aria-label="Heading weight"><sc-for list="{{ bbWeights }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div>
+            </div>
+          </section>
+
+          <section class="bbsec" aria-labelledby="bb-lay">
+            <h2 id="bb-lay">Layout and imagery<span>The few levers that change how every template is drawn.</span></h2>
+            <div class="bbbody">
+              <div class="ctl"><span>Keylines</span><div class="segs" role="group" aria-label="Keylines"><sc-for list="{{ bbLines }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div>
+              <div class="ctl"><span>Image corners</span><div class="segs" role="group" aria-label="Image corners"><sc-for list="{{ bbCorners }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div>
+              <div class="ctl"><span>Photography</span><div class="segs" role="group" aria-label="Photography"><sc-for list="{{ bbPhotos }}" as="o"><button aria-pressed="{{ o.on }}" onClick="{{ o.pick }}">{{ o.label }}</button></sc-for></div></div>
+              <div class="field"><label for="bb-img">Imagery guidance</label><textarea class="input" id="bb-img" value="{{ bbImagery }}" onChange="{{ bbSetImagery }}" placeholder="What good photography looks like for this brand, and what to avoid."></textarea></div>
             </div>
           </section>
 
@@ -568,7 +591,7 @@
                   <div style="min-height:1px"></div>
                   <sc-if value="{{ a.url }}">
                   <div style="display:flex;align-items:center;gap:12px;flex:0 0 auto">
-                    <span data-field="url" style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsUrl }}px">{{ a.url }}</span>
+                    <span data-field="url" style="font-weight:var(--aw-head,600);letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsUrl }}px">{{ a.url }}</span>
                     <svg viewBox="0 0 24 24" style="width:{{ a.fsUrl }}px;height:{{ a.fsUrl }}px;display:block" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 19 L19 5"></path><path d="M8 5 L19 5 L19 16"></path></svg>
                   </div>
                   </sc-if>
@@ -579,16 +602,16 @@
                   <!-- Introduce a speaker -->
                   <sc-if value="{{ a.isSpeaker }}">
                     <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:{{ a.contentDir }};gap:{{ a.gap }}px">
-                      <div style="flex:1 1 50%;min-height:{{ a.halfMin }}px;min-width:0;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor" data-slot="speaker-photo">
+                      <div style="flex:1 1 50%;min-height:{{ a.halfMin }}px;min-width:0;overflow:hidden;position:relative;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;border-radius:var(--aw-radius,0px)" data-slot="speaker-photo">
                         <sc-if value="{{ a.img1.has }}"><img sc-camel-src="{{ a.img1.src }}" alt="" style="{{ a.img1.style }}" /></sc-if>
                         <sc-if value="{{ !a.img1.has }}"><div class="ph" data-guide="1"><span>Speaker portrait</span></div></sc-if>
                       </div>
-                      <div data-fit="name,role,company,venue" style="flex:{{ a.panelFlex }};min-width:0;overflow:hidden;box-shadow:inset 0 0 0 2px currentColor;padding:{{ a.panelPad }}px;display:flex;flex-direction:column;justify-content:flex-end;gap:{{ a.gapS }}px">
-                        <span data-field="eyebrow" style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsEyebrow }}px">{{ a.eyebrow }}</span>
-                        <span data-field="name" style="font-weight:600;letter-spacing:-0.025em;line-height:0.9;font-size:{{ a.fsName }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.name }}</span>
+                      <div data-fit="name,role,company,venue" style="flex:{{ a.panelFlex }};min-width:0;overflow:hidden;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;padding:{{ a.panelPad }}px;display:flex;flex-direction:column;justify-content:flex-end;gap:{{ a.gapS }}px">
+                        <span data-field="eyebrow" style="font-weight:var(--aw-head,600);letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsEyebrow }}px">{{ a.eyebrow }}</span>
+                        <span data-field="name" style="font-weight:var(--aw-head,600);letter-spacing:-0.025em;line-height:0.9;font-size:{{ a.fsName }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.name }}</span>
                         <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:0 {{ a.gapS }}px">
                           <span data-field="role" style="font-weight:300;letter-spacing:-0.02em;line-height:1.02;font-size:{{ a.fsMeta }}px">{{ a.role }}</span>
-                          <span data-field="company" style="font-weight:600;letter-spacing:-0.02em;line-height:1.02;font-size:{{ a.fsMeta }}px">{{ a.company }}</span>
+                          <span data-field="company" style="font-weight:var(--aw-head,600);letter-spacing:-0.02em;line-height:1.02;font-size:{{ a.fsMeta }}px">{{ a.company }}</span>
                         </div>
                         <span data-field="date" style="font-weight:500;letter-spacing:-0.02em;line-height:1.06;font-size:{{ a.fsDate }}px">{{ a.dateLine }}</span>
                       </div>
@@ -599,24 +622,24 @@
                   <sc-if value="{{ a.isTrio }}">
                     <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:{{ a.gap }}px">
                       <div data-fit="sessionTitle" style="flex:0 0 auto;display:flex;flex-direction:column;gap:{{ a.gapS }}px;max-height:{{ a.trioHeadMax }}px;overflow:hidden">
-                        <span data-field="eyebrow" style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsEyebrow }}px">{{ a.eyebrow }}</span>
-                        <span data-field="headline" style="font-weight:600;letter-spacing:-0.03em;line-height:0.9;font-size:{{ a.fsHeadline }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.headline }}</span>
+                        <span data-field="eyebrow" style="font-weight:var(--aw-head,600);letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsEyebrow }}px">{{ a.eyebrow }}</span>
+                        <span data-field="headline" style="font-weight:var(--aw-head,600);letter-spacing:-0.03em;line-height:0.9;font-size:{{ a.fsHeadline }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.headline }}</span>
                       </div>
                       <div style="flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:{{ a.gapS }}px">
                         <sc-for list="{{ a.trio }}" as="t">
-                          <div style="min-width:0;min-height:0;display:flex;flex-direction:column;box-shadow:inset 0 0 0 2px currentColor">
-                            <div style="position:relative;flex:1 1 auto;min-height:0;overflow:hidden" data-slot="{{ t.slotId }}">
+                          <div style="min-width:0;min-height:0;display:flex;flex-direction:column;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor">
+                            <div style="position:relative;flex:1 1 auto;min-height:0;overflow:hidden;border-radius:var(--aw-radius,0px)" data-slot="{{ t.slotId }}">
                               <sc-if value="{{ t.img.has }}"><img sc-camel-src="{{ t.img.src }}" alt="" style="{{ t.img.style }}" /></sc-if>
                               <sc-if value="{{ !t.img.has }}"><div class="ph" data-guide="1"><span>{{ t.name }}</span></div></sc-if>
                             </div>
                             <div style="flex:0 0 auto;padding:{{ a.gapS }}px;display:flex;flex-direction:column;gap:2px;border-top:2px solid currentColor">
-                              <span style="font-weight:600;letter-spacing:-0.025em;line-height:0.98;font-size:{{ a.fsTrioName }}px;overflow-wrap:anywhere">{{ t.name }}</span>
+                              <span style="font-weight:var(--aw-head,600);letter-spacing:-0.025em;line-height:0.98;font-size:{{ a.fsTrioName }}px;overflow-wrap:anywhere">{{ t.name }}</span>
                               <span style="font-weight:300;letter-spacing:-0.015em;line-height:1.1;font-size:{{ a.fsTrioCo }}px">{{ t.company }}</span>
                             </div>
                           </div>
                         </sc-for>
                       </div>
-                      <div style="flex:0 0 auto;box-shadow:inset 0 0 0 2px currentColor;padding:{{ a.panelPad }}px">
+                      <div style="flex:0 0 auto;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;padding:{{ a.panelPad }}px">
                         <span data-field="date" style="font-weight:500;letter-spacing:-0.02em;line-height:1.06;font-size:{{ a.fsDate }}px">{{ a.dateLine }}</span>
                       </div>
                     </div>
@@ -627,14 +650,14 @@
                     <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:{{ a.contentDir }};gap:{{ a.gap }}px">
                       <div data-fit="headline,body,venue" style="flex:{{ a.panelFlex }};min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:{{ a.gap }}px">
                         <div style="display:flex;flex-direction:column;gap:{{ a.gapS }}px">
-                          <span data-field="headline" style="font-weight:600;letter-spacing:-0.03em;line-height:0.88;font-size:{{ a.fsHeadline }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.headline }}</span>
+                          <span data-field="headline" style="font-weight:var(--aw-head,600);letter-spacing:-0.03em;line-height:0.88;font-size:{{ a.fsHeadline }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.headline }}</span>
                           <span data-field="body" style="font-weight:300;letter-spacing:-0.02em;line-height:1.14;font-size:{{ a.fsBody }}px;max-width:{{ a.bodyMax }}px">{{ a.body }}</span>
                         </div>
-                        <div style="flex:0 0 auto;box-shadow:inset 0 0 0 2px currentColor;padding:{{ a.panelPad }}px">
+                        <div style="flex:0 0 auto;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;padding:{{ a.panelPad }}px">
                           <span data-field="date" style="font-weight:500;letter-spacing:-0.02em;line-height:1.06;font-size:{{ a.fsDate }}px">{{ a.dateLine }}</span>
                         </div>
                       </div>
-                      <div style="flex:1 1 50%;min-height:{{ a.eventStripH }}px;min-width:0;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor" data-slot="event-image">
+                      <div style="flex:1 1 50%;min-height:{{ a.eventStripH }}px;min-width:0;overflow:hidden;position:relative;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;border-radius:var(--aw-radius,0px)" data-slot="event-image">
                         <sc-if value="{{ a.img1.has }}"><img sc-camel-src="{{ a.img1.src }}" alt="" style="{{ a.img1.style }}" /></sc-if>
                         <sc-if value="{{ !a.img1.has }}"><div class="ph" data-guide="1"><span>Event image</span></div></sc-if>
                       </div>
@@ -644,10 +667,10 @@
                   <!-- Showcase your partners -->
                   <sc-if value="{{ a.isPartners }}">
                     <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:{{ a.gap }}px">
-                      <div data-fit="headline" style="flex:0 0 auto;max-height:{{ a.trioHeadMax }}px;overflow:hidden"><span data-field="headline" style="font-weight:600;letter-spacing:-0.03em;line-height:0.9;font-size:{{ a.fsHeadline }}px;overflow-wrap:anywhere">{{ a.headline }}</span></div>
+                      <div data-fit="headline" style="flex:0 0 auto;max-height:{{ a.trioHeadMax }}px;overflow:hidden"><span data-field="headline" style="font-weight:var(--aw-head,600);letter-spacing:-0.03em;line-height:0.9;font-size:{{ a.fsHeadline }}px;overflow-wrap:anywhere">{{ a.headline }}</span></div>
                       <div style="flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat({{ a.partnerCols }},1fr);grid-auto-rows:1fr;gap:{{ a.gapS }}px">
                         <sc-for list="{{ a.partners }}" as="p">
-                          <div style="position:relative;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 2px currentColor;padding:{{ a.gapS }}px;min-height:0;overflow:hidden">
+                          <div style="position:relative;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;padding:{{ a.gapS }}px;min-height:0;overflow:hidden">
                             <div role="img" aria-label="{{ p.name }}" style="{{ p.maskStyle }}"></div>
                           </div>
                         </sc-for>
@@ -660,17 +683,17 @@
                     <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:{{ a.listDir }};gap:{{ a.docGap }}px">
                      <div style="flex:{{ a.listLeftFlex }};min-width:0;min-height:0;display:flex;flex-direction:column;gap:{{ a.docGap }}px">
                       <div data-fit="headline,body" style="flex:0 0 auto;display:flex;flex-direction:column;gap:{{ a.docGapS }}px;max-height:{{ a.listHeadMax }}px;overflow:hidden">
-                        <span data-field="eyebrow" style="font-weight:600;letter-spacing:0.06em;line-height:1;font-size:{{ a.fsDocEyebrow }}px;text-transform:uppercase">{{ a.eyebrow }}</span>
-                        <span data-field="headline" style="font-weight:600;letter-spacing:-0.03em;line-height:0.94;font-size:{{ a.fsDocTitle }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.headline }}</span>
+                        <span data-field="eyebrow" style="font-weight:var(--aw-head,600);letter-spacing:0.06em;line-height:1;font-size:{{ a.fsDocEyebrow }}px;text-transform:uppercase">{{ a.eyebrow }}</span>
+                        <span data-field="headline" style="font-weight:var(--aw-head,600);letter-spacing:-0.03em;line-height:0.94;font-size:{{ a.fsDocTitle }}px;text-wrap:balance;overflow-wrap:anywhere">{{ a.headline }}</span>
                         <span data-field="body" style="font-weight:300;letter-spacing:-0.005em;line-height:1.36;font-size:{{ a.fsDocIntro }}px;max-width:{{ a.docTextMax }}px;text-wrap:pretty">{{ a.body }}</span>
                       </div>
                       <sc-if value="{{ a.showHero }}">
-                        <div style="flex:{{ a.heroFlex }};min-height:0;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor" data-slot="listing-hero">
+                        <div style="flex:{{ a.heroFlex }};min-height:0;overflow:hidden;position:relative;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;border-radius:var(--aw-radius,0px)" data-slot="listing-hero">
                           <sc-if value="{{ a.img1.has }}"><img sc-camel-src="{{ a.img1.src }}" alt="" style="{{ a.img1.style }}" /></sc-if>
                           <sc-if value="{{ !a.img1.has }}"><div class="ph" data-guide="1"><span>Header image</span></div></sc-if>
                         </div>
                       </sc-if>
-                      <div style="flex:0 0 auto;box-shadow:inset 0 0 0 2px currentColor;padding:{{ a.docRowPad }}px {{ a.docPad }}px">
+                      <div style="flex:0 0 auto;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;padding:{{ a.docRowPad }}px {{ a.docPad }}px">
                         <span data-field="date" style="font-weight:500;letter-spacing:-0.01em;line-height:1.2;font-size:{{ a.fsDocDate }}px">{{ a.dateLine }}</span>
                       </div>
                      </div>
@@ -678,15 +701,15 @@
                         <sc-for list="{{ a.speakerList }}" as="sp">
                           <div style="min-width:0;display:flex;align-items:center;gap:{{ a.docGap }}px;border-top:2px solid currentColor;padding:{{ a.listRowPad }}px 0">
                             <sc-if value="{{ a.showPortraits }}">
-                              <div style="flex:0 0 auto;width:{{ a.thumb }}px;height:{{ a.thumb }}px;overflow:hidden;position:relative;box-shadow:inset 0 0 0 2px currentColor" data-slot="{{ sp.slotId }}">
+                              <div style="flex:0 0 auto;width:{{ a.thumb }}px;height:{{ a.thumb }}px;overflow:hidden;position:relative;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;border-radius:var(--aw-radius,0px)" data-slot="{{ sp.slotId }}">
                                 <sc-if value="{{ sp.img.has }}"><img sc-camel-src="{{ sp.img.src }}" alt="" style="{{ sp.img.style }}" /></sc-if>
                               </div>
                             </sc-if>
                             <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:{{ a.docGapXS }}px">
-                              <span style="font-weight:600;letter-spacing:-0.02em;line-height:1;font-size:{{ a.fsRowName }}px;overflow-wrap:anywhere;{{ sp.nameStyle }}">{{ sp.displayName }}</span>
+                              <span style="font-weight:var(--aw-head,600);letter-spacing:-0.02em;line-height:1;font-size:{{ a.fsRowName }}px;overflow-wrap:anywhere;{{ sp.nameStyle }}">{{ sp.displayName }}</span>
                               <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:0 {{ a.docGapS }}px">
                                 <span style="font-weight:300;letter-spacing:-0.01em;line-height:1.2;font-size:{{ a.fsRowMeta }}px">{{ sp.role }}</span>
-                                <span style="font-weight:600;letter-spacing:-0.01em;line-height:1.2;font-size:{{ a.fsRowMeta }}px">{{ sp.company }}</span>
+                                <span style="font-weight:var(--aw-head,600);letter-spacing:-0.01em;line-height:1.2;font-size:{{ a.fsRowMeta }}px">{{ sp.company }}</span>
                               </div>
                             </div>
                           </div>
@@ -704,7 +727,7 @@
                         <path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path>
                         <path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path>
                         <path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path>
-                      </svg></sc-if><sc-if value="{{ a.logoMask }}"><div style="{{ a.lockupLogoStyle }}" role="img" aria-label="{{ a.brandName }}"></div></sc-if><sc-if value="{{ a.logoText }}"><span style="font-weight:600;letter-spacing:-0.04em;line-height:0.9;font-size:{{ a.fsLockupName }}px;white-space:nowrap">{{ a.brandName }}</span></sc-if>
+                      </svg></sc-if><sc-if value="{{ a.logoMask }}"><div style="{{ a.lockupLogoStyle }}" role="img" aria-label="{{ a.brandName }}"></div></sc-if><sc-if value="{{ a.logoText }}"><span style="font-weight:var(--aw-head,600);letter-spacing:-0.04em;line-height:0.9;font-size:{{ a.fsLockupName }}px;white-space:nowrap">{{ a.brandName }}</span></sc-if>
                       <span data-field="body" style="font-weight:300;letter-spacing:-0.02em;line-height:1.1;font-size:{{ a.fsMeta }}px;text-align:center;max-width:{{ a.bodyMax }}px">{{ a.body }}</span>
                     </div>
                   </sc-if>
@@ -713,21 +736,21 @@
 
                 <sc-if value="{{ a.showBar }}">
                   <div style="flex:0 0 {{ a.barH }}px;display:flex;gap:{{ a.gapS }}px;margin-top:{{ a.gap }}px">
-                    <div style="flex:0 0 {{ a.barLeftW }}px;box-shadow:inset 0 0 0 2px currentColor;display:flex;align-items:center;justify-content:center;padding:0 {{ a.gapS }}px">
-                      <sc-if value="{{ a.logoBuiltIn }}"><svg viewBox="0 0 879.658 181" style="width:100%;height:52%;display:block" fill="currentColor" preserveAspectRatio="xMidYMid meet" role="img" aria-label="TEKEX">
+                    <div style="flex:0 0 {{ a.barLeftW }}px;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;display:flex;align-items:center;justify-content:center;padding:0 {{ a.gapS }}px">
+                      <sc-if value="{{ a.logoBuiltIn }}"><svg viewBox="0 0 879.658 181" style="width:100%;height:{{ a.barLogoH }};display:block" fill="currentColor" preserveAspectRatio="xMidYMid meet" role="img" aria-label="TEKEX">
                         <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path>
                         <path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path>
                         <path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path>
                         <path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path>
                         <path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path>
-                      </svg></sc-if><sc-if value="{{ a.logoMask }}"><div style="{{ a.barLogoStyle }}" role="img" aria-label="{{ a.brandName }}"></div></sc-if><sc-if value="{{ a.logoText }}"><span style="font-weight:600;letter-spacing:-0.04em;line-height:1;font-size:{{ a.fsBarName }}px;white-space:nowrap">{{ a.brandName }}</span></sc-if>
+                      </svg></sc-if><sc-if value="{{ a.logoMask }}"><div style="{{ a.barLogoStyle }}" role="img" aria-label="{{ a.brandName }}"></div></sc-if><sc-if value="{{ a.logoText }}"><span style="font-weight:var(--aw-head,600);letter-spacing:-0.04em;line-height:1;font-size:{{ a.fsBarName }}px;white-space:nowrap">{{ a.brandName }}</span></sc-if>
                     </div>
-                    <div style="flex:1 1 auto;min-width:0;box-shadow:inset 0 0 0 2px currentColor;display:flex;align-items:stretch">
+                    <div style="flex:1 1 auto;min-width:0;box-shadow:inset 0 0 0 var(--aw-line,2px) currentColor;display:flex;align-items:stretch">
                       <div style="flex:1 1 auto;display:flex;align-items:center;padding:0 {{ a.panelPad }}px;min-width:0">
-                        <span data-field="barLabel" style="font-weight:600;letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsLabel }}px;white-space:nowrap;overflow:hidden">{{ a.barLabel }}</span>
+                        <span data-field="barLabel" style="font-weight:var(--aw-head,600);letter-spacing:-0.02em;line-height:0.92;font-size:{{ a.fsLabel }}px;white-space:nowrap;overflow:hidden">{{ a.barLabel }}</span>
                       </div>
                       <sc-if value="{{ a.showPowered }}">
-                        <div style="flex:0 0 auto;display:flex;align-items:center;gap:{{ a.gapS }}px;padding:0 {{ a.panelPad }}px;box-shadow:inset 2px 0 0 0 currentColor">
+                        <div style="flex:0 0 auto;display:flex;align-items:center;gap:{{ a.gapS }}px;padding:0 {{ a.panelPad }}px;box-shadow:inset var(--aw-line,2px) 0 0 0 currentColor">
                           <span style="font-weight:500;letter-spacing:0.02em;line-height:1;font-size:{{ a.fsPowered }}px;text-transform:uppercase;white-space:nowrap">Powered by</span>
                           <div style="{{ a.psStyle }}" role="img" aria-label="Potting Shed"></div>
                         </div>
@@ -1037,6 +1060,7 @@ class Component extends DCLogic {
     tab: "content",
     zoom: 1, fitScale: 1, cardW: 0,
     gate: (typeof window !== "undefined" && window.__gate) ? (window.__gate.lift ? "lift" : "open") : null, gateColor: (typeof window !== "undefined" && window.__gate) ? window.__gate.c : "#245FFF", arriving: false, userMenuOpen: false,
+    bbPrevTpl: "speaker", bbPrevWay: 0,
     wsMenuOpen: false, bbMenuOpen: false, clientDialog: null, confirm: null, brandRev: 0, bbHex: {}, bbNewLabel: "", bbLogoError: "", bbPartnerError: "",
     saveState: "idle", savedAt: 0,
     past: [], future: [],
@@ -1481,6 +1505,7 @@ class Component extends DCLogic {
         const ratio = contrast(t.ground, t.accent), v = contrastVerdict(ratio), inUse = s.drafts.filter(x => x.theme === i).length;
         return {
           name: t.name, miniStyle: { background: t.ground, color: t.accent }, barStyle: { background: t.accent },
+          prevClass: (s.bbPrevWay || 0) === i ? "is-prev" : "", preview: () => { if ((this.state.bbPrevWay || 0) !== i) this.setState({ bbPrevWay: i }); },
           groundHex: rgbToHex(t.ground), accentHex: rgbToHex(t.accent), options: wayOptions(t), groundLabel: (t.name || "Colourway") + " background", accentLabel: (t.name || "Colourway") + " text and logo colour",
           setName: (e) => { const val = e.target.value; this.editBrand(b => { b.themes[i].name = val; }, "Colourways"); },
           setGround: (e) => { const val = e.target.value; this.editBrand(b => { b.themes[i].ground = hexToRgb(val); }, "Colourways", true); },
@@ -1506,9 +1531,47 @@ class Component extends DCLogic {
       closeClient: () => this.setState({ clientDialog: null }), saveClient: this.saveClient,
       gateOpen: !!s.gate, gateClass: s.gate === "open" ? "is-intro" : "is-down", gateStyle: { "--gate-c": s.gateColor },
       enterApp: this.enterApp,
-      userMenuOpen: s.userMenuOpen, toggleUserMenu: this.toggleUserMenu, signOut: this.signOut
+      userMenuOpen: s.userMenuOpen, toggleUserMenu: this.toggleUserMenu, signOut: this.signOut, logoTap: this.logoTap,
+      ...(() => {
+        const seg = (opts, cur, set, what, restyle) => opts.map(o => ({ label: o[1], on: cur === o[0], pick: () => this.editBrand(b => set(b, o[0]), what, restyle) }));
+        const T = BRAND.type || {}, ST = BRAND.style || {};
+        const checks = [["a name", !!BRAND.name], ["a web address", !!BRAND.url], ["a logo", !!BRAND.logo || WS_ID === DEFAULT_WS], ["an about line", !!(BRAND.about || "").trim()], ["tone of voice", !!(BRAND.voice || "").trim()], ["hashtags", !!(BRAND.hashtags || "").trim()],
+          ["do and don't rules", (BRAND.dos || []).some(x => x.trim()) && (BRAND.donts || []).some(x => x.trim())], ["imagery guidance", !!(BRAND.imagery || "").trim()], ["legible colourways", BRAND.themes.every(t => contrast(t.ground, t.accent) >= 3)], ["partner logos", BRAND.partners.length > 1]];
+        const missing = checks.filter(c => !c[1]).map(c => c[0]);
+        const jump = [["Essentials", "bb-ess"], ["Logo", "bb-logo"], ["Colours", "bb-col"], ["Colourways", "bb-ways"], ["Type", "bb-type"], ["Layout", "bb-lay"], ["Templates", "bb-tpl"], ["Labels", "bb-lab"], ["Partners", "bb-par"], ["Voice", "bb-voice"], ["Team", "bb-team"]];
+        const prevTpl = BRAND.templatesOn.indexOf(s.bbPrevTpl) >= 0 ? s.bbPrevTpl : BRAND.templatesOn[0];
+        return {
+          bbScore: (checks.length - missing.length) + " of " + checks.length + " defined", bbMissing: missing.join(", "),
+          bbJump: jump.map(j => ({ label: j[0], go: () => { const el = document.getElementById(j[1]); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); } })),
+          bbLogoSizes: seg([["s", "Small"], ["m", "Medium"], ["l", "Large"]], BRAND.logoSize || "m", (b, v) => { b.logoSize = v; }, "Logo", true),
+          bbWeights: seg([[400, "Regular"], [500, "Medium"], [600, "Semi-bold"]], T.headWeight || 600, (b, v) => { b.type = Object.assign({}, b.type, { headWeight: v }); }, "Typography", true),
+          bbLines: seg([[0, "None"], [2, "Fine"], [4, "Bold"]], ST.line || 0, (b, v) => { b.style = Object.assign({}, b.style, { line: v }); }, "Layout", true),
+          bbCorners: seg([[0, "Square"], [18, "Soft"], [44, "Round"]], ST.radius || 0, (b, v) => { b.style = Object.assign({}, b.style, { radius: v }); }, "Layout", true),
+          bbPhotos: seg([["colour", "Colour"], ["mono", "Black and white"]], ST.photo || "colour", (b, v) => { b.style = Object.assign({}, b.style, { photo: v }); }, "Layout", true),
+          bbSpecStyle: { fontWeight: T.headWeight || 600 },
+          bbImagery: BRAND.imagery || "", bbSetImagery: (e) => { const v = e.target.value; this.editBrand(b => { b.imagery = v; }, "Layout"); },
+          bbPrevTabs: TEMPLATES.filter(t => BRAND.templatesOn.indexOf(t.key) >= 0).map(t => ({ label: { speaker: "Speaker", event: "Event", listing: "Line-up", trio: "Sessions", partners: "Partners", lockup: "Logo" }[t.key], on: prevTpl === t.key, pick: () => this.setState({ bbPrevTpl: t.key }) }))
+        };
+      })()
     };
   }
+
+  /* The live artwork beside the brand book: one example piece, redrawn as the book changes. */
+  brandPreviewBoard() {
+    const s = this.state, tpl = BRAND.templatesOn.indexOf(s.bbPrevTpl) >= 0 ? s.bbPrevTpl : BRAND.templatesOn[0];
+    if (!this._bbPrev || this._bbPrev.tpl !== tpl) { this._bbPrev = this.exampleDesign(tpl); this._bbPrev.images = fillImages(this._bbPrev); }
+    const d = Object.assign({}, this._bbPrev, { theme: Math.min(s.bbPrevWay || 0, BRAND.themes.length - 1), showPowered: BRAND.powered !== false });
+    return this.boardVals(d, "card", { wrapClass: "card bbcard", artBoxStyle: { aspectRatio: "1 / 1" }, boxRatio: 1, boxPad: 0, title: "", desc: "", open: null, keys: null, aria: "Preview: " + TPL[tpl].name, tab: -1, wrapRole: "img" });
+  }
+  /* The logo is a button home, and each press hands the app a new accent colour. */
+  logoTap = (e) => {
+    const all = this.state.theme === "dark" ? ["#245FFF", "#12CDFF", "#01FECD", "#FDE619", "#FF16A5", "#FE1658", "#FF840A", "#CEFF00", "#69FF46"] : ["#245FFF", "#FF16A5", "#FE1658", "#FF840A"];
+    const i = all.indexOf(this._logo); this._logo = all[(i + 1) % all.length];
+    document.documentElement.style.setProperty("--hs-logo", this._logo);
+    const mark = e && e.currentTarget && e.currentTarget.querySelector(".mark");
+    if (mark && mark.animate) mark.animate([{ transform: "scale(1)" }, { transform: "scale(1.06, .94)", offset: 0.3 }, { transform: "scale(.98, 1.03)", offset: 0.6 }, { transform: "scale(1)" }], { duration: 420, easing: "cubic-bezier(.2,.8,.2,1)" });
+    this.goProjects();
+  };
 
   /* ---------- welcome gate and the curtain ---------- */
   /* The wordmark, cut into its letters so each can move on its own: every letter is the whole word seen through its own window. */
@@ -1736,7 +1799,7 @@ class Component extends DCLogic {
   async thumbBacklog() {
     if (this._thumbBusy || this.state.view === "editor") return;
     const tried = this._thumbTried || (this._thumbTried = new Set());
-    const node = Array.from(document.querySelectorAll("[data-canvas='0'][data-design]")).find(n => { const id = n.getAttribute("data-design"); return !this.state.thumbs[id] && !tried.has(id); });
+    const node = Array.from(document.querySelectorAll("[data-canvas='0'][data-design]")).find(n => { const id = n.getAttribute("data-design"); return !this.state.thumbs[id] && !tried.has(id) && this.state.drafts.some(x => x.id === id); });
     if (!node) return;
     const d = this.state.drafts.find(x => x.id === node.getAttribute("data-design")); if (!d) return;
     this._thumbBusy = true; this._thumbBusyId = d.id; tried.add(d.id); // one attempt per visit: a capture that cannot be stored must not loop
@@ -2070,7 +2133,7 @@ class Component extends DCLogic {
     const img = (id) => imgVals(d.images[id]);
     const isEdit = mode === "edit"; const isOff = mode === "offstage"; const live = isEdit || isOff;
     // Card previews: fixed 16:10 box with the whole artwork sitting inside it, centred. Nothing is cropped.
-    const boxW = this.state.cardW || 380, boxH = Math.round(boxW * 10 / 16), boxPad = 18;
+    const boxW = this.state.cardW || 380, boxH = Math.round(boxW * ((extra && extra.boxRatio) || 10 / 16)), boxPad = extra && extra.boxPad != null ? extra.boxPad : 18;
     const cover = Math.min((boxW - 2 * boxPad) / S.w, (boxH - 2 * boxPad) / S.h);
     const offX = Math.round((boxW - S.w * cover) / 2), offY = Math.round((boxH - S.h * cover) / 2);
     const scale = isOff ? 1 : (isEdit ? this.state.fitScale * this.state.zoom : cover);
@@ -2098,6 +2161,7 @@ class Component extends DCLogic {
         padding: S.pad, background: th.ground, color: th.accent,
         display: "flex", flexDirection: "column", overflow: "hidden",
         fontFamily: "'PP Neue Montreal','Helvetica Neue',Helvetica,Arial,sans-serif",
+        "--aw-head": (BRAND.type && BRAND.type.headWeight) || 600, "--aw-line": ((BRAND.style && BRAND.style.line) || 0) + "px", "--aw-radius": r((BRAND.style && BRAND.style.radius) || 0) + "px",
         transform: isOff ? "none" : "scale(" + scale + ")", transformOrigin: isEdit ? "center center" : "0 0"
       }, live ? {} : { position: "absolute", left: offX, top: offY, boxShadow: "0 " + (1 / cover) + "px " + (2 / cover) + "px rgba(0,0,0,.08), 0 " + (8 / cover) + "px " + (20 / cover) + "px rgba(0,0,0,.10)" }),
       isSpeaker: d.tpl === "speaker", isEvent: d.tpl === "event", isPartners: d.tpl === "partners",
@@ -2118,8 +2182,8 @@ class Component extends DCLogic {
       fsTrioName: r(30), fsTrioCo: r(21),
       psStyle: mask("assets/ps-logo.svg", r(150), r(32)),
       brandName: BRAND.name, logoBuiltIn: !BRAND.logo && WS_ID === DEFAULT_WS, logoMask: !!BRAND.logo, logoText: !BRAND.logo && WS_ID !== DEFAULT_WS,
-      lockupLogoStyle: BRAND.logo ? mask(BRAND.logo.src, (wide ? r(1200) : 800), (wide ? r(300) : 240)) : {}, barLogoStyle: BRAND.logo ? mask(BRAND.logo.src, "100%", "56%") : {},
-      fsLockupName: this.fitLabel(BRAND.name, r(220), wide ? r(1200) : 800), fsBarName: this.fitLabel(BRAND.name, r(72), S.barLeftW - 2 * gapS - 8),
+      lockupLogoStyle: BRAND.logo ? mask(BRAND.logo.src, (wide ? r(1200) : 800), (wide ? r(300) : 240)) : {}, barLogoStyle: BRAND.logo ? mask(BRAND.logo.src, "100%", { s: "42%", m: "56%", l: "72%" }[BRAND.logoSize] || "56%") : {}, barLogoH: { s: "40%", m: "52%", l: "66%" }[BRAND.logoSize] || "52%",
+      fsLockupName: this.fitLabel(BRAND.name, r(220), wide ? r(1200) : 800), fsBarName: this.fitLabel(BRAND.name, r(72 * ({ s: 0.8, m: 1, l: 1.15 }[BRAND.logoSize] || 1)), S.barLeftW - 2 * gapS - 8),
       img1: img(d.tpl === "speaker" ? "speaker-photo" : d.tpl === "event" ? "event-image" : "listing-hero"),
       trio: d.trio.map((t, i) => ({ name: t.name || "Speaker " + (i + 1), company: t.company, slotId: "trio-" + (i + 1), img: img("trio-" + (i + 1)) })),
       partners: partnersShown.map(p => ({ name: p.name, maskStyle: mask(p.src, "78%", "56%") })),
@@ -2258,6 +2322,7 @@ class Component extends DCLogic {
     } else if (isEditor) {
       boards.push(this.boardVals(d, "edit", { open: null, keys: null, aria: "Artwork preview" }));
     }
+    if (view === "brand") boards.push(this.brandPreviewBoard());
     const realBoards = boards.length;
     if (!isEditor && !s.sched && view !== "templates" && view !== "size") {
       // Sizes that never appear as a card have no stored thumbnail; draw one off stage at a time so the backlog can capture it.
@@ -2291,7 +2356,7 @@ class Component extends DCLogic {
       bodyClass: isEditor ? "body" : "shell",
       mainClass: isEditor ? "stage-wrap" : "content",
       stageClass: isEditor ? "stage" : "",
-      boardsClass: isEditor ? "boards stage-boards" : (view === "calendar" || view === "brand" ? "boards offstage" : (realBoards ? "page grid" + (s.layout === "list" ? " list" : "") : "sr")),
+      boardsClass: isEditor ? "boards stage-boards" : (view === "brand" ? "boards bbpreview" : view === "calendar" ? "boards offstage" : (realBoards ? "page grid" + (s.layout === "list" ? " list" : "") : "sr")),
       sortKey: s.sortKey, setSort: (e) => { this.setState({ sortKey: e.target.value }); this.say("Sorted " + e.target.options[e.target.selectedIndex].text.toLowerCase()); },
       q: s.q, setQ: (e) => this.setState({ q: e.target.value, menuId: null }), clearQ: () => this.setState({ q: "" }),
       isGrid: s.layout === "grid", pickGrid: () => { this.setState({ layout: "grid" }); this.say("Grid view"); }, pickList: () => { this.setState({ layout: "list" }); this.say("List view"); },

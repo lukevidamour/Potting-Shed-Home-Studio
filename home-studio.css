@@ -1071,3 +1071,116 @@ h1.welcome{font-size:clamp(48px,6.6vw,104px);line-height:.95;letter-spacing:-.04
 .panel .input:focus{background:var(--hs-surface)}
 .card:hover .art,.btn:hover,.btn.primary,.btn.primary:hover,.bead:hover,.gnav .wschip:hover,.weekcard:hover,.sizepill:hover,.tplbtn:hover{box-shadow:none}
 .scrim{-webkit-backdrop-filter:none;backdrop-filter:none;background:color-mix(in srgb,var(--hs-page) 92%,transparent)}
+
+/* =============================================================================
+   v6 — detail and motion. The twelve principles, applied to an interface:
+   timing (what you trigger answers inside 300ms; only arrivals take longer),
+   slow in and out (entrances ease out, exits ease in), squash and stretch kept
+   within 0.95 to 1.05, staging (one thing leads, the rest cascade behind it at
+   no more than 50ms apart), follow-through on what you touch, and a pressed
+   state on everything that can be pressed.
+   ============================================================================= */
+:root{--out:cubic-bezier(.2,.8,.2,1);--in:cubic-bezier(.4,0,1,1);--t-fast:140ms;--t:220ms;--t-enter:300ms}
+h1,h2,h3,.ttl{text-wrap:balance}
+p,.lede,.desc,.meta{text-wrap:pretty}
+.cnt,.n,.zoomv,.verdict b,.bbscore,.calcell,.cal,.wday,.dims{font-variant-numeric:tabular-nums}
+
+/* ---------- tactile: everything pressable gives under the finger, the same amount ---------- */
+.btn,.bead,.gtab,.pill,.sizepill,.tplbtn,.segs button,.bbjump button,.bbprevtabs button,.sw,.tile,.chipx button,.google,.gnav .wschip,.menu button,.weekcard,.switch{transition-property:background-color,color,border-color,scale,opacity;transition-duration:var(--t);transition-timing-function:var(--out)}
+.btn:active,.bead:active,.pill:active,.sizepill:active,.tplbtn:active,.segs button:active,.bbjump button:active,.bbprevtabs button:active,.sw:active,.tile:active,.google:active,.gnav .wschip:active,.weekcard:active{scale:.96;transition-duration:var(--t-fast)}
+.gtab:active{scale:.98}
+.menu button:active{scale:.98}
+.card .art{transition:background-color var(--t) var(--out),scale var(--t) var(--out)}
+.card:active .art{scale:.985;transition-duration:var(--t-fast)}
+.card .art>.thumbimg,.card .shelf{transition:scale 420ms var(--out)}
+.switch:active::after{width:24px}
+.switch:checked:active::after{transform:translateX(12px)}
+.switch::after{transition:transform var(--t) var(--out),width var(--t-fast) var(--out)}
+/* small targets keep a 40px reach */
+.card .kebab .btn.icon,.chipx button,.ptile .prow .btn.icon{position:relative}
+.card .kebab .btn.icon::after,.chipx button::after,.ptile .prow .btn.icon::after{content:"";position:absolute;inset:50% auto auto 50%;width:40px;height:40px;translate:-50% -50%}
+/* artwork keeps a crisp edge on the flat field, whatever its colour */
+.card .art>.thumbimg,.card .shelf img,.weekcard .wart img{outline:1px solid rgba(0,0,0,.1);outline-offset:-1px}
+:root[data-theme="dark"] .card .art>.thumbimg,:root[data-theme="dark"] .card .shelf img,:root[data-theme="dark"] .weekcard .wart img{outline-color:rgba(255,255,255,.1)}
+
+/* ---------- cascade: each view arrives in order, head first ---------- */
+@keyframes cascade{from{opacity:0;translate:0 14px}}
+@keyframes cascade-tile{from{opacity:0;translate:0 18px;scale:.985}}
+.page,.step{animation:none}
+.page>*{animation:cascade var(--t-enter) var(--out) backwards}
+.page>*:nth-child(2){animation-delay:40ms}.page>*:nth-child(3){animation-delay:80ms}.page>*:nth-child(4){animation-delay:120ms}.page>*:nth-child(5){animation-delay:160ms}.page>*:nth-child(n+6){animation-delay:200ms}
+.pagehead>*,.welcome-wrap>*{animation:cascade var(--t-enter) var(--out) backwards}
+.pagehead>*:nth-child(2),.welcome-wrap>*:nth-child(2){animation-delay:50ms}
+.grid>.card:not(.offcard),.weekstrip>.weekcard{animation:cascade-tile 360ms var(--out) calc(120ms + var(--i,0)*40ms) backwards}
+.weekstrip>.weekcard:nth-child(2){--i:1}.weekstrip>.weekcard:nth-child(3){--i:2}.weekstrip>.weekcard:nth-child(4){--i:3}.weekstrip>.weekcard:nth-child(5){--i:4}.weekstrip>.weekcard:nth-child(n+6){--i:5}
+.grid>.card:nth-of-type(n+10){--i:9}
+.is-arriving .grid>.card:not(.offcard){animation:land .62s cubic-bezier(.22,1,.36,1) calc(.5s + var(--i,0)*45ms) both}
+.bb .bbsec{animation:cascade var(--t-enter) var(--out) backwards}
+.bb .bbsec:nth-of-type(1){animation-delay:120ms}.bb .bbsec:nth-of-type(2){animation-delay:160ms}.bb .bbsec:nth-of-type(3){animation-delay:200ms}.bb .bbsec:nth-of-type(n+4){animation-delay:240ms}
+.panel .sect{animation:cascade var(--t-enter) var(--out) backwards}
+.panel .sect:nth-child(2){animation-delay:35ms}.panel .sect:nth-child(3){animation-delay:70ms}.panel .sect:nth-child(4){animation-delay:105ms}.panel .sect:nth-child(n+5){animation-delay:140ms}
+.hdr.compact{animation:none}
+.hdr.compact>*{animation:cascade var(--t-enter) var(--out) backwards}
+.hdr.compact>*:nth-child(2){animation-delay:30ms}.hdr.compact>*:nth-child(3){animation-delay:60ms}.hdr.compact>*:nth-child(n+4){animation-delay:90ms}
+.panel{animation:none}
+.boards.stage-boards [data-canvas]{animation:art-in 420ms var(--out) 80ms backwards}
+.toolbar>*{animation:cascade var(--t-enter) var(--out) 120ms backwards}
+.calcell,.cal .calhead span{animation:none}
+
+/* ---------- what you trigger answers at once ---------- */
+.menu{animation:menu-in var(--t-fast) var(--out)}
+@keyframes menu-in{from{opacity:0;scale:.97}}
+.menu button{animation:none}
+.scrim{animation:fade var(--t) var(--out)}
+.dialog{animation:sheet-in 260ms var(--out)}
+@keyframes sheet-in{from{opacity:0;translate:0 12px;scale:.985}}
+.drawer{animation:drawer-in 280ms var(--out)}
+@keyframes drawer-in{from{opacity:0;translate:16px 0}}
+.toast{animation:toast-in 280ms var(--out)}
+@keyframes toast-in{from{opacity:0;translate:-50% 10px}}
+.gtab{transition:color var(--t) var(--out),gap 360ms var(--spring),scale var(--t) var(--out)}
+.gtab::before{transition:width 360ms var(--spring)}
+.pill[aria-selected="true"]::before{animation:dot-in 360ms var(--spring) backwards}
+@keyframes dot-in{from{scale:0}}
+.bead svg,.btn.icon svg{transition:rotate 360ms var(--spring),scale var(--t) var(--out)}
+.themebtn:hover svg{rotate:20deg}
+.themebtn:active svg{rotate:-30deg;scale:.9}
+
+/* ---------- circles for clients ---------- */
+.gnav .wschip .wsmark{width:34px;height:34px;flex:0 0 34px;border-radius:999px;padding:0;display:grid;place-items:center}
+.gnav .wschip .wsmark>*{display:none!important}
+.gnav .wschip .wsmark::after{content:attr(data-i);font-size:12px;line-height:1;font-weight:600;letter-spacing:0}
+
+/* ---------- brand book: more depth, same ease ---------- */
+.bb .pagehead{margin-bottom:18px}
+.bbtop{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.bbscore{font-size:15px;line-height:22px;font-weight:500;display:inline-flex;align-items:center;gap:8px}
+.bbscore::before{content:"";width:9px;height:9px;border-radius:999px;background:var(--accent)}
+.bbjump{display:flex;flex-wrap:wrap;gap:4px 18px;margin:22px 0 26px}
+.bbjump button{border:0;background:none;padding:4px 0;font-size:15px;line-height:22px;color:var(--quiet);cursor:pointer}
+.bbjump button:hover{color:var(--hs-ink)}
+.bbsec{grid-template-columns:190px minmax(0,620px);gap:20px 40px;scroll-margin-top:24px}
+.bbsec>h2{font-size:22px;line-height:28px;font-weight:400;letter-spacing:-.02em}
+.ctl{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;min-height:44px}
+.ctl>span{font-size:14px;line-height:20px;font-weight:500}
+.segs{display:inline-flex;gap:0;border:1px solid var(--key);border-radius:999px;padding:3px}
+.segs button{height:34px;padding:0 14px;border:0;border-radius:999px;background:none;font-size:13px;line-height:18px;font-weight:500;color:var(--quiet);cursor:pointer;white-space:nowrap}
+.segs button:hover{color:var(--hs-ink)}
+.segs button[aria-pressed="true"]{background:var(--hs-ink);color:var(--hs-on-ink)}
+.wayrow{border-radius:8px;transition:background-color var(--t) var(--out)}
+.wayrow.is-prev .mini{outline:2px solid var(--hs-ink);outline-offset:2px}
+.boards.bbpreview{display:none}
+.bbprevtabs{display:none}
+@media (min-width:1360px){
+  .boards.bbpreview{display:block;position:fixed;right:48px;top:132px;width:264px;z-index:5;animation:cascade var(--t-enter) var(--out) 200ms backwards}
+  .bbcard{gap:0;cursor:default}
+  .bbcard .art,.bbcard:hover .art{background:none!important;border-radius:0}
+  .bbcard:hover .art>.thumbimg,.bbcard:hover .shelf{scale:1}
+  .bbcard .art>[data-canvas]{transition:background-color var(--t) var(--out),color var(--t) var(--out)}
+  .bbcard .cap{display:none}
+  .bbprevtabs{display:flex;flex-wrap:wrap;gap:2px 12px;position:fixed;right:48px;top:408px;width:264px;z-index:5;animation:cascade var(--t-enter) var(--out) 240ms backwards}
+  .bbprevtabs button{border:0;background:none;padding:4px 0;font-size:13px;line-height:18px;color:var(--quiet);cursor:pointer}
+  .bbprevtabs button:hover,.bbprevtabs button[aria-pressed="true"]{color:var(--hs-ink)}
+  .bbprevtabs button[aria-pressed="true"]{text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--accent);text-decoration-thickness:2px}
+  .bb{padding-right:340px}
+}
