@@ -7,13 +7,13 @@
 <meta name="description" content="Potting Shed Home Studio: on-brand TEKEX social artwork, scheduled and ready to download.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23FF16A5'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial' font-size='30' font-weight='700' text-anchor='middle' fill='white'%3Eps%3C/text%3E%3C/svg%3E">
 <script src="./support.js"></script>
+<script src="home-studio.lib.js?v=20260923g"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css">
-<script src="home-studio.lib.js?v=20260923g"></script>
-<link rel="stylesheet" href="home-studio.css?v=20260923g">
+<link rel="stylesheet" href="home-studio.css?v=20261111a">
 </helmet>
 
 <div class="app {{ viewClass }}">
@@ -348,6 +348,9 @@
               <button class="btn sm" onClick="{{ calToday }}">Today</button>
             </div>
           </div>
+          <sc-if value="{{ calJumpShow }}">
+            <div class="calnote" role="status"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span>{{ calJumpText }}</span><button class="btn sm" onClick="{{ calJumpGo }}">{{ calJumpLabel }}</button></div>
+          </sc-if>
           <div class="callayout">
             <div class="cal" role="grid" aria-label="{{ calTitle }}">
               <div class="calhead" role="row"><sc-for list="{{ calDows }}" as="dw"><span role="columnheader">{{ dw }}</span></sc-for></div>
@@ -1244,6 +1247,7 @@ class Component extends DCLogic {
   /* A stored thumbnail that no longer decodes is thrown away; the card falls back to live artwork and a fresh one is captured. */
   dropThumb(id) {
     if (!this.state.thumbs[id]) return;
+    if (this._thumbTried) this._thumbTried.delete(id);
     const thumbs = Object.assign({}, this.state.thumbs); delete thumbs[id];
     try { Store.set(THUMBS_KEY, thumbs); } catch (e) {}
     this.setState({ thumbs });
@@ -1257,12 +1261,14 @@ class Component extends DCLogic {
   /* Cards without a stored thumbnail render live artwork; capture them one at a time so later visits are cheap. */
   async thumbBacklog() {
     if (this._thumbBusy || this.state.view === "editor") return;
-    const node = Array.from(document.querySelectorAll("[data-canvas='0'][data-design]")).find(n => !this.state.thumbs[n.getAttribute("data-design")]);
+    const tried = this._thumbTried || (this._thumbTried = new Set());
+    const node = Array.from(document.querySelectorAll("[data-canvas='0'][data-design]")).find(n => { const id = n.getAttribute("data-design"); return !this.state.thumbs[id] && !tried.has(id); });
     if (!node) return;
     const d = this.state.drafts.find(x => x.id === node.getAttribute("data-design")); if (!d) return;
-    this._thumbBusy = true;
+    this._thumbBusy = true; tried.add(d.id); // one attempt per visit: a capture that cannot be stored must not loop
     try { const url = await this.renderThumb(node, d); this.storeThumb(d.id, url); } catch (e) {}
     this._thumbBusy = false;
+    if (this.state.view === "calendar") this.setState({ thumbTick: (this.state.thumbTick || 0) + 1 }); // draw the next missing one
     setTimeout(() => this.thumbBacklog(), 120);
   }
   openProject(id) { this.setState({ view: "project", projectId: id, reviewOpen: false, menuId: null }); }
@@ -1736,6 +1742,10 @@ class Component extends DCLogic {
     } else if (view === "calendar" && s.sched) {
       const sd = s.drafts.find(x => x.id === s.sched.id);
       if (sd) boards.push(this.boardVals(sd, "offstage", { open: null, keys: null, aria: "" }));
+    } else if (view === "calendar") {
+      // Sizes that never appear as a card have no stored thumbnail yet; draw one off stage at a time so the backlog can capture it.
+      const miss = s.drafts.find(x => !s.thumbs[x.id] && !(this._thumbTried && this._thumbTried.has(x.id)));
+      if (miss) boards.push(this.boardVals(miss, "card", { open: null, keys: null, aria: "", title: "", desc: "", tab: -1, wrapRole: "presentation" }));
     } else if (isEditor) {
       boards.push(this.boardVals(d, "edit", { open: null, keys: null, aria: "Artwork preview" }));
     }
@@ -1804,6 +1814,17 @@ class Component extends DCLogic {
       calPrev: () => this.setState(st => { const [y, m] = st.calMonth.split("-").map(Number); const d = new Date(y, m - 2, 1); return { calMonth: isoDay(d).slice(0, 7) }; }),
       calNext: () => this.setState(st => { const [y, m] = st.calMonth.split("-").map(Number); const d = new Date(y, m, 1); return { calMonth: isoDay(d).slice(0, 7) }; }),
       calToday: () => this.setState({ calMonth: isoDay(new Date()).slice(0, 7) }),
+      /* An empty month points to where the scheduled work is: the next month that has some, or failing that the most recent. */
+      ...(() => {
+        const months = Array.from(new Set(s.drafts.filter(x => x.scheduledAt).map(x => x.scheduledAt.slice(0, 7)))).sort();
+        if (!months.length || months.indexOf(s.calMonth) >= 0) return { calJumpShow: false, calJumpText: "", calJumpLabel: "", calJumpGo: null };
+        const next = months.find(m => m > s.calMonth), prev = months.filter(m => m < s.calMonth).pop();
+        const target = next || prev; const [ty, tm] = target.split("-").map(Number);
+        const name = new Date(ty, tm - 1, 1).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+        const n = s.drafts.filter(x => x.scheduledAt && x.scheduledAt.slice(0, 7) === target).length;
+        const count = n + " design" + (n === 1 ? "" : "s");
+        return { calJumpShow: true, calJumpText: "Nothing is scheduled this month. " + (next ? "Next up: " + count + " in " + name + "." : "Most recent: " + count + " in " + name + "."), calJumpLabel: "Go to " + name, calJumpGo: () => this.setState({ calMonth: target }) };
+      })(),
       calDows: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       calCells: (() => {
         const [y, m] = s.calMonth.split("-").map(Number);
