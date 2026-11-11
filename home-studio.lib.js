@@ -199,7 +199,8 @@ const CUT_SRC = {}; BRAND.library.forEach(im => { if (im.cut) CUT_SRC[im.src] = 
 function focusOf(im, x, y) { return im && im.fx != null ? { x: im.fx, y: im.fy } : { x: x == null ? 50 : x, y: y == null ? 50 : y }; }
 /* Default imagery: every image area starts filled with TEKEX photography, chosen from the design id so it is stable. */
 const PORTRAIT_IDS = ["tk-nic-rose", "tk-niraj-singh", "tk-lisa-mccabe", "tk-andrew-mcneill", "tk-jeff-macleod", "tk-guy-thompson", "tk-ian-rhodes", "tk-gabe-drogon", "tk-peter-o-brady", "tk-claire-trant", "tk-hannah-mellor", "tk-jake-schofield", "tk-oliver-le-brun", "tk-austin-gibbs", "tk-dr-omar", "tk-serena-guthrie"];
-const EVENT_IDS = ["tk-event-03", "tk-event-07", "tk-event-10", "tk-iom-02", "tk-iom-05", "tk-event-01", "tk-event-04", "tk-iom-08", "tk-event-12", "tk-reel-13", "tk-event-02", "tk-iom-11", "tk-event-08", "tk-reel-61", "tk-event-14", "tk-iom-03", "tk-event-06", "tk-reel-31", "tk-event-09", "tk-iom-07"];
+/* Defaults for event imagery: wide, well-lit room shots that survive any crop. Close-ups and reel frames stay in the library but are not picked automatically. */
+const EVENT_IDS = ["tk-event-03", "tk-event-10", "tk-event-01", "tk-event-02", "tk-event-06", "tk-event-04", "tk-event-07", "tk-event-09", "tk-event-05", "tk-iom-02", "tk-iom-07", "tk-iom-06", "tk-iom-09", "tk-event-extra-01", "tk-event-12", "tk-event-14"];
 function hashStr(str) { let h = 0; for (let i = 0; i < String(str).length; i++) h = (h * 31 + String(str).charCodeAt(i)) >>> 0; return h; }
 function libImg(id, x, y) { const im = LIB[id]; if (!im) return null; const f = focusOf(im, x, y); const rec = { src: im.src, name: im.name, x: f.x, y: f.y, zoom: 1 }; if (im.cut) rec.cut = true; if (im.w) { rec.w = im.w; rec.h = im.h; } return rec; }
 function portraitFor(name, seed) { const s = slug(name || ""); const direct = PORTRAIT_IDS.find(id => id === "tk-" + s); return libImg(direct || PORTRAIT_IDS[hashStr(seed) % PORTRAIT_IDS.length], 50, 28); }
@@ -530,7 +531,7 @@ function imgVals(im) {
   if (im.cut) return {
     has: true, src: im.src, cut: true,
     // Stands on the bottom edge at the frame's height. x centres the face; when zoomed, y chooses how much of the top stays in view.
-    style: { position: "absolute", left: "50%", bottom: 0, top: "auto", right: "auto", height: (100 * z) + "%", width: "auto", maxWidth: "none", display: "block", objectFit: "fill",
+    style: { position: "absolute", left: "50%", bottom: 0, top: "auto", right: "auto", height: (100 * z) + "%", width: "auto", maxWidth: (170 * z) + "%", display: "block", objectFit: "contain", objectPosition: "50% 100%", // in a tall, narrow frame the figure is capped at 1.7 frame widths so it stays a figure, not a face fragment
              transform: "translate(-" + x + "%, " + ((1 - y / 100) * (z - 1) / z * 100).toFixed(2) + "%)" }
   };
   return {

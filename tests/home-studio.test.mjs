@@ -145,3 +145,14 @@ test("re-dating only touches example fields nobody has edited", () => {
   assert.equal(r.projects[2].name, "Founders Breakfast · March");
   assert.equal(lib.redateExamples(r.projects, r.drafts, 20, 20).changed.length, 0);
 });
+
+test("cut-out portraits stand in their frame and are never stretched across it", () => {
+  const im = lib.libImg("tk-jake-schofield");
+  assert.equal(im.cut, true);
+  const v = lib.imgVals(im);
+  assert.equal(v.style.bottom, 0);
+  assert.equal(v.style.height, "100%");
+  assert.equal(v.style.objectFit, "contain");
+  const photo = lib.imgVals(lib.libImg("tk-event-03"));
+  assert.equal(photo.style.objectFit, "cover");
+});
