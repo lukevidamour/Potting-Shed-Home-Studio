@@ -14,7 +14,7 @@
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261111s">
+<link rel="stylesheet" href="home-studio.css?v=20261111t">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -1196,6 +1196,11 @@ class Component extends DCLogic {
     this.setState(Object.assign({ drafts, projects, thumbs, uploads: Store.get(UPLOADS_KEY, []) }, land === "brand" ? { view: "brand" } : {}));
     document.title = "Home Studio · " + BRAND.name + " · Potting Shed";
     this._onClickAway = () => { const st = this.state; if (st.menuId || st.projMenuOpen || st.wsMenuOpen || st.bbMenuOpen || st.userMenuOpen) this.setState({ menuId: null, projMenuOpen: false, wsMenuOpen: false, bbMenuOpen: false, userMenuOpen: false }); };
+    // Dropdowns open the app's own menu instead of the operating system's (mouse and keyboard; touch keeps the native picker).
+    this._onSelDown = (e) => { const sel = e.target.closest && e.target.closest("select"); if (!sel || sel.disabled || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return; e.preventDefault(); sel.focus(); this.openSelectMenu(sel); };
+    this._onSelKey = (e) => { const sel = e.target && e.target.tagName === "SELECT" ? e.target : null; if (!sel || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return; if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); this.openSelectMenu(sel); } };
+    document.addEventListener("mousedown", this._onSelDown, true);
+    document.addEventListener("keydown", this._onSelKey, true);
     // The light that follows the pointer across a pane of glass.
     this._onGlass = (e) => { if (e.pointerType !== "mouse") return; const pane = e.target.closest && e.target.closest(".glass"); if (!pane) return; const r = pane.getBoundingClientRect(); pane.style.setProperty("--mx", (e.clientX - r.left) + "px"); pane.style.setProperty("--my", (e.clientY - r.top) + "px"); };
     document.addEventListener("pointermove", this._onGlass, { passive: true });
@@ -1226,6 +1231,8 @@ class Component extends DCLogic {
     window.removeEventListener("beforeunload", this._onLeave);
     window.removeEventListener("click", this._onClickAway);
     document.removeEventListener("pointermove", this._onGlass);
+    document.removeEventListener("mousedown", this._onSelDown, true);
+    document.removeEventListener("keydown", this._onSelKey, true);
     if (this._ro) this._ro.disconnect();
     clearTimeout(this._saveT); clearTimeout(this._toastT); clearTimeout(this._thumbT);
   }
@@ -1595,6 +1602,35 @@ class Component extends DCLogic {
         };
       })()
     };
+  }
+
+  /* A dropdown list drawn by the app: the same ink menu as everywhere else, anchored to its field. The real <select>
+     stays in place underneath, so forms, labels and screen readers keep working; choosing writes back to it. */
+  openSelectMenu(sel) {
+    if (this._selMenu) this._selMenu.close();
+    const menu = document.createElement("div"); menu.className = "menu selmenu"; menu.setAttribute("role", "listbox");
+    const lab = sel.getAttribute("aria-label") || (sel.labels && sel.labels[0] && sel.labels[0].textContent) || "Options"; menu.setAttribute("aria-label", lab.trim());
+    const opts = Array.from(sel.options);
+    const items = opts.map((o) => { const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "option"); b.setAttribute("aria-selected", o.selected ? "true" : "false"); b.textContent = o.textContent; b.tabIndex = -1; menu.appendChild(b); return b; });
+    const place = () => { const r = sel.getBoundingClientRect(), mh = Math.min(320, menu.scrollHeight), below = window.innerHeight - r.bottom - 12, up = below < Math.min(mh, 180) && r.top > below; menu.style.minWidth = Math.max(160, Math.round(r.width)) + "px"; menu.style.left = Math.round(Math.max(8, Math.min(r.left, window.innerWidth - menu.offsetWidth - 8))) + "px"; menu.style.maxHeight = Math.max(120, Math.min(320, (up ? r.top : below) - 6)) + "px"; if (up) { menu.style.top = "auto"; menu.style.bottom = Math.round(window.innerHeight - r.top + 6) + "px"; menu.style.transformOrigin = "bottom left"; } else { menu.style.bottom = "auto"; menu.style.top = Math.round(r.bottom + 6) + "px"; menu.style.transformOrigin = "top left"; } };
+    const close = (refocus) => { document.removeEventListener("mousedown", away, true); window.removeEventListener("resize", onMove); window.removeEventListener("scroll", onMove, true); menu.remove(); sel.removeAttribute("data-open"); this._selMenu = null; if (refocus) sel.focus(); };
+    const choose = (i) => { const o = opts[i]; if (o && !o.disabled && sel.value !== o.value) { Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(sel, o.value); sel.dispatchEvent(new Event("change", { bubbles: true })); } close(true); };
+    const away = (e) => { if (!menu.contains(e.target)) { const same = e.target === sel; close(false); if (same) { e.preventDefault(); e.stopPropagation(); } } };
+    const onMove = (e) => { if (e && e.target && menu.contains(e.target)) return; close(false); };
+    items.forEach((b, i) => b.addEventListener("click", () => choose(i)));
+    menu.addEventListener("keydown", (e) => {
+      const cur = items.indexOf(document.activeElement);
+      if (e.key === "Escape" || e.key === "Tab") { e.preventDefault(); e.stopPropagation(); close(true); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); items[Math.min(items.length - 1, cur + 1)].focus(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); items[Math.max(0, cur - 1)].focus(); }
+      else if (e.key === "Home") { e.preventDefault(); items[0].focus(); }
+      else if (e.key === "End") { e.preventDefault(); items[items.length - 1].focus(); }
+      else if (e.key.length === 1 && /\S/.test(e.key)) { const k = e.key.toLowerCase(); const next = items.findIndex((b, i) => i > cur && b.textContent.trim().toLowerCase().indexOf(k) === 0); const hit = next >= 0 ? next : items.findIndex(b => b.textContent.trim().toLowerCase().indexOf(k) === 0); if (hit >= 0) items[hit].focus(); }
+    });
+    document.body.appendChild(menu); sel.setAttribute("data-open", "1"); place();
+    (items[Math.max(0, sel.selectedIndex)] || items[0]).focus({ preventScroll: true });
+    setTimeout(() => { document.addEventListener("mousedown", away, true); window.addEventListener("resize", onMove); window.addEventListener("scroll", onMove, true); }, 0);
+    this._selMenu = { close };
   }
 
   /* ---------- make by describing ---------- */

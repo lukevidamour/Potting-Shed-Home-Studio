@@ -1272,3 +1272,15 @@ p,.lede,.desc,.meta{text-wrap:pretty}
   .gfoot{justify-content:flex-start;gap:4px;margin-top:4px}
   .gfoot .kebab .menu{left:0;right:auto;bottom:calc(100% + 12px);top:auto;transform-origin:bottom left}
 }
+
+/* ---------- dropdowns: the app's own list, not the operating system's ---------- */
+.menu.selmenu{position:fixed;z-index:400;right:auto;overflow-y:auto;overscroll-behavior:contain;animation:menu-in var(--t-fast) var(--out)}
+.menu.selmenu button{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;flex:0 0 auto;font-weight:400}
+.menu.selmenu button[aria-selected="true"]{font-weight:500}
+.menu.selmenu button[aria-selected="true"]::after{content:"";width:6px;height:11px;border:solid currentColor;border-width:0 1.6px 1.6px 0;transform:rotate(45deg);margin:-3px 4px 0 0;flex:0 0 auto}
+.menu.selmenu button:focus-visible{outline:none;box-shadow:none;background:rgba(255,255,255,.14)}
+:root[data-theme="dark"] .menu.selmenu button:focus-visible{background:rgba(23,23,23,.1)}
+select.input{cursor:pointer;transition:border-color var(--t) var(--out),color var(--t) var(--out)}
+select.input[data-open]{border-color:var(--hs-ink)}
+.filters select.input{font-weight:500}
+.filters select.input:hover{color:var(--hs-ink);text-decoration:underline;text-underline-offset:4px}
