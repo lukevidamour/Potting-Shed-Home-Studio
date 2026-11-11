@@ -16,6 +16,31 @@ const SIZE_ORDER = ["square", "portrait", "story", "landscape", "linkedin"];
 /* TEKEX brand configuration — values carried over from the existing prototype. */
 const BRAND = {
   workspace: "TEKEX",
+  name: "TEKEX",
+  url: "TEKEX.CO",
+  logo: null,                             // null = the built-in TEKEX wordmark; otherwise { src, name } (SVG or PNG with a transparent background)
+  about: "TEKEX is the innovation community for the Crown Dependencies. It connects founders, investors, operators and policymakers through talks, socials and an annual summit.",
+  voice: "Confident, plain-spoken and warm. Lead with the person or the event, not with TEKEX. Short sentences. No jargon, no exclamation marks.",
+  dos: ["Name the speaker and their company in full", "Give the date, time and venue on every event post", "Use one colourway per campaign so a series reads as a set"],
+  donts: ["Stretch, recolour or crop the wordmark", "Put text over faces in photography", "Mix more than two brand colours on one artwork"],
+  hashtags: "#TEKEX #ChannelIslands #Innovation",
+  palette: [
+    { name: "Mint",    value: "#81FFE7" },
+    { name: "Magenta", value: "#F824FF" },
+    { name: "Violet",  value: "#7824FF" },
+    { name: "Lime",    value: "#D0FFBF" },
+    { name: "Ink",     value: "#141414" },
+    { name: "Light",   value: "#E5E6E7" }
+  ],
+  fonts: { display: "PP Neue Montreal", accent: "Quarto Italic" },
+  templatesOn: ["speaker", "event", "listing", "trio", "partners", "lockup"],
+  team: [
+    { name: "Luke Vidamour", role: "Partner, Potting Shed", src: "assets/team/luke-vidamour.jpg" },
+    { name: "Ed Prow",       role: "Partner, Potting Shed", src: "assets/team/ed-prow.jpg" },
+    { name: "Tom Langford",  role: "Partner, Potting Shed", src: "assets/team/tom-langford.jpg" },
+    { name: "Al Mitchell",   role: "Partner, Potting Shed", src: "assets/team/al-mitchell.jpg" }
+  ],
+  log: [],
   studioEmail: "luke@pottingshed.com",   // where "Ask Potting Shed" messages go
   themes: [
     { name: "Mint & magenta",  ground: "rgb(129,255,231)", accent: "rgb(248,36,255)" },
@@ -156,11 +181,23 @@ LIB.u8 = LIB["tk-iom-02"];
 LIB.u9 = LIB["tk-reel-13"];
 LIB.u10 = LIB["tk-event-10"];
 const LIB_GROUPS = ["Speakers", "Events", "Reel", "Graphics", "Team"];
+/* Focal points for portraits: [face centre across, top of the head down], as % of the image. Used as the default
+   position, because object-position P% lines up the image's P% with the frame's P%: the top of the head then sits
+   just inside the frame at any frame shape, instead of being cropped by a fixed guess. */
+const FOCUS = {
+  "tk-andrew-mcneill": [42, 2], "tk-jeff-macleod": [50, 5], "tk-nic-rose": [50, 3], "tk-niraj-singh": [50, 4], "tk-guy-thompson": [50, 3],
+  "tk-ian-rhodes": [50, 3], "tk-gabe-drogon": [50, 2], "tk-peter-o-brady": [50, 3], "tk-claire-trant": [49, 4], "tk-lisa-mccabe": [50, 4],
+  "tk-hannah-mellor": [48, 3], "tk-jake-schofield": [50, 4], "tk-oliver-le-brun": [47, 5], "tk-austin-gibbs": [50, 4], "tk-dr-omar": [48, 4],
+  "tk-serena-guthrie-cutout": [50, 3], "tk-serena-guthrie": [50, 3], "tk-tim-huelin-cutout": [45, 2], "lib-al-mitchell": [55, 6],
+  "tk-ed": [50, 8], "tk-ed-bw": [48, 8], "tk-tom": [48, 10], "tk-tom-bw": [48, 10], "tk-louis": [50, 3], "tk-al-mitchell-portrait": [42, 21]
+};
+Object.keys(FOCUS).forEach(id => { if (LIB[id]) { LIB[id].fx = FOCUS[id][0]; LIB[id].fy = FOCUS[id][1]; } });
+function focusOf(im, x, y) { return im && im.fx != null ? { x: im.fx, y: im.fy } : { x: x == null ? 50 : x, y: y == null ? 50 : y }; }
 /* Default imagery: every image area starts filled with TEKEX photography, chosen from the design id so it is stable. */
 const PORTRAIT_IDS = ["tk-nic-rose", "tk-niraj-singh", "tk-lisa-mccabe", "tk-andrew-mcneill", "tk-jeff-macleod", "tk-guy-thompson", "tk-ian-rhodes", "tk-gabe-drogon", "tk-peter-o-brady", "tk-claire-trant", "tk-hannah-mellor", "tk-jake-schofield", "tk-oliver-le-brun", "tk-austin-gibbs", "tk-dr-omar", "tk-serena-guthrie"];
 const EVENT_IDS = ["tk-event-03", "tk-event-07", "tk-event-10", "tk-iom-02", "tk-iom-05", "tk-event-01", "tk-event-04", "tk-iom-08", "tk-event-12", "tk-reel-13", "tk-event-02", "tk-iom-11", "tk-event-08", "tk-reel-61", "tk-event-14", "tk-iom-03", "tk-event-06", "tk-reel-31", "tk-event-09", "tk-iom-07"];
 function hashStr(str) { let h = 0; for (let i = 0; i < String(str).length; i++) h = (h * 31 + String(str).charCodeAt(i)) >>> 0; return h; }
-function libImg(id, x, y) { const im = LIB[id]; if (!im) return null; return { src: im.src, name: im.name, x: x == null ? 50 : x, y: y == null ? 50 : y, zoom: 1 }; }
+function libImg(id, x, y) { const im = LIB[id]; if (!im) return null; const f = focusOf(im, x, y); return { src: im.src, name: im.name, x: f.x, y: f.y, zoom: 1 }; }
 function portraitFor(name, seed) { const s = slug(name || ""); const direct = PORTRAIT_IDS.find(id => id === "tk-" + s); return libImg(direct || PORTRAIT_IDS[hashStr(seed) % PORTRAIT_IDS.length], 50, 28); }
 function eventImageFor(seed) { return libImg(EVENT_IDS[hashStr(seed) % EVENT_IDS.length], 50, 50); }
 /* Fill any empty image area on a design. Returns a new images map (or the same one if nothing was missing). */
@@ -179,8 +216,8 @@ const TEMPLATES = [
   { key: "event",    name: "Announce an event",        desc: "A headline, a short intro and the date, time and venue.",          required: ["headline"] },
   { key: "listing",  name: "Meet the speakers",        desc: "A full line-up with names, roles and optional portraits.",          required: ["headline"] },
   { key: "trio",     name: "Highlight three sessions", desc: "Three speakers or sessions side by side under one title.",          required: ["sessionTitle"] },
-  { key: "partners", name: "Showcase your partners",   desc: "Approved partner logos in the TEKEX grid.",                         required: ["headline"] },
-  { key: "lockup",   name: "Brand announcement",       desc: "The TEKEX mark with a single line of copy.",                        required: ["body"] }
+  { key: "partners", name: "Showcase your partners",   desc: "Approved partner logos in a tidy grid.",                         required: ["headline"] },
+  { key: "lockup",   name: "Brand announcement",       desc: "The logo with a single line of copy.",                        required: ["body"] }
 ];
 const TPL = Object.fromEntries(TEMPLATES.map(t => [t.key, t]));
 
@@ -218,7 +255,7 @@ const EXAMPLE_COPY = {
   eyebrow: "TEKEX #36 · Speaker line-up",
   sessionPrefix: "11.00am · Talks", sessionTitle: "Wellness and emerging therapies",
   date: "Fri 22nd Aug", startTime: "2pm", endTime: "5pm", venue: "C5 Hub, Windward House",
-  barLabel: "SPEAKERS", url: "TEKEX.CO"
+  barLabel: "SPEAKERS", url: BRAND.url
 };
 const EXAMPLE_SPEAKERS = [
   { id: "s1", name: "Richard Tavernor", role: "Founder",  company: "Yoono" },
@@ -245,12 +282,12 @@ function listNames(arr) { const a = arr.filter(Boolean); if (a.length <= 1) retu
 function draftCaption(d, platform, variant) {
   const c = d.copy, T = d.tpl, v = variant || 0;
   const pick = (arr) => arr[((v % arr.length) + arr.length) % arr.length];
-  const url = (c.url || "TEKEX.CO").trim().toLowerCase();
+  const url = (c.url || BRAND.url || "").trim().toLowerCase();
   const when = composeDateLine(c);
   let hook = "", body = "", cta = "";
   if (T === "speaker") {
     const roleCo = join([(c.role || "").replace(/[,\s]+$/, ""), c.company], " at ");
-    hook = c.name ? pick(["Meet " + c.name + ".", c.name + " joins the TEKEX line-up.", "Speaker announcement: " + c.name + "."]) : "";
+    hook = c.name ? pick(["Meet " + c.name + ".", c.name + " joins the " + BRAND.name + " line-up.", "Speaker announcement: " + c.name + "."]) : "";
     body = join([roleCo ? roleCo + "." : "", when ? pick(["Join us " + when + ".", when + ".", "We're together " + when + "."]) : ""], " ");
   } else if (T === "event") {
     hook = c.headline ? pick([c.headline + ".", c.headline + " — save the date.", "Coming up: " + c.headline + "."]) : "";
@@ -271,8 +308,9 @@ function draftCaption(d, platform, variant) {
   } else {
     hook = (c.body || "").trim();
   }
-  cta = pick(["Details at " + url, "More at " + url, "Find out more: " + url]);
-  const tags = "#TEKEX #ChannelIslands #Innovation" + (T === "speaker" || T === "listing" || T === "trio" ? " #Speakers" : "") + (T === "event" ? " #Events" : "");
+  cta = url ? pick(["Details at " + url, "More at " + url, "Find out more: " + url]) : "";
+  const brandTags = (BRAND.hashtags || "").trim();
+  const tags = join([brandTags, (T === "speaker" || T === "listing" || T === "trio" ? "#Speakers" : ""), (T === "event" ? "#Events" : "")], " ");
   if (!hook && !body) return "";
   if (platform === "x") {
     let t = join([hook, body, cta], " ");
@@ -282,7 +320,7 @@ function draftCaption(d, platform, variant) {
   }
   if (platform === "instagram") return join([hook, body, cta, tags], "\n\n");
   if (platform === "facebook") return join([hook, body, cta], "\n\n");
-  return join([hook, body, cta, "#TEKEX #Innovation"], "\n\n");
+  return join([hook, body, cta, brandTags.split(/\s+/).filter(Boolean).slice(0, 2).join(" ")], "\n\n");
 }
 const DRAFTS_KEY = "hs-drafts-v1";
 const PROJECTS_KEY = "hs-projects-v1";
@@ -305,7 +343,7 @@ function seedExamples(existing) {
   const have = new Set(existing.map(pj => pj.name));
   const DAY = 86400000, now = Date.now();
   const projects = [], drafts = [];
-  const img = (id, x, y) => ({ src: LIB[id].src, name: LIB[id].name, x: x == null ? 50 : x, y: y == null ? 50 : y, zoom: 1 });
+  const img = (id, x, y) => libImg(id, x, y);
   const P = (name, brief, daysAgo, archived) => { const pj = newProject(name, brief, ""); pj.example = true; pj.archived = !!archived; pj.createdAt = now - daysAgo * DAY; pj.updatedAt = now - Math.max(0, daysAgo - 3) * DAY; return pj; };
   const D = (pj, tpl, size, title, o) => {
     const d = newDesign(tpl, size, pj.id); d.title = title; d.updatedAt = pj.updatedAt - (o && o.age ? o.age : 0) * DAY;
@@ -405,7 +443,7 @@ function composeDateLine(c) {
   const first = join([c.date, when], ": ");
   return join([first, c.venue], ", ");
 }
-function composeEyebrow(c) { return c.eventNumber ? "TEKEX #" + c.eventNumber + " Speaker:" : "TEKEX Speaker:"; }
+function composeEyebrow(c) { return c.eventNumber ? BRAND.name + " #" + c.eventNumber + " Speaker:" : BRAND.name + " Speaker:"; }
 function lum(rgb) { const p = rgb.map(v => { const c = v / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }); return 0.2126 * p[0] + 0.7152 * p[1] + 0.0722 * p[2]; }
 function parseRgb(str) { const m = String(str).match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/); return m ? [+m[1], +m[2], +m[3]] : [0, 0, 0]; }
 function contrast(a, b) { const la = lum(parseRgb(a)), lb = lum(parseRgb(b)); return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05); }
@@ -474,12 +512,69 @@ function readFileAsImage(file) {
 
 
 /* ---------- persistence adapter: swap this for a real backend without touching the UI ---------- */
+const GLOBAL_KEYS = { "hs-theme": 1, "hs-workspaces-v1": 1, "hs-ws-current": 1 };
 const Store = {
-  get(key, fallback) { try { const v = JSON.parse(localStorage.getItem(key) || "null"); return v == null ? fallback : v; } catch (e) { return fallback; } },
-  set(key, value) { localStorage.setItem(key, JSON.stringify(value)); },
-  raw(key) { try { return localStorage.getItem(key); } catch (e) { return null; } },
-  flag(key) { try { localStorage.setItem(key, "1"); } catch (e) {} }
+  ns: "", // "" for the first client (TEKEX); "hs-ws-<id>:" for every client added later, so each keeps its own work
+  k(key) { return this.ns && !GLOBAL_KEYS[key] ? this.ns + key : key; },
+  get(key, fallback) { try { const v = JSON.parse(localStorage.getItem(this.k(key)) || "null"); return v == null ? fallback : v; } catch (e) { return fallback; } },
+  set(key, value) { localStorage.setItem(this.k(key), JSON.stringify(value)); },
+  raw(key) { try { return localStorage.getItem(this.k(key)); } catch (e) { return null; } },
+  flag(key) { try { localStorage.setItem(this.k(key), "1"); } catch (e) {} },
+  del(key) { try { localStorage.removeItem(this.k(key)); } catch (e) {} }
 };
+
+/* ---------- clients and their brand books ----------
+   A client is a workspace: its own brand book, projects, designs and uploads. The brand book is the single
+   source every template reads from (BRAND), so editing it re-skins the artwork. Switching client reloads the page. */
+const WS_KEY = "hs-workspaces-v1", WS_CUR = "hs-ws-current", BRAND_KEY = "hs-brand-v1", DEFAULT_WS = "tekex";
+const BRAND_EDITABLE = ["name", "url", "logo", "about", "voice", "dos", "donts", "hashtags", "palette", "themes", "barLabels", "partners", "templatesOn", "team", "log", "updatedAt", "updatedBy"];
+const BRAND_DEFAULT = JSON.parse(JSON.stringify(BRAND));
+function hexToRgb(hex) { const m = String(hex || "").trim().replace(/^#/, ""); const f = m.length === 3 ? m.split("").map(ch => ch + ch).join("") : m; const n = parseInt(f, 16); return /^[0-9a-fA-F]{6}$/.test(f) ? "rgb(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + ")" : "rgb(0,0,0)"; }
+function rgbToHex(rgb) { return "#" + parseRgb(rgb).map(v => v.toString(16).padStart(2, "0")).join("").toUpperCase(); }
+function validHex(v) { return /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(String(v || "").trim()); }
+function normHex(v) { const m = String(v || "").trim().replace(/^#/, ""); return "#" + (m.length === 3 ? m.split("").map(ch => ch + ch).join("") : m).toUpperCase(); }
+function contrastVerdict(ratio) { return ratio >= 4.5 ? { key: "pass", text: "Passes AA" } : ratio >= 3 ? { key: "large", text: "Large text only" } : { key: "fail", text: "Too low to read" }; }
+/* A starter brand book for a new client: two colours in, three approved colourways out. */
+function blankBrand(name, primary, secondary, url) {
+  const p = normHex(validHex(primary) ? primary : "#245FFF"), q = normHex(validHex(secondary) ? secondary : "#F2F2F2");
+  const ink = "#141414", paper = "#F5F4F0";
+  const best = (ground) => [q, ink, paper, p].filter(c => c !== ground).sort((a, b) => contrast(hexToRgb(b), hexToRgb(ground)) - contrast(hexToRgb(a), hexToRgb(ground)))[0];
+  const way = (label, ground, accent) => ({ name: label, ground: hexToRgb(ground), accent: hexToRgb(accent) });
+  return {
+    workspace: name, name, url: (url || "").trim().toUpperCase(), logo: null, about: "", voice: "", dos: [], donts: [], hashtags: "#" + String(name).replace(/[^A-Za-z0-9]+/g, ""),
+    palette: [{ name: "Primary", value: p }, { name: "Secondary", value: q }, { name: "Ink", value: ink }, { name: "Paper", value: paper }],
+    themes: [way("Primary", p, best(p)), way("Secondary", q, best(q)), way("Ink", ink, [p, q, paper].sort((a, b) => contrast(hexToRgb(b), hexToRgb(ink)) - contrast(hexToRgb(a), hexToRgb(ink)))[0])],
+    barLabels: ["EVENT", "SPEAKERS", "PARTNERS", "NEWS"], partners: [{ key: "ps", name: "Potting Shed", src: "assets/ps-logo.svg" }], library: [],
+    fonts: { display: "PP Neue Montreal", accent: "Quarto Italic" }, templatesOn: ["speaker", "event", "listing", "trio", "partners", "lockup"],
+    team: JSON.parse(JSON.stringify(BRAND_DEFAULT.team)), log: [], studioEmail: BRAND_DEFAULT.studioEmail
+  };
+}
+function wsList() { let l = null; try { l = JSON.parse(localStorage.getItem(WS_KEY) || "null"); } catch (e) {} const rest = (l || []).filter(w => w && w.id && w.id !== DEFAULT_WS); return [{ id: DEFAULT_WS, name: (wsBrandName(DEFAULT_WS) || BRAND_DEFAULT.name) }].concat(rest); }
+function wsBrandName(id) { try { const b = JSON.parse(localStorage.getItem((id === DEFAULT_WS ? "" : "hs-ws-" + id + ":") + BRAND_KEY) || "null"); return b && b.name; } catch (e) { return ""; } }
+function wsCurrentId() { let id = DEFAULT_WS; try { id = localStorage.getItem(WS_CUR) || DEFAULT_WS; } catch (e) {} return wsList().some(w => w.id === id) ? id : DEFAULT_WS; }
+function wsSave(list) { try { localStorage.setItem(WS_KEY, JSON.stringify(list.filter(w => w.id !== DEFAULT_WS))); } catch (e) {} }
+function wsSwitch(id) { try { localStorage.setItem(WS_CUR, id); } catch (e) {} }
+/* Write the saved brand book over BRAND in place, so everything that reads BRAND picks it up. */
+function applyBrand(saved) {
+  if (!saved) return BRAND;
+  BRAND_EDITABLE.forEach(k => { if (saved[k] !== undefined) BRAND[k] = JSON.parse(JSON.stringify(saved[k])); });
+  if (!BRAND.themes || !BRAND.themes.length) BRAND.themes = JSON.parse(JSON.stringify(BRAND_DEFAULT.themes));
+  if (!BRAND.templatesOn || !BRAND.templatesOn.length) BRAND.templatesOn = TEMPLATES.map(t => t.key);
+  BRAND.workspace = BRAND.name;
+  return BRAND;
+}
+const WS_ID = wsCurrentId();
+Store.ns = WS_ID === DEFAULT_WS ? "" : "hs-ws-" + WS_ID + ":";
+if (WS_ID !== DEFAULT_WS) {
+  // A client added later starts from a blank book: none of the first client's imagery, partners or copy carries over.
+  const meta = wsList().find(w => w.id === WS_ID) || {};
+  Object.keys(BRAND).forEach(k => delete BRAND[k]);
+  Object.assign(BRAND, blankBrand(meta.name || "New client", meta.primary, meta.secondary, meta.url));
+  Object.keys(LIB).forEach(k => delete LIB[k]);
+  PORTRAIT_IDS.length = 0; EVENT_IDS.length = 0;
+  Object.assign(EXAMPLE_COPY, { eventNumber: "", name: "Speaker name", role: "Job title,", company: "Company", headline: "Your headline", body: "One or two sentences about what is happening and why it matters.", eyebrow: BRAND.name + " · Line-up", sessionPrefix: "11.00am · Talks", sessionTitle: "Session title", date: "Fri 22nd Aug", startTime: "2pm", endTime: "5pm", venue: "Venue name", barLabel: "EVENT", url: BRAND.url });
+}
+applyBrand(Store.get(BRAND_KEY, null));
 const THUMBS_KEY = "hs-thumbs-v1";
 /* Lazy-load the export/thumbnail renderer only when first needed. */
 let __shotP = null;
@@ -490,4 +585,4 @@ function ensureShot() {
 }
 
 /* expose for tests (node) */
-if (typeof module !== 'undefined') module.exports = { SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
+if (typeof module !== 'undefined') module.exports = { FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };

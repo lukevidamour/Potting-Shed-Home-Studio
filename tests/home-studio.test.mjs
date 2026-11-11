@@ -79,3 +79,41 @@ test("example artwork published in several sizes shares one size family", () => 
   assert.equal(rb.length, 2);
   assert.equal(rb[0].familyId, rb[1].familyId);
 });
+
+test("brand book colour helpers round-trip and judge contrast", () => {
+  assert.equal(lib.hexToRgb("#81FFE7"), "rgb(129,255,231)");
+  assert.equal(lib.rgbToHex("rgb(129,255,231)"), "#81FFE7");
+  assert.equal(lib.normHex("abc"), "#AABBCC");
+  assert.equal(lib.validHex("#12"), false);
+  assert.equal(lib.contrastVerdict(15).key, "pass");
+  assert.equal(lib.contrastVerdict(3.5).key, "large");
+  assert.equal(lib.contrastVerdict(2).key, "fail");
+});
+
+test("a new client starts with three readable colourways and none of the first client's content", () => {
+  const b = lib.blankBrand("Harbour Health", "#0B5D4B", "#FFE9C7", "harbourhealth.je");
+  assert.equal(b.name, "Harbour Health");
+  assert.equal(b.url, "HARBOURHEALTH.JE");
+  assert.equal(b.themes.length, 3);
+  b.themes.forEach(t => assert.ok(lib.contrast(t.ground, t.accent) >= 4.5, t.name + " should pass AA"));
+  assert.equal(b.library.length, 0);
+  assert.deepEqual(b.partners.map(p => p.key), ["ps"]);
+});
+
+test("portraits open on the face rather than a fixed guess", () => {
+  const im = lib.libImg("tk-serena-guthrie");
+  assert.deepEqual([im.x, im.y], lib.FOCUS["tk-serena-guthrie"]);
+  const ev = lib.libImg("tk-event-03");
+  assert.deepEqual([ev.x, ev.y], [50, 50]);
+  const d = lib.newDesign("speaker", "square", null);
+  assert.ok(d.images["speaker-photo"].y <= 10, "default portrait keeps the top of the head in frame");
+});
+
+test("editing the brand book changes what templates read", () => {
+  const before = lib.BRAND.themes[0].ground;
+  lib.applyBrand({ themes: [{ name: "Test", ground: "rgb(1,2,3)", accent: "rgb(250,250,250)" }], name: "Renamed" });
+  assert.equal(lib.BRAND.themes[0].ground, "rgb(1,2,3)");
+  assert.equal(lib.composeEyebrow({ eventNumber: "9" }), "Renamed #9 Speaker:");
+  lib.applyBrand({ themes: lib.BRAND_DEFAULT.themes, name: lib.BRAND_DEFAULT.name });
+  assert.equal(lib.BRAND.themes[0].ground, before);
+});
