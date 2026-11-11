@@ -516,7 +516,7 @@ function fitSize(str, base, minRatio) {
 function newDesign(tpl, size, projectId) {
   if (TPL[tpl] && TPL[tpl].sizes && TPL[tpl].sizes.indexOf(size) < 0) size = TPL[tpl].sizes[0]; // a template that comes in fixed sizes
   const d = {
-    id: uid("d"), tpl, size, theme: 0, title: TPL[tpl].name, projectId: projectId || null, familyId: uid("f"), scheduledAt: "", thumb: "",
+    id: uid("d"), tpl, size, theme: 0, layout: 0, title: TPL[tpl].name, projectId: projectId || null, familyId: uid("f"), scheduledAt: "", thumb: "",
     platforms: (DEFAULT_PLATFORMS[size] || ["linkedin"]).slice(), caption: { mode: "auto", variant: 0, text: {} },
     copy: Object.assign({}, EXAMPLE_COPY, packTpl(tpl) && PACK.examples ? PACK.examples[tpl] : null),
     speakers: EXAMPLE_SPEAKERS.map(s => Object.assign({}, s)),
@@ -528,6 +528,8 @@ function newDesign(tpl, size, projectId) {
   d.images = fillImages(d);
   return d;
 }
+/* The copy fields a design shows: a template's fields, less any that belong to a layout it is not using. */
+function fieldsFor(d) { const L = d.layout || 0; return (FIELDS[d.tpl] || []).filter(f => !f.on || f.on.indexOf(L) >= 0); }
 function slotsFor(d) {
   if (packTpl(d.tpl) && PACK.slots) { const ps = PACK.slots(d); if (ps) return ps; }
   if (d.tpl === "speaker") return [{ id: "speaker-photo", label: "Speaker portrait" }];
@@ -771,4 +773,4 @@ function ensureGsap() {
 }
 
 /* expose for tests (node) */
-if (typeof module !== 'undefined') module.exports = { portraitMatch, readBrief, PRESETS, PACK, packTpl, imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
+if (typeof module !== 'undefined') module.exports = { fieldsFor, portraitMatch, readBrief, PRESETS, PACK, packTpl, imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };

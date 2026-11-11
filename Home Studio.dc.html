@@ -9,13 +9,13 @@
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261111r"></script>
+<script src="home-studio.lib.js?v=20261111t"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261111y">
+<link rel="stylesheet" href="home-studio.css?v=20261112d">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -114,6 +114,14 @@
           </section>
 
 
+
+          <sc-if value="{{ hasLayouts }}">
+            <section class="sect" aria-labelledby="sl-lay"><h3 class="stitle" id="sl-lay">Layout</h3>
+              <div class="tpl-grid">
+                <sc-for list="{{ layoutTiles }}" as="lt"><button class="tplbtn" aria-pressed="{{ lt.on }}" onClick="{{ lt.pick }}">{{ lt.name }}</button></sc-for>
+              </div>
+            </section>
+          </sc-if>
 
           <section class="sect" aria-labelledby="sl-col"><h3 class="stitle" id="sl-col">Colourway</h3>
             <div class="swatches" role="radiogroup" aria-label="Colour combination" onKeyDown="{{ themeKeys }}">
@@ -392,32 +400,44 @@
           </div>
         </div>
       </sc-if>
-      <!-- Make: describe it, get it -->
+      <!-- The assistant: describe it, get it -->
       <sc-if value="{{ isMake }}">
-        <div class="makeover" role="dialog" aria-modal="true" aria-label="Make by describing">
-        <button class="btn icon mkclose" onClick="{{ closeMake }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-        <div class="page make">
-          <sc-if value="{{ makeEmpty }}">
-            <div class="mkintro"><h1 class="welcome">Describe it, <em>get it</em>.</h1><p class="lede">Say who, what, when and where. Home Studio picks the template and makes it on brand. Then ask for other sizes or colours.</p></div>
-          </sc-if>
-          <div class="thread" role="log" aria-live="polite" aria-label="Conversation">
-            <sc-for list="{{ makeMsgs }}" as="mm">
-              <div class="msg {{ mm.cls }}">
-                <p>{{ mm.text }}</p>
-                <sc-if value="{{ mm.hasArt }}">
-                  <div class="mkart"><sc-for list="{{ mm.art }}" as="ar"><button class="mktile" style="{{ ar.style }}" onClick="{{ ar.open }}" aria-label="{{ ar.aria }}"><sc-if value="{{ ar.thumb }}"><img sc-camel-src="{{ ar.thumb }}" alt="" /></sc-if><span>{{ ar.size }}</span></button></sc-for></div>
-                </sc-if>
-                <sc-if value="{{ mm.hasChips }}">
-                  <div class="mkchips"><sc-for list="{{ mm.chips }}" as="ch"><button onClick="{{ ch.go }}">{{ ch.label }}</button></sc-for></div>
-                </sc-if>
+        <div class="makeover {{ makeStateClass }}" role="dialog" aria-modal="true" aria-label="Assistant">
+          <header class="mkbar">
+            <span class="mkwho" title="Everything made here follows this client's brand book"><i style="{{ makeDotStyle }}"></i>{{ wsName }}</span>
+            <span class="mkbar__gap"></span>
+            <sc-if value="{{ !makeEmpty }}"><button class="mknew" onClick="{{ makeReset }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New chat</button></sc-if>
+            <button class="btn icon mkclose" onClick="{{ closeMake }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </header>
+          <div class="mkscroll">
+            <div class="mkcol">
+              <sc-if value="{{ makeEmpty }}">
+                <div class="mkintro"><h1 class="welcome">What shall we <em>make</em>?</h1></div>
+              </sc-if>
+              <div class="thread" role="log" aria-live="polite" aria-label="Conversation">
+                <sc-for list="{{ makeMsgs }}" as="mm">
+                  <div class="msg {{ mm.cls }}">
+                    <p>{{ mm.text }}</p>
+                    <sc-if value="{{ mm.hasArt }}">
+                      <div class="mkart"><sc-for list="{{ mm.art }}" as="ar"><button class="mktile" style="{{ ar.style }}" onClick="{{ ar.open }}" aria-label="{{ ar.aria }}"><sc-if value="{{ ar.thumb }}"><img sc-camel-src="{{ ar.thumb }}" alt="" /></sc-if><span>{{ ar.size }}</span></button></sc-for></div>
+                    </sc-if>
+                    <sc-if value="{{ mm.hasChips }}">
+                      <div class="mkchips"><sc-for list="{{ mm.chips }}" as="ch"><button onClick="{{ ch.go }}">{{ ch.label }}</button></sc-for></div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ makePending }}"><div class="msg hs pending" aria-label="Working on it"><span class="mkdots" aria-hidden="true"><i></i><i></i><i></i></span></div></sc-if>
               </div>
-            </sc-for>
+            </div>
           </div>
           <form class="composer" onSubmit="{{ makeSubmit }}">
-            <sc-if value="{{ makeEmpty }}"><div class="mkchips start"><sc-for list="{{ makeIdeas }}" as="idea"><button type="button" onClick="{{ idea.go }}">{{ idea.label }}</button></sc-for></div></sc-if>
-            <div class="mkfield"><input id="mk-input" value="{{ makeText }}" onChange="{{ makeSetText }}" placeholder="{{ makeHint }}" aria-label="Describe what to make" autoComplete="off" /><button class="go" type="submit" aria-label="Make it"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button></div>
+            <div class="mkfield">
+              <textarea id="mk-input" rows="1" value="{{ makeText }}" onChange="{{ makeSetText }}" onKeyDown="{{ makeKeys }}" placeholder="{{ makeHint }}" aria-label="Describe what to make" autoComplete="off"></textarea>
+              <button class="go" type="submit" aria-label="Send" disabled="{{ makeBlank }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+            </div>
+            <sc-if value="{{ makeEmpty }}"><div class="mkchips start"><sc-for list="{{ makeIdeas }}" as="idea"><button type="button" onClick="{{ idea.go }}" title="{{ idea.full }}">{{ idea.label }}</button></sc-for></div></sc-if>
+            <sc-if value="{{ !makeEmpty }}"><p class="mknote">Enter to send. Shift and Enter for a new line.</p></sc-if>
           </form>
-        </div>
         </div>
       </sc-if>
 
@@ -1135,7 +1155,7 @@ class Component extends DCLogic {
     tab: "content",
     zoom: 1, fitScale: 1, cardW: 0,
     gate: (typeof window !== "undefined" && window.__gate) ? (window.__gate.lift ? "lift" : "open") : null, gateColor: (typeof window !== "undefined" && window.__gate) ? window.__gate.c : "#245FFF", arriving: false, userMenuOpen: false,
-    bbPrevTpl: "speaker", bbPrevWay: 0, chat: [], makeText: "", makeOpen: false,
+    bbPrevTpl: "speaker", bbPrevWay: 0, chat: [], makeText: "", makeOpen: false, makePending: false,
     wsMenuOpen: false, bbMenuOpen: false, clientDialog: null, confirm: null, brandRev: 0, bbHex: {}, bbNewLabel: "", bbLogoError: "", bbPartnerError: "",
     saveState: "idle", savedAt: 0,
     past: [], future: [],
@@ -1160,6 +1180,7 @@ class Component extends DCLogic {
   }
   setTheme(t) { this.applyTheme(t); try { localStorage.setItem("hs-theme", t); } catch (e) {} this.setState({ theme: t }); this.say(t === "dark" ? "Dark mode" : "Light mode"); }
   componentDidMount() {
+    if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__hs = this; // a handle for local testing only
     this.applyTheme(this.state.theme);
     let drafts = Store.get(DRAFTS_KEY, []), projects = Store.get(PROJECTS_KEY, []);
     if (WS_ID === DEFAULT_WS && !Store.raw("hs-seed-v2")) {
@@ -1197,13 +1218,17 @@ class Component extends DCLogic {
     let thumbs = Store.get(THUMBS_KEY, {});
     Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || v.indexOf("data:image/") !== 0 || v.length < 1500) delete thumbs[k]; });
     if (drafts.some(d => d.thumb)) { drafts.forEach(d => { if (d.thumb) thumbs[d.id] = d.thumb; }); drafts = drafts.map(d => { const c = Object.assign({}, d); delete c.thumb; return c; }); try { Store.set(THUMBS_KEY, thumbs); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
-    if (PACK && WS_ID === PACK.id && PACK.seed && !Store.raw("hs-seed-pack")) {
+    const seedKey = PACK ? "hs-seed-pack" + ((PACK.seedVersion || 1) > 1 ? "-" + PACK.seedVersion : "") : "";
+    if (PACK && WS_ID === PACK.id && PACK.seed && !Store.raw(seedKey)) {
+      // An earlier example set that nobody has scheduled or sent for approval is replaced, not doubled up.
+      const olds = projects.filter(p => p.example).map(p => p.id), oldDrafts = drafts.filter(d => olds.indexOf(d.projectId) >= 0);
+      if (olds.length && !oldDrafts.some(d => d.scheduledAt || (d.approval && d.approval.status && d.approval.status !== "none"))) { projects = projects.filter(p => olds.indexOf(p.id) < 0); drafts = drafts.filter(d => olds.indexOf(d.projectId) < 0); }
       const ex = PACK.seed({
         project: (name, brief) => { const p = newProject(name, brief, ""); p.example = true; return p; },
-        design: (p, tpl, title, theme, copy, pics) => { const d = newDesign(tpl, (TPL[tpl].sizes || ["square"])[0], p.id); d.title = title; d.theme = theme; d.copy = Object.assign({}, d.copy, copy || {}); d.images = {}; Object.keys(pics || {}).forEach(k => { const im = libImg(pics[k]); if (im) d.images[k] = im; }); d.images = fillImages(d); return d; }
+        design: (p, tpl, title, theme, copy, pics, layout) => { const d = newDesign(tpl, (TPL[tpl].sizes || ["square"])[0], p.id); d.title = title; d.theme = theme; d.layout = layout || 0; d.copy = Object.assign({}, d.copy, copy || {}); d.images = {}; Object.keys(pics || {}).forEach(k => { const im = libImg(pics[k]); if (im) d.images[k] = im; }); d.images = fillImages(d); return d; }
       });
       projects = projects.concat(ex.projects); drafts = drafts.concat(ex.drafts);
-      try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag("hs-seed-pack"); } catch (e) {}
+      try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag(seedKey); } catch (e) {}
     }
     drafts = drafts.map(x => BRAND.themes[x.theme] ? x : Object.assign({}, x, { theme: 0 }));
     // Example content keeps itself current: fields nobody has edited move with today, the first time and then whenever they drift by four weeks.
@@ -1619,11 +1644,16 @@ class Component extends DCLogic {
       enterApp: this.enterApp,
       userMenuOpen: s.userMenuOpen, toggleUserMenu: this.toggleUserMenu, signOut: this.signOut, logoTap: this.logoTap,
       isMake: s.makeOpen, goMake: this.goMake, closeMake: this.closeMake, makeEmpty: s.chat.length === 0, fabShow: view !== "editor" && !s.makeOpen && !s.gate,
-      makeText: s.makeText, makeSetText: (e) => this.setState({ makeText: e.target.value }), makeSubmit: (e) => { e.preventDefault(); this.makeSend(); },
-      makeHint: WS_ID === DEFAULT_WS ? "Anna Le Page, Partner at Rathbones, is speaking Wed 2 Dec, 8am at Wild Peak" : "Describe it: who, what, when and where",
-      makeIdeas: (["Dr Niraj Singh, Founder at Ketamine Therapies, is speaking Thu 26 Nov, 9am at the BDO Hub", "Announce the Founders Breakfast on 2 December, 8am at Wild Peak. As a square and a story.", "Thank our partners"]).map(t => ({ label: t, go: () => this.makeSend(t) })),
+      makeText: s.makeText, makeSetText: (e) => { this.growComposer(e.target); this.setState({ makeText: e.target.value }); }, makeSubmit: (e) => { e.preventDefault(); this.makeSend(); },
+      makeKeys: (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); this.makeSend(); } },
+      makeBlank: !s.makeText.trim() || s.makePending, makePending: s.makePending, makeStateClass: s.chat.length === 0 && !s.makePending ? "is-empty" : "is-talking",
+      makeReset: () => { clearTimeout(this._makeT); this._makeLast = null; this.setState({ chat: [], makePending: false, makeText: "" }); this.focusLater("mk-input"); },
+      makeDotStyle: { background: (BRAND.themes[0] || {}).ground || "var(--accent)" },
+      makeHint: s.chat.length ? "Ask for a change, or describe the next one" : "Describe what to make: who, what, when and where",
+      // Starting points are short to read and send the full brief; a client pack brings its own.
+      makeIdeas: ((PACK && WS_ID === PACK.id && PACK.ideas) || [["A speaker card", "Dr Niraj Singh, Founder at Ketamine Therapies, is speaking Thu 26 Nov, 9am at the BDO Hub"], ["An event, square and story", "Announce the Founders Breakfast on 2 December, 8am at Wild Peak. As a square and a story."], ["A thank you to partners", "Thank our partners"]]).map(x => ({ label: x[0], full: x[1], go: () => this.makeSend(x[1]) })),
       makeMsgs: s.chat.map(m => {
-        const fam = m.fam ? s.drafts.filter(x => x.familyId === m.fam).sort((a, b) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)) : [];
+        const fam = m.fam ? s.drafts.filter(x => x.familyId === m.fam || x.setId === m.fam).sort((a, b) => (SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)) || String(a.title).localeCompare(String(b.title))) : [];
         return { cls: m.who === "me" ? "me" : "hs", text: m.text, hasArt: fam.length > 0,
           art: fam.map(x => { const Z = SIZES[x.size], th = BRAND.themes[x.theme] || BRAND.themes[0]; return { thumb: s.thumbs[x.id] || "", size: Z.label, style: { aspectRatio: Z.w + " / " + Z.h, background: th.ground, color: th.accent }, aria: "Open " + x.title, open: () => { this.setState({ makeOpen: false }); this.openDesign(x, false); } }; }),
           hasChips: !!(m.chips && m.chips.length) && m === s.chat[s.chat.length - 1],
@@ -1721,20 +1751,36 @@ class Component extends DCLogic {
   makeSend = (given) => {
     const text = String(given != null ? given : this.state.makeText).trim(); if (!text) return;
     let r = readBrief(text); const last = this._makeLast;
-    const adjusting = !r.tpl && last && this.state.drafts.some(x => x.familyId === last) && (r.sizes.length || r.theme != null || r.nextTheme || r.remove || r.copy.date || r.copy.startTime || r.copy.venue);
-    if (PACK && WS_ID === PACK.id && PACK.fromBrief && !adjusting) r = PACK.fromBrief(r, text);
-    const follow = !r.tpl && last && this.state.drafts.some(x => x.familyId === last) && (r.sizes.length || r.theme != null || r.nextTheme || r.remove || r.copy.date || r.copy.startTime || r.copy.venue);
+    const adjusting = !r.tpl && last && this.state.drafts.some(x => x.familyId === last || x.setId === last) && (r.sizes.length || r.theme != null || r.nextTheme || r.remove || r.copy.date || r.copy.startTime || r.copy.venue);
+    // A brief that plainly asks for something new is never read as a change to the last piece.
+    const fresh = PACK && WS_ID === PACK.id && PACK.startsNew && PACK.startsNew(text);
+    if (PACK && WS_ID === PACK.id && PACK.fromBrief && (!adjusting || fresh)) r = PACK.fromBrief(r, text);
+    const follow = !r.tpl && last && this.state.drafts.some(x => x.familyId === last || x.setId === last) && (r.sizes.length || r.theme != null || r.nextTheme || r.remove || r.copy.date || r.copy.startTime || r.copy.venue);
     const reply = follow ? this.makeAdjust(r, last) : this.makeCreate(r, text);
-    this.setState(st => ({ chat: st.chat.concat([{ who: "me", text }, reply]), makeText: "", makeOpen: true }), () => requestAnimationFrame(() => { const sc = document.querySelector(".makeover"); if (sc) sc.scrollTo({ top: sc.scrollHeight, behavior: "smooth" }); const el = document.getElementById("mk-input"); if (el) el.focus({ preventScroll: true }); }));
+    const settle = () => requestAnimationFrame(() => { const sc = document.querySelector(".mkscroll"); if (sc) sc.scrollTo({ top: sc.scrollHeight, behavior: "smooth" }); const el = document.getElementById("mk-input"); if (el) { this.growComposer(el); el.focus({ preventScroll: true }); } });
+    this.setState(st => ({ chat: st.chat.concat([{ who: "me", text }]), makeText: "", makeOpen: true, makePending: true }), settle);
+    clearTimeout(this._makeT);
+    this._makeT = setTimeout(() => this.setState(st => ({ chat: st.chat.concat([reply]), makePending: false }), settle), matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 480);
   };
+  /* The composer grows with what is typed, up to a few lines, then scrolls. */
+  growComposer(el) { if (!el) return; el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 176) + "px"; }
   makeCreate(r, text) {
     let tpl = r.tpl, note = "";
+    if (r.set && r.set.length) {
+      // Several designs that belong together (a carousel): one project, each slide its own design, in order.
+      const setId = uid("s"), now = Date.now(), proj = newProject(r.title || "Carousel", "", "");
+      const made = r.set.map((sl, i) => { const d = newDesign(sl.tpl, (TPL[sl.tpl].sizes || ["square"])[0], proj.id); d.layout = sl.layout || 0; d.setId = setId; d.title = sl.title; d.copy = Object.assign({}, d.copy, sl.copy); d.images = {}; d.images = fillImages(d); d.updatedAt = now - i; return d; });
+      const drafts = made.concat(this.state.drafts), projects = [proj].concat(this.state.projects);
+      try { this.persistDrafts(drafts); this.persistProjects(projects); } catch (e) {}
+      this.setState({ drafts, projects }); this._makeLast = setId;
+      return { who: "hs", text: "Here's a carousel: " + r.said.join(" · ") + ", in a project of its own." + (r.setNote || ""), fam: setId, chips: ["Another colourway", "Open in the editor"] };
+    }
     if (!tpl) { tpl = "lockup"; r.copy.body = text.replace(/\s+/g, " ").slice(0, 140); note = " I couldn't find a person or an event in that, so I set it as a brand announcement."; }
     if (BRAND.templatesOn.indexOf(tpl) < 0) return { who: "hs", text: "“" + TPL[tpl].name + "” is switched off in the " + BRAND.name + " brand book, so I can't make that one. Turn it on there, or describe something else.", ids: [] };
     const sizes = r.sizes.length ? r.sizes : ["square"], fam = uid("f"), base = r.title || TPL[tpl].name; let noFace = "";
     const made = sizes.map(size => {
       const d = newDesign(tpl, size, null);
-      d.familyId = fam; d.copy = Object.assign({}, d.copy, r.copy); if (r.theme != null) d.theme = r.theme;
+      d.familyId = fam; d.copy = Object.assign({}, d.copy, r.copy); if (r.theme != null) d.theme = r.theme; if (r.layout != null) d.layout = r.layout;
       if (tpl === "listing" && r.speakers.length) d.speakers = r.speakers.map((sp, i) => Object.assign({ id: "s" + (i + 1) }, sp));
       if (tpl === "trio" && r.speakers.length) d.trio = r.speakers.concat(d.trio.slice(r.speakers.length)).slice(0, 3);
       d.title = base + " · " + SIZES[size].label; d.images = {};
@@ -1756,9 +1802,10 @@ class Component extends DCLogic {
   }
   makeAdjust(r, fam) {
     let drafts = this.state.drafts, thumbs = Object.assign({}, this.state.thumbs); const done = [];
-    const mine = () => drafts.filter(x => x.familyId === fam);
-    if (r.remove) { const ids = mine().map(x => x.id); drafts = drafts.filter(x => x.familyId !== fam); ids.forEach(id => delete thumbs[id]); try { this.persistDrafts(drafts); Store.set(THUMBS_KEY, thumbs); } catch (e) {} this.setState({ drafts, thumbs }); this._makeLast = null; return { who: "hs", text: "Removed. What next?", ids: [] }; }
-    const touch = (fn, label) => { drafts = drafts.map(x => { if (x.familyId !== fam) return x; delete thumbs[x.id]; return Object.assign({}, fn(x), { updatedAt: Date.now() }); }); done.push(label); };
+    const inSet = (x) => x.familyId === fam || x.setId === fam;
+    const mine = () => drafts.filter(inSet);
+    if (r.remove) { const ids = mine().map(x => x.id); drafts = drafts.filter(x => !inSet(x)); ids.forEach(id => delete thumbs[id]); try { this.persistDrafts(drafts); Store.set(THUMBS_KEY, thumbs); } catch (e) {} this.setState({ drafts, thumbs }); this._makeLast = null; return { who: "hs", text: "Removed. What next?", ids: [] }; }
+    const touch = (fn, label) => { drafts = drafts.map(x => { if (!inSet(x)) return x; delete thumbs[x.id]; return Object.assign({}, fn(x), { updatedAt: Date.now() }); }); done.push(label); };
     if (r.theme != null) touch(x => Object.assign({}, x, { theme: r.theme }), "set the colourway to " + BRAND.themes[r.theme].name);
     else if (r.nextTheme) { const cur = mine()[0].theme, nx = (cur + 1) % BRAND.themes.length; touch(x => Object.assign({}, x, { theme: nx }), "switched to " + BRAND.themes[nx].name); }
     const patch = {}; ["date", "startTime", "endTime", "venue"].forEach(k => { if (r.copy[k] != null && (k !== "endTime" || r.copy.startTime)) patch[k] = r.copy[k]; });
@@ -1768,7 +1815,7 @@ class Component extends DCLogic {
     else if (r.sizes.length) done.push("it's already in " + (r.sizes.length > 1 ? "those sizes" : "that size"));
     try { this.persistDrafts(drafts); Store.set(THUMBS_KEY, thumbs); } catch (e) {}
     this._thumbTried = new Set(); this.setState({ drafts, thumbs });
-    const s0 = done.join(", "); return { who: "hs", text: s0 ? "Done: " + s0 + "." : "I didn't catch a change in that. Try a size, a colourway, a date or a venue.", fam, chips: ["Another colourway", "All sizes", "Open in the editor"] };
+    const s0 = done.join(", "); return { who: "hs", text: s0 ? "Done: " + s0 + "." : "I didn't catch a change in that. Try a size, a colourway, a date or a venue.", fam, chips: mine().every(x => (TPL[x.tpl].sizes || []).length === 1) ? ["Another colourway", "Open in the editor"] : ["Another colourway", "All sizes", "Open in the editor"] };
   }
 
   /* The live artwork beside the brand book: one example piece, redrawn as the book changes. */
@@ -2048,7 +2095,24 @@ class Component extends DCLogic {
     if (TPL[key].sizes && TPL[key].sizes.indexOf(d.size) < 0) patch.size = TPL[key].sizes[0]; else if (!TPL[key].sizes && !SIZES[d.size].ratio) patch.size = "square";
     if (!TPL[key].sizes && SIZE_ORDER.indexOf(d.size) < 0) patch.size = "square";
     if (key === "trio" && !d.copy.sessionTitle) patch.copy = Object.assign({}, d.copy, { sessionPrefix: EXAMPLE_COPY.sessionPrefix, sessionTitle: EXAMPLE_COPY.sessionTitle });
+    if (TPL[key].layouts || d.layout) patch.layout = 0;
+    const copy = this.exampleSwap(d, key, 0); if (copy) patch.copy = copy;
     patch.images = fillImages(Object.assign({}, d, patch)); // new template, new image areas: start them filled too
+    this.commit(patch);
+  }
+  /* A field still holding its example text takes the new template's or layout's example; anything someone typed is kept. */
+  exampleSwap(d, tpl, layout) {
+    if (!PACK || !PACK.exampleFor || !packTpl(tpl)) return null;
+    const was = packTpl(d.tpl) ? PACK.exampleFor(d.tpl, d.layout || 0) : null, now = PACK.exampleFor(tpl, layout); if (!now) return null;
+    const copy = Object.assign({}, d.copy);
+    Object.keys(now).forEach(k => { const cur = String(copy[k] || ""); if (!cur.trim() || (was && cur === String(was[k] || "")) || cur === String(EXAMPLE_COPY[k] || "")) copy[k] = now[k]; });
+    return copy;
+  }
+  setLayout(i) {
+    const d = this.state.design; if (!d || (d.layout || 0) === i) return;
+    const patch = { layout: i }, copy = this.exampleSwap(d, d.tpl, i); if (copy) patch.copy = copy;
+    const next = Object.assign({}, d, patch), keep = {}; slotsFor(next).forEach(sl => { if (d.images[sl.id]) keep[sl.id] = d.images[sl.id]; });
+    next.images = keep; patch.images = fillImages(next);
     this.commit(patch);
   }
   backToProject = async () => { clearTimeout(this._saveT); await this.captureThumb(); const d = this.state.design; if (d) this.saveNow(); const pid = d && d.projectId; this.setState({ view: pid ? "project" : "projects", projectId: pid || null, reviewOpen: false, projMenuOpen: false }); };
@@ -2238,7 +2302,10 @@ class Component extends DCLogic {
   defaultFileName(design) {
     const d = design || this.state.design; const c = d.copy;
     const subject = d.tpl === "speaker" ? c.name : d.tpl === "trio" ? c.sessionTitle : d.tpl === "lockup" ? "announcement" : c.headline;
-    return join(["tekex", d.tpl === "speaker" ? "speaker" : slug(TPL[d.tpl].name), slug(subject), d.size], "-");
+    // Named for the client it was made for, and for carousel slides by their place in the set, so files sort in order.
+    const who = slug(WS_ID === DEFAULT_WS ? "tekex" : (BRAND.name || "").split(" ").slice(0, 2).join(" ")), order = d.setId || /^\d+\s/.test(d.title) ? (String(d.title).match(/^(\d+)\s/) || [])[1] : "";
+    const size = SIZES[d.size] && /^\w+\d{3,}$/.test(d.size) ? SIZES[d.size].w + "x" + SIZES[d.size].h : d.size;
+    return join([who, order ? ("0" + order).slice(-2) : "", d.tpl === "speaker" ? "speaker" : slug(TPL[d.tpl].name), slug(subject).slice(0, 48).replace(/-+$/, ""), size], "-");
   }
   openReview = () => { this._reviewReturn = document.activeElement; this.setState(s => ({ reviewOpen: true, exportDone: false, exportError: "", fileName: s.fileName || this.defaultFileName() })); requestAnimationFrame(() => { const el = document.getElementById("rv-title"); if (el) { el.setAttribute("tabindex", "-1"); el.focus(); } }); };
   closeReview = () => { this.setState({ reviewOpen: false }); if (this._reviewReturn && this._reviewReturn.focus) this._reviewReturn.focus(); };
@@ -2259,7 +2326,7 @@ class Component extends DCLogic {
     const bmp = await createImageBitmap(blob);
     const ok = bmp.width === S.w && bmp.height === S.h; bmp.close && bmp.close();
     if (!ok) throw new Error("The rendered size didn't match " + S.dims + " px.");
-    const name = (slug(fileName) || this.defaultFileName(d)) + (jpg ? ".jpg" : ".png");
+    const name = (String(fileName || "").trim() ? slug(fileName) : this.defaultFileName(d)) + (jpg ? ".jpg" : ".png");
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
@@ -2700,14 +2767,15 @@ class Component extends DCLogic {
     const LABELS = { name: "Speaker name", role: "Job title", company: "Company", venue: "Venue", headline: "Headline", body: "Intro", sessionTitle: "Session title", speakers: "Speaker list" };
     const overLabels = over.map(k => LABELS[k] || k);
     const slots = slotsFor(d);
-    const fieldsDef = FIELDS[d.tpl];
+    const fieldsDef = fieldsFor(d);
     const ratio = contrast(th.ground, th.accent);
     const blocked = missing.length > 0 || over.length > 0;
     const blockedMsg = missing.length ? "Add " + (fieldsDef.find(f => f.key === missing[0]) || { label: missing[0] }).label.toLowerCase().replace(/^a /, "") + " to continue." : "Some text doesn't fit this layout yet. Shorten it or choose another size.";
     const checks = [];
     checks.push(missing.length ? { level: "fail", label: "Required content missing: " + missing.map(k => (fieldsDef.find(f => f.key === k) || { label: k }).label).join(", ") } : { level: "pass", label: "All required content is in" });
     checks.push(over.length ? { level: "fail", label: "Text overflows the layout: " + overLabels.join(", ") } : { level: "pass", label: "All text fits the layout" });
-    if (slots.length) { const filled = slots.filter(sl => d.images[sl.id]).length; checks.push(filled === slots.length ? { level: "pass", label: "All " + slots.length + " image area" + (slots.length > 1 ? "s" : "") + " filled" } : { level: "warn", label: filled + " of " + slots.length + " image areas filled — empty areas export as flat colour" }); }
+    const needed = slots.filter(sl => !sl.optional || d.images[sl.id]); // an optional area left empty is a choice, not a gap
+    if (needed.length) { const slots = needed, filled = slots.filter(sl => d.images[sl.id]).length; checks.push(filled === slots.length ? { level: "pass", label: "All " + slots.length + " image area" + (slots.length > 1 ? "s" : "") + " filled" } : { level: "warn", label: filled + " of " + slots.length + " image areas filled — empty areas export as flat colour" }); }
     const soft = slots.filter(sl => { const im = d.images[sl.id]; if (!im) return false; const b = this.slotBox(sl.id); return this.softAt(im, b.w, b.h, im.zoom); });
     if (soft.length) checks.push({ level: "warn", label: "May look soft: " + soft.map(x => x.label).join(", ") });
     checks.push({ level: ratio >= 4.5 ? "pass" : "warn", label: th.name + " · " + ratio.toFixed(1) + ":1 contrast" });
@@ -2728,6 +2796,7 @@ class Component extends DCLogic {
       newProjectFromEditor: this.newProjectFromEditor, unassignProject: () => this.assignProject(null),
       tplName: tplDef.name, sizeLabel: S.label, sizeDims: S.dims, themeName: th.name,
       templateTiles: TEMPLATES.filter(t => BRAND.templatesOn.indexOf(t.key) >= 0 || d.tpl === t.key).map(t => ({ name: t.name, on: d.tpl === t.key, pick: () => this.switchTemplate(t.key) })),
+      hasLayouts: (tplDef.layouts || []).length > 1, layoutTiles: (tplDef.layouts || []).map((name, i) => ({ name, on: (d.layout || 0) === i, pick: () => this.setLayout(i) })),
       apprNone: this.appr(d).status === "none", apprSubmitted: this.appr(d).status === "submitted", apprResubmit: ["changes", "changed"].indexOf(this.appr(d).status) >= 0,
       apprLabel: this.apprLabel(d), apprClass: this.apprClass(d), apprNote: this.appr(d).note || "", apprGuardianNote: this.appr(d).guardianNote || "",
       apprWhen: (() => { const a = this.appr(d); if (a.status === "submitted") return "Sent " + fmtWhen(new Date(a.at).getTime()) + " · " + a.ref; if (a.decidedAt) return fmtWhen(new Date(a.decidedAt).getTime()) + " · " + a.ref; return a.ref || ""; })(),

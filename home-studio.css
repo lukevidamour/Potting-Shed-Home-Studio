@@ -1372,3 +1372,83 @@ select.input[data-open]{border-color:var(--hs-ink)}
 .markt b{font-size:14px;line-height:20px;font-weight:500}
 [data-theme="dark"] .markbox{outline-color:rgba(255,255,255,.1)}
 @media (max-width:640px){.marks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ---------- v8: the assistant, in the shape people already know ----------
+   One centred column. With nothing said yet, the greeting and the composer sit together in the middle of the screen;
+   once talking, the thread scrolls and the composer stays at the foot. The composer is a rounded field with the send
+   button inside it. Enter sends. */
+.makeover{display:flex;flex-direction:column;overflow:hidden;--mk-w:760px}
+.mkbar{flex:none;display:flex;align-items:center;gap:10px;height:64px;padding:0 20px 0 28px}
+.mkbar__gap{flex:1}
+.mkwho{display:inline-flex;align-items:center;gap:10px;font-size:14px;line-height:20px;color:var(--quiet)}
+.mkwho i{width:8px;height:8px;border-radius:50%}
+.mknew{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px 0 12px;border:0;border-radius:999px;background:none;font-size:14px;line-height:20px;color:var(--hs-ink);cursor:pointer;transition:background-color var(--t) var(--out),scale var(--t) var(--out)}
+.mknew svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round}
+.mknew:hover{background:color-mix(in srgb,var(--hs-ink) 7%,transparent)}
+.mknew:active{scale:.96;transition-duration:var(--t-fast)}
+.makeover .mkclose{position:static;width:40px;height:40px;border:0;background:none}
+.makeover .mkclose:hover{background:color-mix(in srgb,var(--hs-ink) 7%,transparent);color:var(--hs-ink)}
+.mkscroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable both-edges}
+.mkcol{width:100%;max-width:var(--mk-w);margin:0 auto;padding:8px 24px 28px;box-sizing:border-box}
+.makeover.is-empty .mkscroll{flex:0 0 auto;margin-top:auto;overflow:visible}
+.makeover.is-empty .composer{margin-bottom:auto;padding-bottom:12vh}
+.makeover .mkintro{padding:0 0 28px;text-align:center}
+.makeover .mkintro h1.welcome{margin:0;font-size:clamp(34px,4.4vw,52px);line-height:1.08;text-wrap:balance}
+.makeover .thread{max-width:none;padding:0;gap:28px}
+.makeover.is-empty .thread{display:none}
+.makeover .msg p{max-width:none;font-size:17px;line-height:1.5;letter-spacing:-.005em;text-wrap:pretty}
+.makeover .msg.me p{max-width:min(78%,560px);padding:11px 18px;border-radius:22px 22px 6px 22px;background:var(--hs-surface);color:var(--hs-ink);box-shadow:inset 0 0 0 1px var(--key)}
+.makeover .msg.hs{align-items:flex-start}
+.makeover .mktile{height:clamp(180px,24vh,260px);border-radius:3px;outline:1px solid rgba(0,0,0,.08);outline-offset:-1px}
+.makeover .mkchips button{height:36px;padding:0 14px;font-size:14px}
+.makeover .composer{position:static;flex:none;width:100%;max-width:var(--mk-w);margin:0 auto;padding:0 24px 18px;box-sizing:border-box;background:none;animation:cascade var(--t-enter) var(--out) 120ms backwards}
+.makeover .mkfield{display:flex;align-items:flex-end;gap:8px;max-width:none;padding:8px 8px 8px 20px;border:0;border-radius:26px;background:var(--hs-surface);box-shadow:inset 0 0 0 1px var(--key);transition:box-shadow var(--t) var(--out)}
+.makeover .mkfield:focus-within{box-shadow:inset 0 0 0 1.5px var(--hs-ink)}
+.makeover .mkfield textarea{flex:1;min-width:0;height:40px;max-height:176px;margin:0;padding:8px 0;border:0;outline:0;resize:none;background:none;color:inherit;font:inherit;font-size:17px;line-height:24px;letter-spacing:-.005em;overflow-y:auto}
+.makeover .mkfield textarea::placeholder{color:var(--quiet);opacity:1}
+.makeover .mkfield textarea:focus-visible{outline:none;box-shadow:none}
+.makeover .mkfield .go{width:40px;height:40px;aspect-ratio:auto;flex:none}
+.makeover .mkfield .go svg{width:20px;height:20px;transition:translate var(--t) var(--spring-bouncy)}
+.makeover .mkfield .go:hover svg{translate:0 -2px}
+.makeover .mkfield .go[disabled]{background:color-mix(in srgb,var(--hs-ink) 8%,transparent);color:var(--quiet);cursor:default}
+.makeover .mkfield .go[disabled]:hover{background:color-mix(in srgb,var(--hs-ink) 8%,transparent);color:var(--quiet)}
+.makeover .mkfield .go[disabled]:hover svg{translate:0}
+.makeover .mkchips.start{flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:18px 0 0}
+.makeover .mkchips.start button{min-height:36px;height:36px;padding:0 14px;font-size:14px;color:var(--hs-ink)}
+.mknote{margin:10px 0 0;text-align:center;font-size:12px;line-height:16px;color:var(--quiet)}
+.mkdots{display:inline-flex;align-items:center;gap:5px;height:26px}
+.mkdots i{width:7px;height:7px;border-radius:50%;background:var(--quiet);animation:mk-dot 900ms var(--out) infinite}
+.mkdots i:nth-child(2){animation-delay:120ms}.mkdots i:nth-child(3){animation-delay:240ms}
+@keyframes mk-dot{0%,60%,100%{opacity:.3;translate:0}30%{opacity:1;translate:0 -3px}}
+.makeover .msg.pending{animation:fade 160ms var(--out)}
+[data-theme="dark"] .makeover .mktile{outline-color:rgba(255,255,255,.1)}
+@media (max-width:640px){.mkbar{padding:0 8px 0 16px;height:56px}.mkcol{padding:8px 16px 20px}.makeover .composer{padding:0 12px 12px}.makeover.is-empty .composer{padding-bottom:6vh}.makeover .mkchips.start{justify-content:flex-start}.mknote{display:none}}
+@media (prefers-reduced-motion:reduce){.mkdots i{animation:none;opacity:.6}}
+
+/* ---------- v9: QA fixes ---------- */
+/* The editor header kept a fixed height at narrow widths, so its wrapped rows ran over the stage.
+   Tablet: one row, with the save state reduced to its dot. Phone: two rows, back and title and Publish above, the rest below. */
+@media (max-width:860px){
+  .hdr.compact{padding:0 12px;gap:8px;flex-wrap:nowrap}
+  .sizepill{white-space:nowrap}
+  .hdr.compact>.btn.sm.quiet{flex:none;width:40px;height:40px;padding:0;justify-content:center;font-size:0;gap:0}
+  .hdr.compact>.btn.sm.quiet svg{width:20px;height:20px;flex:none}
+  .hdr.compact .title-in{flex:1 1 80px;width:auto;min-width:80px}
+  .hdr.compact .kebab{flex:0 1 auto;min-width:0}
+  .hdr.compact .projchip{max-width:30vw}
+  .hdr.compact .projchip>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hdr.compact .save>span:not(.sdot){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .hdr.compact .spacer{flex:0 1 0}
+}
+@media (max-width:640px){
+  .hdr.compact{height:auto;flex-basis:auto;flex-wrap:wrap;padding:10px 12px}
+  .hdr.compact .title-in{order:1;flex:1 1 calc(100% - 160px)}
+  .hdr.compact>.btn.primary{order:2}
+  .hdr.compact .kebab{order:3}.hdr.compact .save{order:4}.hdr.compact .spacer{order:5;flex:1 1 0}.hdr.compact>.btn.icon{order:6}
+  .hdr.compact .projchip{max-width:46vw}
+  .hdr.compact>.btn.icon[aria-label^="Switch to"]{display:none}
+}
+/* A row of tabs that scrolls says so: the trailing edge fades, with room for the last tab to come clear of it. */
+@media (max-width:860px){
+  .gtabs{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);padding-right:28px;scroll-padding-right:28px}
+}
