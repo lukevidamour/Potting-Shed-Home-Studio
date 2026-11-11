@@ -1251,3 +1251,9 @@ p,.lede,.desc,.meta{text-wrap:pretty}
 :root:not([data-theme="dark"]) .card:hover .art,
 :root:not([data-theme="dark"]) .weekcard:hover{background:var(--accent)}
 :root:not([data-theme="dark"]) .bbcard .art,:root:not([data-theme="dark"]) .bbcard:hover .art{background:none}
+
+/* The assistant button: a small chat icon. */
+.fab{width:52px;height:52px;right:26px;bottom:26px}
+.fab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:rotate 360ms var(--spring),scale var(--t) var(--out)}
+.fab:hover svg{rotate:-6deg;scale:1.06}
+@keyframes make-open{from{clip-path:circle(26px at calc(100% - 52px) calc(100% - 52px))}to{clip-path:circle(150% at calc(100% - 52px) calc(100% - 52px))}}
