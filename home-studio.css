@@ -1257,3 +1257,18 @@ p,.lede,.desc,.meta{text-wrap:pretty}
 .fab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:rotate 360ms var(--spring),scale var(--t) var(--out)}
 .fab:hover svg{rotate:-6deg;scale:1.06}
 @keyframes make-open{from{clip-path:circle(26px at calc(100% - 52px) calc(100% - 52px))}to{clip-path:circle(150% at calc(100% - 52px) calc(100% - 52px))}}
+
+/* ---------- rail foot: who you are on the left, the three utilities on the right, one size, one rule above ---------- */
+.gfoot{align-items:center;gap:6px;padding-top:16px;border-top:.5px solid var(--key)}
+.gfoot__gap{flex:1 1 auto}
+.gfoot .bead{width:40px;height:40px;min-width:40px;padding:0}
+.gfoot .bead.round{border-color:transparent;color:var(--quiet)}
+.gfoot .bead.round:hover{background:var(--well);color:var(--hs-ink);border-color:transparent}
+.gfoot .bead.round svg{width:19px;height:19px}
+.gfoot .bead.avatar{outline:.5px solid var(--key);outline-offset:2px;transition:outline-color var(--t) var(--out),scale var(--t) var(--out)}
+.gfoot .bead.avatar:hover{outline-color:var(--hs-ink);background:none}
+.gfoot .bead.avatar[aria-expanded="true"]{outline:1.5px solid var(--accent)}
+@media (min-width:861px){
+  .gfoot{justify-content:flex-start;gap:4px;margin-top:4px}
+  .gfoot .kebab .menu{left:0;right:auto;bottom:calc(100% + 12px);top:auto;transform-origin:bottom left}
+}
