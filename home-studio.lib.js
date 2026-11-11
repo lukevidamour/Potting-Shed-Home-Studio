@@ -491,7 +491,7 @@ function composeDateLine(c) {
   const first = join([c.date, when], ": ");
   return join([first, c.venue], ", ");
 }
-function composeEyebrow(c) { return c.eventNumber ? BRAND.name + " #" + c.eventNumber + " Speaker:" : BRAND.name + " Speaker:"; }
+function composeEyebrow(c) { const k = BRAND.speakerKicker; if (k) return (c.eventNumber ? k + " #" + c.eventNumber : k) + ":"; return c.eventNumber ? BRAND.name + " #" + c.eventNumber + " Speaker:" : BRAND.name + " Speaker:"; }
 function lum(rgb) { const p = rgb.map(v => { const c = v / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }); return 0.2126 * p[0] + 0.7152 * p[1] + 0.0722 * p[2]; }
 function parseRgb(str) { const m = String(str).match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/); return m ? [+m[1], +m[2], +m[3]] : [0, 0, 0]; }
 function contrast(a, b) { const la = lum(parseRgb(a)), lb = lum(parseRgb(b)); return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05); }
@@ -508,7 +508,7 @@ function newDesign(tpl, size, projectId) {
     speakers: EXAMPLE_SPEAKERS.map(s => Object.assign({}, s)),
     trio: EXAMPLE_TRIO.map(t => Object.assign({}, t)),
     images: {}, partnersOn: BRAND.partners.map(p => p.key),
-    showBar: true, showPowered: true, showHero: true, showPortraits: true,
+    showBar: true, showPowered: BRAND.powered !== false, showHero: true, showPortraits: true,
     updatedAt: Date.now()
   };
   d.images = fillImages(d);
@@ -586,7 +586,7 @@ const Store = {
    A client is a workspace: its own brand book, projects, designs and uploads. The brand book is the single
    source every template reads from (BRAND), so editing it re-skins the artwork. Switching client reloads the page. */
 const WS_KEY = "hs-workspaces-v1", WS_CUR = "hs-ws-current", BRAND_KEY = "hs-brand-v1", DEFAULT_WS = "tekex";
-const BRAND_EDITABLE = ["name", "url", "logo", "about", "voice", "dos", "donts", "hashtags", "palette", "themes", "barLabels", "partners", "templatesOn", "team", "log", "updatedAt", "updatedBy"];
+const BRAND_EDITABLE = ["powered", "speakerKicker", "name", "url", "logo", "about", "voice", "dos", "donts", "hashtags", "palette", "themes", "barLabels", "partners", "templatesOn", "team", "log", "updatedAt", "updatedBy"];
 const BRAND_DEFAULT = JSON.parse(JSON.stringify(BRAND));
 function hexToRgb(hex) { const m = String(hex || "").trim().replace(/^#/, ""); const f = m.length === 3 ? m.split("").map(ch => ch + ch).join("") : m; const n = parseInt(f, 16); return /^[0-9a-fA-F]{6}$/.test(f) ? "rgb(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + ")" : "rgb(0,0,0)"; }
 function rgbToHex(rgb) { return "#" + parseRgb(rgb).map(v => v.toString(16).padStart(2, "0")).join("").toUpperCase(); }
@@ -608,6 +608,78 @@ function blankBrand(name, primary, secondary, url) {
     team: JSON.parse(JSON.stringify(BRAND_DEFAULT.team)), log: [], studioEmail: BRAND_DEFAULT.studioEmail
   };
 }
+
+/* ---------- Potting Shed as a client of its own tool ----------
+   Built from the February 2026 brand guidelines: one accent at a time on ink or off-white, Neue Montreal Regular
+   for everything, Quarto italic for a single word, the wordmark in any single brand colour. */
+const PS_WS = "potting-shed";
+function pottingShedBrand() {
+  const way = (name, ground, accent) => ({ name, ground: hexToRgb(ground), accent: hexToRgb(accent) });
+  const INK = "#171717", PAPER = "#F2F2F2";
+  return {
+    workspace: "Potting Shed", name: "Potting Shed", url: "POTTINGSHED.COM", logo: { src: "assets/ps-logo.svg", name: "Potting Shed wordmark" }, powered: false, speakerKicker: "Shed Session",
+    about: "We are a brand studio specialising in strategy, identity, & experience. We tell the world who you really are, with hand-crafted, loving, human design.",
+    voice: "Say what you mean. Keep it human. Choose optimism. No bollocks. Stay wildly curious. Vibrant but not noisy, playful but polished.",
+    dos: ["Use one accent colour at a time, grounded on off-white or ink", "Set everything in Neue Montreal Regular and build hierarchy with scale and colour", "Use Quarto italic for a single accent word in a headline", "Use ink text on yellow, lime and green"],
+    donts: ["Mix accent colours on one piece", "Use bold for headings, outline text or justify paragraphs", "Put the logo in grey, in a holding shape, or give it a shadow, bevel or outline", "Stretch or distort the logo or type"],
+    hashtags: "",
+    palette: [{ name: "Ink", value: INK }, { name: "Paper", value: PAPER }, { name: "Blue", value: "#245FFF" }, { name: "Cyan", value: "#12CDFF" }, { name: "Teal", value: "#01FECD" }, { name: "Yellow", value: "#FDE619" }, { name: "Pink", value: "#FF16A5" }, { name: "Red", value: "#FE1658" }, { name: "Orange", value: "#FF840A" }, { name: "Peach", value: "#FFADA2" }, { name: "Lime", value: "#CEFF00" }, { name: "Green", value: "#69FF46" }],
+    themes: [way("Paper", PAPER, INK), way("Ink", INK, PAPER), way("Blue", "#245FFF", PAPER), way("Pink", "#FF16A5", INK), way("Red", "#FE1658", INK), way("Orange", "#FF840A", INK), way("Yellow", "#FDE619", INK), way("Teal", "#01FECD", INK), way("Cyan", "#12CDFF", INK), way("Lime", "#CEFF00", INK), way("Green", "#69FF46", INK), way("Peach", "#FFADA2", INK)],
+    barLabels: ["SHED LIFE", "WORK", "JOURNAL", "STUDIO", "HIRING"],
+    partners: [{"key": "dim-mak", "name": "Dim Mak", "src": "assets/ps/clients/dim-mak.svg"}, {"key": "ey", "name": "EY", "src": "assets/ps/clients/ey.svg"}, {"key": "pwc", "name": "PwC", "src": "assets/ps/clients/pwc.svg"}, {"key": "rip-curl", "name": "Rip Curl", "src": "assets/ps/clients/rip-curl.svg"}, {"key": "specsavers", "name": "Specsavers", "src": "assets/ps/clients/specsavers.svg"}, {"key": "void-acoustics", "name": "Void Acoustics", "src": "assets/ps/clients/void-acoustics.svg"}],
+    library: [
+      {"id": "ps-abbie-morton", "name": "Abbie Morton — Designer", "src": "assets/ps/team/abbie-morton.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Abbie Morton", "role": "Designer"},
+      {"id": "ps-al-mitchell", "name": "Al Mitchell — Partner", "src": "assets/ps/team/al-mitchell.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Al Mitchell", "role": "Partner"},
+      {"id": "ps-ed-prow", "name": "Ed Prow — Partner", "src": "assets/ps/team/ed-prow.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Ed Prow", "role": "Partner"},
+      {"id": "ps-emily-devon", "name": "Emily Devon — Senior Designer", "src": "assets/ps/team/emily-devon.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Emily Devon", "role": "Senior Designer"},
+      {"id": "ps-harry-torode", "name": "Harry Torode — Designer", "src": "assets/ps/team/harry-torode.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Harry Torode", "role": "Designer"},
+      {"id": "ps-jamie-dodds", "name": "Jamie Dodds — Developer", "src": "assets/ps/team/jamie-dodds.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Jamie Dodds", "role": "Developer"},
+      {"id": "ps-jayne-white", "name": "Jayne White — Accountant", "src": "assets/ps/team/jayne-white.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Jayne White", "role": "Accountant"},
+      {"id": "ps-keelie-chadwick", "name": "Keelie Chadwick — Account Manager", "src": "assets/ps/team/keelie-chadwick.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Keelie Chadwick", "role": "Account Manager"},
+      {"id": "ps-luke-vidamour", "name": "Luke Vidamour — Partner", "src": "assets/ps/team/luke-vidamour.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Luke Vidamour", "role": "Partner"},
+      {"id": "ps-marike-visagie", "name": "Marike Visagie — Project Manager", "src": "assets/ps/team/marike-visagie.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Marike Visagie", "role": "Project Manager"},
+      {"id": "ps-nat-whitty", "name": "Nat Whitty — Studio Director", "src": "assets/ps/team/nat-whitty.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Nat Whitty", "role": "Studio Director"},
+      {"id": "ps-scarlett-mauger", "name": "Scarlett Mauger — Project Manager", "src": "assets/ps/team/scarlett-mauger.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Scarlett Mauger", "role": "Project Manager"},
+      {"id": "ps-silvie-grant", "name": "Silvie Grant — Senior Designer", "src": "assets/ps/team/silvie-grant.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Silvie Grant", "role": "Senior Designer"},
+      {"id": "ps-tom-langford", "name": "Tom Langford — Partner", "src": "assets/ps/team/tom-langford.jpg", "group": "Team", "w": 560, "h": 888, "fx": 50, "fy": 6, "person": "Tom Langford", "role": "Partner"},
+      {"id": "ps-studio-meeting", "name": "Studio meeting", "src": "assets/ps/work/studio-meeting.jpg", "group": "Studio", "w": 1800, "h": 1215},
+      {"id": "ps-studio-window-letters", "name": "Studio window letters", "src": "assets/ps/work/studio-window-letters.jpg", "group": "Studio", "w": 1800, "h": 1800},
+      {"id": "ps-work-yoono-the-more-yoono", "name": "Yoono - The more Yoono", "src": "assets/ps/work/yoono-the-more-yoono.jpg", "group": "Work", "w": 1600, "h": 900},
+      {"id": "ps-work-gta-flexible-learning-flexible-branding", "name": "GTA - Flexible learning, flexible branding", "src": "assets/ps/work/gta-flexible-learning-flexible-branding.jpg", "group": "Work", "w": 1600, "h": 900},
+      {"id": "ps-work-bank-aston-offshore-future", "name": "Bank Aston - Offshore Future", "src": "assets/ps/work/bank-aston-offshore-future.jpg", "group": "Work", "w": 1600, "h": 900},
+      {"id": "ps-work-home-no-place-like-home", "name": "Home - No Place Like Home", "src": "assets/ps/work/home-no-place-like-home.jpg", "group": "Work", "w": 1600, "h": 900},
+      {"id": "ps-work-io-co-superhuman-future", "name": "iO-CO - Superhuman future", "src": "assets/ps/work/io-co-superhuman-future.jpg", "group": "Work", "w": 1600, "h": 900},
+      {"id": "ps-work-jdc-westward-building-the-future-with-a-sense-of-place", "name": "JDC - Westward - Building the Future with a Sense of Place", "src": "assets/ps/work/jdc-westward-building-the-future-with-a-sense-of-place.jpg", "group": "Work", "w": 1600, "h": 1051},
+      {"id": "ps-work-winslow-brew-co-impeccable-character", "name": "Winslow Brew Co - Impeccable Character", "src": "assets/ps/work/winslow-brew-co-impeccable-character.jpg", "group": "Work", "w": 1600, "h": 900},
+      {"id": "ps-work-visual-education-the-shape-of-creativity", "name": "Visual Education - The shape of creativity", "src": "assets/ps/work/visual-education-the-shape-of-creativity.jpg", "group": "Work", "w": 1600, "h": 900},
+      {"id": "ps-work-true-true-colours", "name": "True - True Colours", "src": "assets/ps/work/true-true-colours.jpg", "group": "Work", "w": 1600, "h": 1067},
+      {"id": "ps-work-gravity-defying-gravity", "name": "Gravity - Defying Gravity", "src": "assets/ps/work/gravity-defying-gravity.jpg", "group": "Work", "w": 1600, "h": 1066}
+    ],
+    fonts: { display: "PP Neue Montreal", accent: "Quarto Italic" }, templatesOn: ["speaker", "event", "listing", "trio", "partners", "lockup"],
+    team: [{"name": "Abbie Morton", "role": "Designer", "src": "assets/ps/team/abbie-morton.jpg"}, {"name": "Al Mitchell", "role": "Partner", "src": "assets/ps/team/al-mitchell.jpg"}, {"name": "Ed Prow", "role": "Partner", "src": "assets/ps/team/ed-prow.jpg"}, {"name": "Emily Devon", "role": "Senior Designer", "src": "assets/ps/team/emily-devon.jpg"}, {"name": "Harry Torode", "role": "Designer", "src": "assets/ps/team/harry-torode.jpg"}, {"name": "Jamie Dodds", "role": "Developer", "src": "assets/ps/team/jamie-dodds.jpg"}, {"name": "Jayne White", "role": "Accountant", "src": "assets/ps/team/jayne-white.jpg"}, {"name": "Keelie Chadwick", "role": "Account Manager", "src": "assets/ps/team/keelie-chadwick.jpg"}, {"name": "Luke Vidamour", "role": "Partner", "src": "assets/ps/team/luke-vidamour.jpg"}, {"name": "Marike Visagie", "role": "Project Manager", "src": "assets/ps/team/marike-visagie.jpg"}, {"name": "Nat Whitty", "role": "Studio Director", "src": "assets/ps/team/nat-whitty.jpg"}, {"name": "Scarlett Mauger", "role": "Project Manager", "src": "assets/ps/team/scarlett-mauger.jpg"}, {"name": "Silvie Grant", "role": "Senior Designer", "src": "assets/ps/team/silvie-grant.jpg"}, {"name": "Tom Langford", "role": "Partner", "src": "assets/ps/team/tom-langford.jpg"}],
+    log: [], studioEmail: BRAND_DEFAULT.studioEmail
+  };
+}
+const PRESETS = { ps: pottingShedBrand };
+/* A few pieces to open on, in the brand's own words. */
+function seedPottingShed() {
+  const pj = (name, brief, daysAgo) => { const p = newProject(name, brief, ""); p.example = true; p.createdAt = Date.now() - daysAgo * 86400000; p.updatedAt = p.createdAt; return p; };
+  const mk = (p, tpl, size, title, theme, copy, extra) => { const d = newDesign(tpl, size, p.id); d.title = title; d.theme = theme; d.copy = Object.assign({}, d.copy, copy || {}); Object.assign(d, extra || {}); d.images = fillImages(d); d.updatedAt = p.updatedAt; return d; };
+  const person = (id) => ({ "speaker-photo": libImg(id) });
+  const who = (id) => { const im = LIB[id]; return { name: im.person, role: im.role + ",", company: "Potting Shed" }; };
+  const sessions = pj("Shed Sessions", "Meet the team, one at a time. One card per person in a different brand colour.", 3);
+  const studio = pj("Studio", "Who we are, in one line, and the company we keep.", 8);
+  const line = { date: "On the journal now", startTime: "", endTime: "", venue: "", barLabel: "SHED LIFE", eventNumber: "" };
+  const drafts = [
+    mk(sessions, "speaker", "portrait", "Abbie Morton · Portrait", 3, Object.assign({}, who("ps-abbie-morton"), line), { images: person("ps-abbie-morton") }),
+    mk(sessions, "speaker", "portrait", "Silvie Grant · Portrait", 6, Object.assign({}, who("ps-silvie-grant"), line), { images: person("ps-silvie-grant") }),
+    mk(sessions, "speaker", "portrait", "Ed Prow · Portrait", 2, Object.assign({}, who("ps-ed-prow"), line), { images: person("ps-ed-prow") }),
+    mk(studio, "lockup", "square", "Who we are · Square", 0, { body: "We tell the world who you really are.", barLabel: "STUDIO" }),
+    mk(studio, "partners", "square", "Trusted by · Square", 1, { headline: "Trusted by", barLabel: "WORK" }),
+    mk(studio, "event", "landscape", "Studio · Landscape", 7, { headline: "Hand-crafted, loving, human design", body: "A brand studio specialising in strategy, identity and experience.", date: "Guernsey and Jersey", startTime: "", endTime: "", venue: "", barLabel: "STUDIO" }, { images: { "event-image": libImg("ps-studio-window-letters") } })
+  ];
+  return { projects: [sessions, studio], drafts };
+}
 function wsList() { let l = null; try { l = JSON.parse(localStorage.getItem(WS_KEY) || "null"); } catch (e) {} const rest = (l || []).filter(w => w && w.id && w.id !== DEFAULT_WS); return [{ id: DEFAULT_WS, name: (wsBrandName(DEFAULT_WS) || BRAND_DEFAULT.name) }].concat(rest); }
 function wsBrandName(id) { try { const b = JSON.parse(localStorage.getItem((id === DEFAULT_WS ? "" : "hs-ws-" + id + ":") + BRAND_KEY) || "null"); return b && b.name; } catch (e) { return ""; } }
 function wsCurrentId() { let id = DEFAULT_WS; try { id = localStorage.getItem(WS_CUR) || DEFAULT_WS; } catch (e) {} return wsList().some(w => w.id === id) ? id : DEFAULT_WS; }
@@ -622,16 +694,20 @@ function applyBrand(saved) {
   BRAND.workspace = BRAND.name;
   return BRAND;
 }
+try { if (!localStorage.getItem("hs-ps-client-v1")) { const l = JSON.parse(localStorage.getItem(WS_KEY) || "[]"); if (!l.some(w => w.id === PS_WS)) l.unshift({ id: PS_WS, name: "Potting Shed", preset: "ps", primary: "#245FFF", createdAt: Date.now() }); localStorage.setItem(WS_KEY, JSON.stringify(l)); localStorage.setItem("hs-ps-client-v1", "1"); } } catch (e) {}
 const WS_ID = wsCurrentId();
 Store.ns = WS_ID === DEFAULT_WS ? "" : "hs-ws-" + WS_ID + ":";
 if (WS_ID !== DEFAULT_WS) {
   // A client added later starts from a blank book: none of the first client's imagery, partners or copy carries over.
   const meta = wsList().find(w => w.id === WS_ID) || {};
   Object.keys(BRAND).forEach(k => delete BRAND[k]);
-  Object.assign(BRAND, blankBrand(meta.name || "New client", meta.primary, meta.secondary, meta.url));
+  Object.assign(BRAND, PRESETS[meta.preset] ? PRESETS[meta.preset]() : blankBrand(meta.name || "New client", meta.primary, meta.secondary, meta.url));
   Object.keys(LIB).forEach(k => delete LIB[k]);
   PORTRAIT_IDS.length = 0; EVENT_IDS.length = 0;
-  Object.assign(EXAMPLE_COPY, { eventNumber: "", name: "Speaker name", role: "Job title,", company: "Company", headline: "Your headline", body: "One or two sentences about what is happening and why it matters.", eyebrow: BRAND.name + " · Line-up", sessionPrefix: "11.00am · Talks", sessionTitle: "Session title", startTime: "2pm", endTime: "5pm", venue: "Venue name", barLabel: "EVENT", url: BRAND.url });
+  (BRAND.library || []).forEach(im => { LIB[im.id] = im; if (im.group === "Team") PORTRAIT_IDS.push(im.id); else EVENT_IDS.push(im.id); });
+  LIB_GROUPS.length = 0; Array.from(new Set((BRAND.library || []).map(im => im.group))).forEach(g => LIB_GROUPS.push(g));
+  Object.assign(EXAMPLE_COPY, { eventNumber: "", name: "Speaker name", role: "Job title,", company: "Company", headline: "Your headline", body: "One or two sentences about what is happening and why it matters.", eyebrow: BRAND.name + " · Line-up", sessionPrefix: "11.00am · Talks", sessionTitle: "Session title", startTime: "2pm", endTime: "5pm", venue: "Venue name", barLabel: (BRAND.barLabels || ["EVENT"])[0], url: BRAND.url });
+  if (meta.preset === "ps") Object.assign(EXAMPLE_COPY, { name: "Abbie Morton", role: "Designer,", company: "Potting Shed", headline: "We tell the world who you really are", body: BRAND.about, eyebrow: "Shed Sessions · Meet the team", sessionPrefix: "Shed Sessions", sessionTitle: "Meet the people behind the work", date: "On the journal now", startTime: "", endTime: "", venue: "" });
 }
 applyBrand(Store.get(BRAND_KEY, null));
 const THUMBS_KEY = "hs-thumbs-v1";
@@ -643,5 +719,13 @@ function ensureShot() {
   return __shotP;
 }
 
+/* GSAP is only needed for the sign-in intro, so it is fetched when that plays. */
+let __gsapP = null;
+function ensureGsap() {
+  if (window.gsap) return Promise.resolve(window.gsap);
+  if (!__gsapP) __gsapP = new Promise((res, rej) => { const el = document.createElement("script"); el.src = "vendor/gsap.min.js"; el.onload = () => (window.gsap ? res(window.gsap) : rej(new Error("gsap missing"))); el.onerror = () => { __gsapP = null; rej(new Error("gsap failed to load")); }; document.head.appendChild(el); });
+  return __gsapP;
+}
+
 /* expose for tests (node) */
-if (typeof module !== 'undefined') module.exports = { imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
+if (typeof module !== 'undefined') module.exports = { pottingShedBrand, seedPottingShed, PS_WS, imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
