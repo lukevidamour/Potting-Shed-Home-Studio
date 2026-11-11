@@ -12,3 +12,7 @@ node_modules/
 /*.JPG
 /*.jpeg
 /*.png
+
+# Client material that has not been cleared for a public repository (unreleased rebrand, staff photos, licensed fonts).
+# Remove these lines only once the client and Luke have agreed it can be published.
+assets/hh/

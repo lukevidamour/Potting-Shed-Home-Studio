@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/ps-favicon.svg">
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261111o"></script>
+<script src="home-studio.lib.js?v=20261111p"></script>
 </head>
 <body>
 <x-dc>
@@ -1155,11 +1155,6 @@ class Component extends DCLogic {
     let thumbs = Store.get(THUMBS_KEY, {});
     Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || v.indexOf("data:image/") !== 0 || v.length < 1500) delete thumbs[k]; });
     if (drafts.some(d => d.thumb)) { drafts.forEach(d => { if (d.thumb) thumbs[d.id] = d.thumb; }); drafts = drafts.map(d => { const c = Object.assign({}, d); delete c.thumb; return c; }); try { Store.set(THUMBS_KEY, thumbs); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
-    if (WS_ID === PS_WS && !Store.raw("hs-seed-ps")) {
-      const ex = seedPottingShed();
-      projects = projects.concat(ex.projects); drafts = drafts.concat(ex.drafts);
-      try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag("hs-seed-ps"); } catch (e) {}
-    }
     drafts = drafts.map(x => BRAND.themes[x.theme] ? x : Object.assign({}, x, { theme: 0 }));
     // Example content keeps itself current: fields nobody has edited move with today, the first time and then whenever they drift by four weeks.
     if (WS_ID === DEFAULT_WS) {
@@ -1568,8 +1563,8 @@ class Component extends DCLogic {
       userMenuOpen: s.userMenuOpen, toggleUserMenu: this.toggleUserMenu, signOut: this.signOut, logoTap: this.logoTap,
       isMake: s.makeOpen, goMake: this.goMake, closeMake: this.closeMake, makeEmpty: s.chat.length === 0, fabShow: view !== "editor" && !s.makeOpen && !s.gate,
       makeText: s.makeText, makeSetText: (e) => this.setState({ makeText: e.target.value }), makeSubmit: (e) => { e.preventDefault(); this.makeSend(); },
-      makeHint: WS_ID === PS_WS ? "Meet Abbie Morton, Designer at Potting Shed" : WS_ID === DEFAULT_WS ? "Anna Le Page, Partner at Rathbones, is speaking Wed 2 Dec, 8am at Wild Peak" : "Describe it: who, what, when and where",
-      makeIdeas: (WS_ID === PS_WS ? ["Meet Silvie Grant, Senior Designer at Potting Shed", "Announce our studio open evening on 10 December, 6pm at Trinity Square", "Thank our partners"] : ["Dr Niraj Singh, Founder at Ketamine Therapies, is speaking Thu 26 Nov, 9am at the BDO Hub", "Announce the Founders Breakfast on 2 December, 8am at Wild Peak. As a square and a story.", "Thank our partners"]).map(t => ({ label: t, go: () => this.makeSend(t) })),
+      makeHint: WS_ID === DEFAULT_WS ? "Anna Le Page, Partner at Rathbones, is speaking Wed 2 Dec, 8am at Wild Peak" : "Describe it: who, what, when and where",
+      makeIdeas: (["Dr Niraj Singh, Founder at Ketamine Therapies, is speaking Thu 26 Nov, 9am at the BDO Hub", "Announce the Founders Breakfast on 2 December, 8am at Wild Peak. As a square and a story.", "Thank our partners"]).map(t => ({ label: t, go: () => this.makeSend(t) })),
       makeMsgs: s.chat.map(m => {
         const fam = m.fam ? s.drafts.filter(x => x.familyId === m.fam).sort((a, b) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)) : [];
         return { cls: m.who === "me" ? "me" : "hs", text: m.text, hasArt: fam.length > 0,
