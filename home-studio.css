@@ -1222,3 +1222,21 @@ p,.lede,.desc,.meta{text-wrap:pretty}
 .mkchips.start{flex-direction:column;align-items:flex-start;margin-bottom:22px}
 .mkchips.start button{height:auto;min-height:40px;padding:9px 18px;font-size:15px}
 .composer{position:sticky;bottom:0;padding:18px 0 28px;background:linear-gradient(180deg,transparent,var(--hs-page) 26%);max-width:980px}
+
+/* ---------- make lives behind one floating button, and opens to the whole screen ---------- */
+.fab{position:fixed;right:28px;bottom:28px;z-index:45;width:60px;height:60px;padding:0;border:0;border-radius:999px;background:var(--hs-ink);color:var(--hs-on-ink);cursor:pointer;display:grid;place-items:center;transition:background-color var(--t) var(--out),scale var(--t) var(--out);animation:bead-in 420ms var(--spring-bouncy) 200ms backwards}
+.fab__leaf{display:block;width:30px;height:30px;background:currentColor;-webkit-mask:url(assets/ps-favicon.svg) center/contain no-repeat;mask:url(assets/ps-favicon.svg) center/contain no-repeat;transition:rotate 360ms var(--spring),color var(--t) var(--out)}
+.fab:hover{background:var(--accent);color:#171717;scale:1.05}
+.fab:hover .fab__leaf{rotate:-8deg}
+.fab:active{scale:.96;transition-duration:var(--t-fast)}
+.fab:focus-visible{outline:2px solid var(--hs-focus);outline-offset:4px;box-shadow:none}
+.makeover{position:fixed;inset:0;z-index:300;overflow-y:auto;background:var(--hs-page);animation:make-open 380ms var(--out)}
+@keyframes make-open{from{clip-path:circle(30px at calc(100% - 58px) calc(100% - 58px))}to{clip-path:circle(150% at calc(100% - 58px) calc(100% - 58px))}}
+.makeover .page.make{max-width:1080px;margin:0 auto;padding:56px 48px 0;animation:none}
+.makeover .mkintro,.makeover .thread,.makeover .composer{animation:cascade var(--t-enter) var(--out) 160ms backwards}
+.makeover .composer{animation-delay:220ms;max-width:none}
+.makeover .thread,.makeover .mkfield{max-width:none}
+.mkclose{position:fixed;top:22px;right:26px;z-index:2;width:44px;height:44px;border:.5px solid var(--key);border-radius:999px;background:var(--hs-page)}
+.mkclose:hover{background:var(--hs-ink);color:var(--hs-on-ink)}
+@media (prefers-reduced-motion:reduce){.makeover{animation:none}}
+@media (max-width:860px){.fab{right:16px;bottom:16px}.makeover .page.make{padding:56px 20px 0}}

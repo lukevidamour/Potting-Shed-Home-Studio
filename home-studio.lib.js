@@ -766,7 +766,8 @@ function readBrief(text, now) {
   while ((nm = nre.exec(raw))) names.push({ name: (nm[1] || "") + nm[2], at: nm.index });
   // where: the last "at / in / @ Place" that is not the company and not a date
   let venue = ""; const vre = /(?:\bat|\bin|@) (?:the )?([A-Z][A-Za-z0-9'&/.-]*(?:,? (?:[A-Z0-9][A-Za-z0-9'&/.-]*|St|of|the))*)/g; let vm;
-  while ((vm = vre.exec(raw))) { const v = vm[1].replace(/[,. ]+$/, ""); if (v !== company && !/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/.test(v)) venue = v; }
+  const sentences = raw.split(/(?<=[.!?])\s+/); // a place never runs on into the next sentence
+  sentences.forEach(sen => { vre.lastIndex = 0; while ((vm = vre.exec(sen))) { const v = vm[1].replace(/[,. ]+$/, ""); if (v !== company && !/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/.test(v)) venue = v; } });
   if (venue) { out.copy.venue = venue; out.said.push(venue); }
   const brandWords = (BRAND.name || "").toLowerCase();
   const isPlace = (n) => n === venue || venue.indexOf(n) >= 0 || n === company || company.indexOf(n) >= 0 || n.toLowerCase() === brandWords;
@@ -790,7 +791,8 @@ function readBrief(text, now) {
     if (!head) { const m = raw.match(/(?:announc\w+|launch\w*|introducing|join us (?:for|at)|come to)? ?(?:the |our |a |an )?([A-Z][^,.;:!?]*?)(?= (?:on|at|from|this|next|in) |,|\.|;|:|!|\?|$)/); head = m ? m[1].trim() : ""; }
     if (!head || head.length < 3) head = raw.split(/[,.;]/)[0];
     out.copy.headline = head.replace(/^(Announce|Announcing|Launch|Launching)\s+(the\s+|our\s+)?/i, "").slice(0, 60);
-    const rest = raw.split(/(?<=[.!?])\s+/).slice(1).join(" "); out.copy.body = rest && rest.length > 12 ? rest.slice(0, 220) : "";
+    // What follows the first sentence is the intro, minus anything that is an instruction to us (sizes, colourways).
+    const rest = sentences.slice(1).filter(x => !/\b(square|stor(y|ies)|portrait|landscape|linkedin|sizes?|colou?rways?)\b/i.test(x)).join(" "); out.copy.body = rest && rest.length > 12 ? rest.slice(0, 220) : "";
     out.copy.barLabel = pickLabel("EVENT"); out.title = out.copy.headline; out.said.unshift(out.copy.headline);
   }
   return out;

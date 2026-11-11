@@ -173,6 +173,8 @@ test("a plain-English brief becomes the right template with its details", () => 
   assert.equal(b.copy.headline, "Founders Breakfast");
   assert.equal(b.copy.date, "Thu 14 Jan");
   assert.deepEqual(b.sizes, ["square", "story"]);
+  assert.equal(b.copy.venue, "Wild Peak");
+  assert.equal(b.copy.body, "Coffee, pastries and honest conversation.");
   const c = lib.readBrief("Thank our partners", now);
   assert.equal(c.tpl, "partners");
   const d = lib.readBrief("also as a story, in lime", now);

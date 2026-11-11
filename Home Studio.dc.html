@@ -8,13 +8,13 @@
 <link rel="icon" type="image/svg+xml" href="assets/ps-favicon.svg">
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261111n"></script>
+<script src="home-studio.lib.js?v=20261111o"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261111o">
+<link rel="stylesheet" href="home-studio.css?v=20261111p">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -73,7 +73,6 @@
         </div>
           <div class="gtabs">
             <button class="gtab" onClick="{{ goProjects }}" aria-current="{{ projectsCurrent }}">Drafts</button>
-            <button class="gtab" onClick="{{ goMake }}" aria-current="{{ makeCurrent }}">Make</button>
             <button class="gtab" onClick="{{ goDesigns }}" aria-current="{{ designsCurrent }}">All designs</button>
             <button class="gtab" onClick="{{ goCalendar }}" aria-current="{{ calendarCurrent }}">Calendar</button>
             <button class="gtab" onClick="{{ goBrand }}" aria-current="{{ brandCurrent }}">Brand book</button>
@@ -244,9 +243,7 @@
       <sc-if value="{{ isProjects }}">
         <div class="page" style="padding-bottom:0">
           <div class="pagehead">
-            <div class="askwrap"><h1 class="welcome">What are we making <em>today</em>?</h1>
-              <form class="mkfield" onSubmit="{{ makeSubmit }}"><input value="{{ makeText }}" onChange="{{ makeSetText }}" placeholder="{{ makeHint }}" aria-label="Describe what to make" autoComplete="off" /><button class="go" type="submit" aria-label="Make it"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button></form>
-            </div>
+            <div><h1 class="welcome">What are we making <em>today</em>?</h1></div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
               <button class="btn lg" onClick="{{ openNewProject }}">New project</button>
               <button class="btn primary lg" onClick="{{ newArtwork }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New artwork</button>
@@ -395,6 +392,8 @@
       </sc-if>
       <!-- Make: describe it, get it -->
       <sc-if value="{{ isMake }}">
+        <div class="makeover" role="dialog" aria-modal="true" aria-label="Make by describing">
+        <button class="btn icon mkclose" onClick="{{ closeMake }}" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
         <div class="page make">
           <sc-if value="{{ makeEmpty }}">
             <div class="mkintro"><h1 class="welcome">Describe it, <em>get it</em>.</h1><p class="lede">Say who, what, when and where. Home Studio picks the template and makes it on brand. Then ask for other sizes or colours.</p></div>
@@ -416,6 +415,7 @@
             <sc-if value="{{ makeEmpty }}"><div class="mkchips start"><sc-for list="{{ makeIdeas }}" as="idea"><button type="button" onClick="{{ idea.go }}">{{ idea.label }}</button></sc-for></div></sc-if>
             <div class="mkfield"><input id="mk-input" value="{{ makeText }}" onChange="{{ makeSetText }}" placeholder="{{ makeHint }}" aria-label="Describe what to make" autoComplete="off" /><button class="go" type="submit" aria-label="Make it"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button></div>
           </form>
+        </div>
         </div>
       </sc-if>
 
@@ -1000,6 +1000,10 @@
     </div>
   </sc-if>
 
+  <sc-if value="{{ fabShow }}">
+    <button class="fab" data-chrome="1" onClick="{{ goMake }}" aria-label="Make something by describing it" title="Describe it"><span class="fab__leaf" aria-hidden="true"></span></button>
+  </sc-if>
+
   <sc-if value="{{ gateOpen }}">
     <div class="gate {{ gateClass }}" style="{{ gateStyle }}" data-chrome="1" role="dialog" aria-modal="true" aria-label="Welcome to Home Studio">
       <div class="gate__top"><span class="gate__leaf" role="img" aria-label="Potting Shed"></span><span class="gate__corner">Home Studio</span></div>
@@ -1089,7 +1093,7 @@ class Component extends DCLogic {
     tab: "content",
     zoom: 1, fitScale: 1, cardW: 0,
     gate: (typeof window !== "undefined" && window.__gate) ? (window.__gate.lift ? "lift" : "open") : null, gateColor: (typeof window !== "undefined" && window.__gate) ? window.__gate.c : "#245FFF", arriving: false, userMenuOpen: false,
-    bbPrevTpl: "speaker", bbPrevWay: 0, chat: [], makeText: "",
+    bbPrevTpl: "speaker", bbPrevWay: 0, chat: [], makeText: "", makeOpen: false,
     wsMenuOpen: false, bbMenuOpen: false, clientDialog: null, confirm: null, brandRev: 0, bbHex: {}, bbNewLabel: "", bbLogoError: "", bbPartnerError: "",
     saveState: "idle", savedAt: 0,
     past: [], future: [],
@@ -1473,6 +1477,7 @@ class Component extends DCLogic {
     const s = this.state;
     if (s.menuId || s.projMenuOpen || s.wsMenuOpen || s.bbMenuOpen || s.userMenuOpen) return this.setState({ menuId: null, projMenuOpen: false, wsMenuOpen: false, bbMenuOpen: false, userMenuOpen: false });
     if (s.confirm) return this.setState({ confirm: null });
+    if (s.makeOpen && !s.clientDialog) return this.closeMake();
     if (s.clientDialog) return this.setState({ clientDialog: null });
     if (s.sched) return this.closeSched();
     if (s.projDialog) return this.closeProjDialog();
@@ -1561,16 +1566,16 @@ class Component extends DCLogic {
       gateOpen: !!s.gate, gateClass: s.gate === "open" ? "is-intro" : "is-down", gateStyle: { "--gate-c": s.gateColor },
       enterApp: this.enterApp,
       userMenuOpen: s.userMenuOpen, toggleUserMenu: this.toggleUserMenu, signOut: this.signOut, logoTap: this.logoTap,
-      isMake: view === "make", makeCurrent: view === "make" ? "page" : null, goMake: this.goMake, makeEmpty: s.chat.length === 0,
+      isMake: s.makeOpen, goMake: this.goMake, closeMake: this.closeMake, makeEmpty: s.chat.length === 0, fabShow: view !== "editor" && !s.makeOpen && !s.gate,
       makeText: s.makeText, makeSetText: (e) => this.setState({ makeText: e.target.value }), makeSubmit: (e) => { e.preventDefault(); this.makeSend(); },
       makeHint: WS_ID === PS_WS ? "Meet Abbie Morton, Designer at Potting Shed" : WS_ID === DEFAULT_WS ? "Anna Le Page, Partner at Rathbones, is speaking Wed 2 Dec, 8am at Wild Peak" : "Describe it: who, what, when and where",
       makeIdeas: (WS_ID === PS_WS ? ["Meet Silvie Grant, Senior Designer at Potting Shed", "Announce our studio open evening on 10 December, 6pm at Trinity Square", "Thank our partners"] : ["Dr Niraj Singh, Founder at Ketamine Therapies, is speaking Thu 26 Nov, 9am at the BDO Hub", "Announce the Founders Breakfast on 2 December, 8am at Wild Peak. As a square and a story.", "Thank our partners"]).map(t => ({ label: t, go: () => this.makeSend(t) })),
       makeMsgs: s.chat.map(m => {
         const fam = m.fam ? s.drafts.filter(x => x.familyId === m.fam).sort((a, b) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)) : [];
         return { cls: m.who === "me" ? "me" : "hs", text: m.text, hasArt: fam.length > 0,
-          art: fam.map(x => { const Z = SIZES[x.size], th = BRAND.themes[x.theme] || BRAND.themes[0]; return { thumb: s.thumbs[x.id] || "", size: Z.label, style: { aspectRatio: Z.w + " / " + Z.h, background: th.ground, color: th.accent }, aria: "Open " + x.title, open: () => this.openDesign(x, false) }; }),
+          art: fam.map(x => { const Z = SIZES[x.size], th = BRAND.themes[x.theme] || BRAND.themes[0]; return { thumb: s.thumbs[x.id] || "", size: Z.label, style: { aspectRatio: Z.w + " / " + Z.h, background: th.ground, color: th.accent }, aria: "Open " + x.title, open: () => { this.setState({ makeOpen: false }); this.openDesign(x, false); } }; }),
           hasChips: !!(m.chips && m.chips.length) && m === s.chat[s.chat.length - 1],
-          chips: (m.chips || []).map(c => ({ label: c, go: () => { if (c === "Open in the editor") { const x = fam[0]; if (x) this.openDesign(x, false); } else this.makeSend(c); } })) };
+          chips: (m.chips || []).map(c => ({ label: c, go: () => { if (c === "Open in the editor") { const x = fam[0]; if (x) { this.setState({ makeOpen: false }); this.openDesign(x, false); } } else this.makeSend(c); } })) };
       }),
       ...(() => {
         const seg = (opts, cur, set, what, restyle) => opts.map(o => ({ label: o[1], on: cur === o[0], pick: () => this.editBrand(b => set(b, o[0]), what, restyle) }));
@@ -1597,13 +1602,14 @@ class Component extends DCLogic {
   }
 
   /* ---------- make by describing ---------- */
-  goMake = () => { this.setState({ view: "make", reviewOpen: false, menuId: null }); this.focusLater("mk-input"); };
+  goMake = () => { this._makeReturn = document.activeElement; this.setState({ makeOpen: true, menuId: null, wsMenuOpen: false, userMenuOpen: false }); this.focusLater("mk-input"); };
+  closeMake = () => { this.setState({ makeOpen: false }); const r = this._makeReturn; if (r && r.focus && document.body.contains(r)) r.focus(); };
   makeSend = (given) => {
     const text = String(given != null ? given : this.state.makeText).trim(); if (!text) return;
     const r = readBrief(text), last = this._makeLast;
     const follow = !r.tpl && last && this.state.drafts.some(x => x.familyId === last) && (r.sizes.length || r.theme != null || r.nextTheme || r.remove || r.copy.date || r.copy.startTime || r.copy.venue);
     const reply = follow ? this.makeAdjust(r, last) : this.makeCreate(r, text);
-    this.setState(st => ({ chat: st.chat.concat([{ who: "me", text }, reply]), makeText: "", view: "make" }), () => requestAnimationFrame(() => { window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" }); const el = document.getElementById("mk-input"); if (el) el.focus({ preventScroll: true }); }));
+    this.setState(st => ({ chat: st.chat.concat([{ who: "me", text }, reply]), makeText: "", makeOpen: true }), () => requestAnimationFrame(() => { const sc = document.querySelector(".makeover"); if (sc) sc.scrollTo({ top: sc.scrollHeight, behavior: "smooth" }); const el = document.getElementById("mk-input"); if (el) el.focus({ preventScroll: true }); }));
   };
   makeCreate(r, text) {
     let tpl = r.tpl, note = "";
@@ -2447,7 +2453,7 @@ class Component extends DCLogic {
       bodyClass: isEditor ? "body" : "shell",
       mainClass: isEditor ? "stage-wrap" : "content",
       stageClass: isEditor ? "stage" : "",
-      boardsClass: isEditor ? "boards stage-boards" : (view === "brand" ? "boards bbpreview" : view === "calendar" || view === "make" ? "boards offstage" : (realBoards ? "page grid" + (s.layout === "list" ? " list" : "") : "sr")),
+      boardsClass: isEditor ? "boards stage-boards" : (view === "brand" ? "boards bbpreview" : view === "calendar" ? "boards offstage" : (realBoards ? "page grid" + (s.layout === "list" ? " list" : "") : "sr")),
       sortKey: s.sortKey, setSort: (e) => { this.setState({ sortKey: e.target.value }); this.say("Sorted " + e.target.options[e.target.selectedIndex].text.toLowerCase()); },
       q: s.q, setQ: (e) => this.setState({ q: e.target.value, menuId: null }), clearQ: () => this.setState({ q: "" }),
       isGrid: s.layout === "grid", pickGrid: () => { this.setState({ layout: "grid" }); this.say("Grid view"); }, pickList: () => { this.setState({ layout: "list" }); this.say("List view"); },
