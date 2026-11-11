@@ -950,3 +950,124 @@ h1.welcome{font-size:clamp(40px,5vw,58px);line-height:1;letter-spacing:-.03em}
   .is-arriving .gnav>*{animation:bead-in .7s var(--spring-bouncy) calc(.4s + var(--i,0)*55ms) backwards}
   @keyframes rail-in{from{opacity:0;translate:-16px 0;scale:.97}}
 }
+
+/* =============================================================================
+   v5 — flat. No shadows, no floating panes, no blur. Depth is replaced by
+   scale, hairlines, one live accent colour and spring motion.
+   ============================================================================= */
+:root{--key:rgba(23,23,23,.12);--quiet:#8B8B8B}
+:root[data-theme="dark"]{--key:rgba(255,255,255,.14);--quiet:#8B8B8B}
+.glass,.bead,.btn,.card .art,.menu,.dialog,.toast,.hdr.compact,.panel,.drawer,.cal,.calnote,.pill[aria-selected="true"],.viewtog,.sizepill,.tplbtn,.search input.input,.filters select.input,.gnav .wschip,.boards.stage-boards [data-canvas]{box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+.glass{background:none}
+.glass::before,.glass::after{display:none}
+.card .art>.thumbimg,.card .shelf img{filter:none}
+
+/* ---------- rail: flush to the edge, set in large type ---------- */
+@media (min-width:861px){
+  .shell{padding-left:248px}
+  .navwrap{left:0;top:0;bottom:0;width:248px}
+  .gnav{gap:6px;padding:26px 22px 20px;border-radius:0;background:var(--hs-page);border-right:.5px solid var(--key)}
+  .bead.logo{height:auto;padding:0;margin:0 0 22px;border-radius:0}
+  .bead.logo:hover{background:none}
+  .bead.logo .mark{width:150px;height:32px}
+  .gnav .wschip{height:44px;padding:0 4px 0 0;border-radius:0;background:none;gap:10px}
+  .gnav .wschip:hover{background:none}
+  .gnav .wschip:hover .wsname{text-decoration:underline;text-underline-offset:4px}
+  .gnav .wschip .wsmark{width:44px;height:28px;flex-basis:44px;border-radius:6px;padding:0 6px}
+  .gnav .wschip .wsname{font-size:15px}
+  .gtabs{gap:0;padding:26px 0 0}
+  .gtab{height:auto;padding:5px 0;border-radius:0;background:none;font-size:28px;line-height:34px;font-weight:400;letter-spacing:-.03em;color:var(--quiet);display:flex;align-items:center;gap:0;transition:color .3s var(--ease),gap .5s var(--spring),scale .5s var(--spring-bouncy);transform-origin:left center}
+  .gtab::before{content:"";width:0;height:10px;border-radius:999px;background:var(--accent);transition:width .5s var(--spring)}
+  .gtab:hover{background:none;color:var(--hs-ink)}
+  .gtab[aria-current="page"]{background:none;color:var(--hs-ink);gap:10px}
+  .gtab[aria-current="page"]::before{width:10px}
+  .gfoot{justify-content:flex-start;gap:8px;padding-top:0}
+}
+.bead{background:none;border:.5px solid var(--key)}
+.bead:hover{background:var(--hs-ink);color:var(--hs-on-ink);border-color:var(--hs-ink)}
+.bead.logo,.bead.logo:hover{border:0;background:none}
+.bead.avatar{border:0}
+:root[data-theme="dark"] .bead{background:none;box-shadow:none}
+.gnav .wschip{border:0}
+.gnav .wsswitch .menu,.gfoot .kebab .menu{min-width:220px}
+
+/* ---------- the wall: big type, work on flat fields that take the accent when touched ---------- */
+.page{padding:40px 48px 72px;max-width:none}
+h1.welcome{font-size:clamp(48px,6.6vw,104px);line-height:.95;letter-spacing:-.04em}
+.lede{font-size:17px;line-height:24px}
+.grid{gap:44px 28px}
+.card .art{border-radius:4px;background:var(--hs-stage);transition:background-color .35s var(--ease)}
+.card .art:has(.thumbimg),.card .art:has([data-canvas]),.card .art:has(.noart),.card .art:has(.shelf){background:var(--hs-stage)}
+.card:hover .art{translate:none;background:var(--accent)}
+.card:hover .art>.thumbimg,.card:hover .shelf{scale:1.035}
+.card:active .art{translate:none}
+.card .cap{padding:0}
+.card .ttl{font-size:17px;line-height:22px;font-weight:400;letter-spacing:-.01em}
+.card .desc{color:var(--quiet)}
+.weekcard{border:0;border-radius:4px;background:var(--hs-stage);box-shadow:none;transition:background-color .35s var(--ease)}
+.weekcard:hover{transform:none;box-shadow:none;background:var(--accent)}
+.weekcard .wart{border-radius:2px}
+.weekhead h3{font-size:28px;line-height:34px;letter-spacing:-.03em}
+
+/* ---------- controls: outlines and inversions, never shadows ---------- */
+.btn{background:none;border:1px solid var(--hs-ink);transition:background-color .25s,color .25s,scale .5s var(--spring-bouncy)}
+.btn:hover{background:var(--hs-ink);color:var(--hs-on-ink)}
+.btn.primary{background:var(--hs-ink);color:var(--hs-on-ink)}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent);color:#171717;filter:none}
+.btn.quiet,.btn.icon{border-color:transparent}
+.btn.quiet:hover,.btn.icon:hover{background:var(--well);color:var(--hs-ink)}
+.btn.icon.ring{background:none;border:.5px solid var(--key)}
+.btn.primary.danger,.btn.primary.danger:hover{background:var(--hs-error);border-color:var(--hs-error);color:#fff}
+.btn[disabled]:hover{background:none;color:inherit}
+.search input.input{border:0;border-bottom:1.5px solid var(--hs-ink);border-radius:0;background:none;padding-left:30px;height:44px}
+.search>svg{left:2px}
+.search input.input:focus{box-shadow:none;border-bottom-color:var(--accent)}
+.filters select.input{border:0;background-color:transparent;border-radius:0;padding-left:4px}
+.viewtog{border:0;background:none;padding:0;gap:2px}
+.viewtog button{border-radius:999px}
+.pills{background:none;padding:0;gap:22px;border-radius:0}
+.pill{height:44px;padding:0;border-radius:0;font-size:17px;color:var(--quiet);gap:8px}
+.pill[aria-selected="true"]{background:none;color:var(--hs-ink)}
+.pill[aria-selected="true"]::before{content:"";width:9px;height:9px;border-radius:999px;background:var(--accent)}
+.pill .n{color:inherit;opacity:.6}
+
+/* ---------- menus are ink; sheets are plain paper on a paper veil ---------- */
+.menu{padding:6px;border-radius:14px;background:#171717;color:#F2F2F2}
+.menu button{height:40px;border-radius:9px;color:inherit}
+.menu button:hover{background:rgba(255,255,255,.14)}
+.menu button.danger{color:#FFADA2}
+.menu .mlabel{color:#8B8B8B}
+.menu .msep{background:rgba(255,255,255,.16)}
+.menu button[role="menuitemradio"][aria-checked="true"]:hover{background:rgba(255,255,255,.14)}
+.menu button[role="menuitemradio"][aria-checked="true"]::after{border-color:#F2F2F2}
+:root[data-theme="dark"] .menu{background:#F2F2F2;color:#171717}
+:root[data-theme="dark"] .menu button:hover{background:rgba(23,23,23,.1)}
+:root[data-theme="dark"] .menu button[role="menuitemradio"][aria-checked="true"]::after{border-color:#171717}
+.scrim{background:color-mix(in srgb,var(--hs-page) 88%,transparent)}
+.dialog{background:var(--hs-surface);border-radius:8px;outline:.5px solid var(--key)}
+.dialog .dhead h2{font-size:clamp(30px,3.4vw,44px);line-height:1;letter-spacing:-.03em}
+.toast{background:#171717;color:#F2F2F2}
+.cal{border:.5px solid var(--key);border-radius:6px}
+.calnote{border:.5px solid var(--key);border-radius:6px;background:none}
+.input{border-radius:6px}
+.tplrows,.type,.ptile .pl,.chipx{border-color:var(--key);border-radius:6px}
+.chipx,.chips .input{border-radius:999px}
+.bbsec{border-top:.5px solid var(--key)}
+
+/* ---------- editor: docked, flat, and the room is the artwork's colour, flat ---------- */
+.app.is-editor{background:color-mix(in srgb,var(--stage-tint,#EAEAE7) 18%,var(--hs-page))}
+.hdr.compact{margin:0;height:64px;flex-basis:64px;padding:0 16px 0 14px;border-radius:0;background:var(--hs-page);border-bottom:.5px solid var(--key)}
+.panel{margin:0;border-radius:0;background:var(--hs-page);border-right:.5px solid var(--key)}
+.drawer{margin:0;border-radius:0;background:var(--hs-page);border-left:.5px solid var(--key)}
+.sizepill{border:1px solid var(--key);background:none}
+.sizepill[aria-selected="true"]{border-color:var(--hs-ink)}
+.tplbtn{border:1px solid var(--key);border-radius:6px;background:none}
+.tplbtn[aria-pressed="true"]{border-color:var(--hs-ink)}
+.sect .sw{border-color:var(--key);border-radius:6px;background:none}
+.sect .sw[aria-checked="true"]{border-color:var(--hs-ink)}
+.sect .sw .mini{border-radius:3px}
+.slot-card{border-color:var(--key);border-radius:6px}
+.panel .input{background:none}
+.panel .input:focus{background:var(--hs-surface)}
+.card:hover .art,.btn:hover,.btn.primary,.btn.primary:hover,.bead:hover,.gnav .wschip:hover,.weekcard:hover,.sizepill:hover,.tplbtn:hover{box-shadow:none}
+.scrim{-webkit-backdrop-filter:none;backdrop-filter:none;background:color-mix(in srgb,var(--hs-page) 92%,transparent)}
