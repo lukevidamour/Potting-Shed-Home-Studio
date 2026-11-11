@@ -192,12 +192,16 @@ const FOCUS = {
   "tk-ed": [50, 8], "tk-ed-bw": [48, 8], "tk-tom": [48, 10], "tk-tom-bw": [48, 10], "tk-louis": [50, 3], "tk-al-mitchell-portrait": [42, 21]
 };
 Object.keys(FOCUS).forEach(id => { if (LIB[id]) { LIB[id].fx = FOCUS[id][0]; LIB[id].fy = FOCUS[id][1]; } });
+/* Cut-outs (a person on a transparent background) are never stretched to fill a frame: that blows the head up and
+   cuts off the shoulders. They stand on the bottom edge at the frame's height, centred on the face. */
+BRAND.library.forEach(im => { if (/\.webp$/.test(im.src) && im.group === "Speakers" || /-cutout\./.test(im.src)) { im.cut = true; im.w = im.w || 680; im.h = im.h || 638; } });
+const CUT_SRC = {}; BRAND.library.forEach(im => { if (im.cut) CUT_SRC[im.src] = true; });
 function focusOf(im, x, y) { return im && im.fx != null ? { x: im.fx, y: im.fy } : { x: x == null ? 50 : x, y: y == null ? 50 : y }; }
 /* Default imagery: every image area starts filled with TEKEX photography, chosen from the design id so it is stable. */
 const PORTRAIT_IDS = ["tk-nic-rose", "tk-niraj-singh", "tk-lisa-mccabe", "tk-andrew-mcneill", "tk-jeff-macleod", "tk-guy-thompson", "tk-ian-rhodes", "tk-gabe-drogon", "tk-peter-o-brady", "tk-claire-trant", "tk-hannah-mellor", "tk-jake-schofield", "tk-oliver-le-brun", "tk-austin-gibbs", "tk-dr-omar", "tk-serena-guthrie"];
 const EVENT_IDS = ["tk-event-03", "tk-event-07", "tk-event-10", "tk-iom-02", "tk-iom-05", "tk-event-01", "tk-event-04", "tk-iom-08", "tk-event-12", "tk-reel-13", "tk-event-02", "tk-iom-11", "tk-event-08", "tk-reel-61", "tk-event-14", "tk-iom-03", "tk-event-06", "tk-reel-31", "tk-event-09", "tk-iom-07"];
 function hashStr(str) { let h = 0; for (let i = 0; i < String(str).length; i++) h = (h * 31 + String(str).charCodeAt(i)) >>> 0; return h; }
-function libImg(id, x, y) { const im = LIB[id]; if (!im) return null; const f = focusOf(im, x, y); return { src: im.src, name: im.name, x: f.x, y: f.y, zoom: 1 }; }
+function libImg(id, x, y) { const im = LIB[id]; if (!im) return null; const f = focusOf(im, x, y); const rec = { src: im.src, name: im.name, x: f.x, y: f.y, zoom: 1 }; if (im.cut) rec.cut = true; if (im.w) { rec.w = im.w; rec.h = im.h; } return rec; }
 function portraitFor(name, seed) { const s = slug(name || ""); const direct = PORTRAIT_IDS.find(id => id === "tk-" + s); return libImg(direct || PORTRAIT_IDS[hashStr(seed) % PORTRAIT_IDS.length], 50, 28); }
 function eventImageFor(seed) { return libImg(EVENT_IDS[hashStr(seed) % EVENT_IDS.length], 50, 50); }
 /* Fill any empty image area on a design. Returns a new images map (or the same one if nothing was missing). */
@@ -523,6 +527,12 @@ function slotsFor(d) {
 function imgVals(im) {
   if (!im || !im.src) return { has: false, src: "", style: {} };
   const x = im.x == null ? 50 : im.x, y = im.y == null ? 50 : im.y, z = im.zoom || 1;
+  if (im.cut) return {
+    has: true, src: im.src, cut: true,
+    // Stands on the bottom edge at the frame's height. x centres the face; when zoomed, y chooses how much of the top stays in view.
+    style: { position: "absolute", left: "50%", bottom: 0, top: "auto", right: "auto", height: (100 * z) + "%", width: "auto", maxWidth: "none", display: "block", objectFit: "fill",
+             transform: "translate(-" + x + "%, " + ((1 - y / 100) * (z - 1) / z * 100).toFixed(2) + "%)" }
+  };
   return {
     has: true, src: im.src,
     style: { position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", objectFit: "cover",
@@ -542,10 +552,15 @@ function readFileAsImage(file) {
         const w = Math.round(img.naturalWidth * scale), h = Math.round(img.naturalHeight * scale);
         const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
         cv.getContext("2d").drawImage(img, 0, 0, w, h);
-        const keepPng = file.type === "image/png";
+        // A person on a transparent background is treated as a cut-out: all four corners see-through.
+        let cut = false;
+        if (file.type !== "image/jpeg") { try { const cx = cv.getContext("2d"); cut = [[1, 1], [w - 2, 1], [1, Math.round(h * 0.4)], [w - 2, Math.round(h * 0.4)]].every(pt => cx.getImageData(pt[0], pt[1], 1, 1).data[3] < 24); } catch (e) {} }
+        const keepPng = file.type === "image/png" || cut;
         const src = keepPng ? cv.toDataURL("image/png") : cv.toDataURL("image/jpeg", 0.88);
         URL.revokeObjectURL(url);
-        resolve({ id: uid("u"), name: file.name.replace(/\.[^.]+$/, ""), src, w, h, addedAt: Date.now() });
+        const rec = { id: uid("u"), name: file.name.replace(/\.[^.]+$/, ""), src, w, h, addedAt: Date.now() };
+        if (cut) rec.cut = true;
+        resolve(rec);
       } catch (e) { reject(new Error("We couldn't read that image.")); }
     };
     img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("We couldn't read that image.")); };
@@ -628,4 +643,4 @@ function ensureShot() {
 }
 
 /* expose for tests (node) */
-if (typeof module !== 'undefined') module.exports = { seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
+if (typeof module !== 'undefined') module.exports = { imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };

@@ -7,7 +7,7 @@
 <meta name="description" content="Potting Shed Home Studio: on-brand TEKEX social artwork, scheduled and ready to download.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23FF16A5'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial' font-size='30' font-weight='700' text-anchor='middle' fill='white'%3Eps%3C/text%3E%3C/svg%3E">
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261111f"></script>
+<script src="home-studio.lib.js?v=20261111g"></script>
 </head>
 <body>
 <x-dc>
@@ -1089,6 +1089,19 @@ class Component extends DCLogic {
         try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.set(THUMBS_KEY, thumbs); Store.set("hs-redate-w", wNow); } catch (e) {}
       }
     }
+    // Images that are cut-outs are marked as such, so they stand in their frame instead of being stretched across it.
+    if (!Store.raw("hs-cut-v1")) {
+      const cutUploads = {}; Store.get(UPLOADS_KEY, []).forEach(u => { if (u.cut) cutUploads[u.src] = true; });
+      let any = false;
+      drafts = drafts.map(x => {
+        let changed = false; const images = Object.assign({}, x.images || {});
+        Object.keys(images).forEach(k => { const im = images[k]; if (im && !im.cut && (CUT_SRC[im.src] || cutUploads[im.src])) { images[k] = Object.assign({}, im, { cut: true, w: im.w || 680, h: im.h || 638 }); changed = true; } });
+        if (changed) { delete thumbs[x.id]; any = true; }
+        return changed ? Object.assign({}, x, { images }) : x;
+      });
+      if (any) { try { Store.set(DRAFTS_KEY, drafts); Store.set(THUMBS_KEY, thumbs); } catch (e) {} }
+      Store.flag("hs-cut-v1");
+    }
     // One-time pass: portraits still sitting at the old fixed position move to their face. Anything a person repositioned is left alone.
     if (!Store.raw("hs-focus-v1")) {
       const bySrc = {}; Object.keys(LIB).forEach(k => { const im = LIB[k]; if (im && im.fx != null) bySrc[im.src] = im; });
@@ -1701,6 +1714,7 @@ class Component extends DCLogic {
     const prev = d.images[slotId];
     const f = focusOf(im); // portraits open on the face, everything else centred
     const rec = { src: im.src, name: im.name, w: im.w, h: im.h, x: f.x, y: f.y, zoom: 1 };
+    if (im.cut) rec.cut = true;
     this.commit({ images: Object.assign({}, d.images, { [slotId]: rec }) });
     if (!im.w) { const probe = new Image(); probe.onload = () => { const cur = this.state.design; if (!cur || !cur.images[slotId] || cur.images[slotId].src !== im.src) return; this.setState({ design: Object.assign({}, cur, { images: Object.assign({}, cur.images, { [slotId]: Object.assign({}, cur.images[slotId], { w: probe.naturalWidth, h: probe.naturalHeight }) }) }) }); }; probe.src = im.src; }
     this.setState({ libOpen: false, libSlot: null });
@@ -1715,7 +1729,7 @@ class Component extends DCLogic {
     const d = this.state.design; const im = d.images[slotId]; if (!im) return;
     const box = this.slotBox(slotId);
     this._cropReturn = document.activeElement;
-    this.setState({ crop: { slotId, src: im.src, w: im.w, h: im.h, x: im.x, y: im.y, zoom: im.zoom, boxW: box.w, boxH: box.h, prev: prev === undefined ? im : prev } });
+    this.setState({ crop: { slotId, src: im.src, w: im.w, h: im.h, x: im.x, y: im.y, zoom: im.zoom, cut: !!im.cut, boxW: box.w, boxH: box.h, prev: prev === undefined ? im : prev } });
     requestAnimationFrame(() => { const el = document.querySelector(".crop"); if (el) el.focus(); });
   }
   cancelCrop = () => {
@@ -1757,7 +1771,7 @@ class Component extends DCLogic {
   };
   softAt(im, boxW, boxH, zoom) {
     if (!im || !im.w) return false;
-    const cover = Math.max(boxW / im.w, boxH / im.h) * (zoom || 1);
+    const cover = (im.cut ? boxH / im.h : Math.max(boxW / im.w, boxH / im.h)) * (zoom || 1);
     return cover > 1.35; // the source is being enlarged by more than ~35% at export size
   }
   libPageFile = async (e) => {
@@ -2368,8 +2382,8 @@ class Component extends DCLogic {
       libFile: this.onFileInput, dropOverClass: s.libOver ? "over" : "",
       libDragOver: (e) => { e.preventDefault(); if (!s.libOver) this.setState({ libOver: true }); }, libDragLeave: () => this.setState({ libOver: false }), libDrop: (e) => { if (s.libSlot) this.dropTo(s.libSlot, e); },
       cropOpen: !!s.crop, crop: s.crop || {},
-      cropBoxStyle: s.crop ? { aspectRatio: s.crop.boxW + " / " + s.crop.boxH, maxHeight: 420, width: s.crop.boxW >= s.crop.boxH ? "100%" : Math.round(420 * s.crop.boxW / s.crop.boxH) } : {},
-      cropImgStyle: s.crop ? { objectPosition: s.crop.x + "% " + s.crop.y + "%", transform: "scale(" + s.crop.zoom + ")", transformOrigin: s.crop.x + "% " + s.crop.y + "%" } : {},
+      cropBoxStyle: s.crop ? Object.assign({ aspectRatio: s.crop.boxW + " / " + s.crop.boxH, maxHeight: 420, width: s.crop.boxW >= s.crop.boxH ? "100%" : Math.round(420 * s.crop.boxW / s.crop.boxH) }, s.crop.cut && d ? { background: (BRAND.themes[d.theme] || BRAND.themes[0]).ground } : {}) : {},
+      cropImgStyle: s.crop ? (s.crop.cut ? imgVals(s.crop).style : { objectPosition: s.crop.x + "% " + s.crop.y + "%", transform: "scale(" + s.crop.zoom + ")", transformOrigin: s.crop.x + "% " + s.crop.y + "%" }) : {},
       cropZoomPct: s.crop ? Math.round(s.crop.zoom * 100) + "%" : "",
       cropSoft: s.crop ? this.softAt(s.crop, s.crop.boxW, s.crop.boxH, s.crop.zoom) : false,
       cropDown: this.cropDown, cropMove: this.cropMove, cropUp: this.cropUp, cropKeys: this.cropKeys, cropZoom: this.cropZoom, resetCrop: this.resetCrop, cancelCrop: this.cancelCrop, useCrop: this.useCrop
