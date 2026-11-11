@@ -16,3 +16,7 @@ node_modules/
 # Client material that has not been cleared for a public repository (unreleased rebrand, staff photos, licensed fonts).
 # Remove these lines only once the client and Luke have agreed it can be published.
 assets/hh/
+
+# Responsive QA output (reports and screenshots may show client work)
+tools/qa/out/
+tools/qa/__pycache__/

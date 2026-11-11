@@ -6,16 +6,18 @@
 <title>Home Studio · TEKEX · Potting Shed</title>
 <meta name="description" content="Potting Shed Home Studio: on-brand TEKEX social artwork, scheduled and ready to download.">
 <link rel="icon" type="image/svg+xml" href="assets/ps-favicon.svg">
+<link rel="preload" href="assets/fonts/neue-montreal-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/quarto-medium-italic.woff2" as="font" type="font/woff2" crossorigin>
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261112a"></script>
+<script src="home-studio.lib.js?v=20261112b"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261112e">
+<link rel="stylesheet" href="home-studio.css?v=20261112k">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -91,6 +93,7 @@
             </sc-if>
           </div>
           <span class="gfoot__gap"></span>
+          <button class="bead round" onClick="{{ cmdOpenNow }}" aria-label="Search and commands" title="Search and commands  ·  ⌘K"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button>
           <button class="bead round themebtn" onClick="{{ toggleTheme }}" aria-label="{{ themeToggleLabel }}" title="{{ themeToggleLabel }}"><sc-if value="{{ isDark }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></sc-if><sc-if value="{{ isLight }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if></button>
           <button class="bead round" onClick="{{ openAsk }}" aria-label="Ask Potting Shed" title="Ask Potting Shed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></button>
           <button class="bead round" onClick="{{ openHelp }}" aria-label="How it works" title="How it works"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/><path d="M12 17h.01"/></svg></button>
@@ -611,7 +614,7 @@
             <h2 id="bb-lib">Image library<span>{{ bbLibCount }} approved images, by kind.</span></h2>
             <div class="bbbody">
               <sc-for list="{{ bbLibGroups }}" as="lg2">
-                <div class="libgrp"><div class="libhead"><b>{{ lg2.name }}</b><span class="meta">{{ lg2.count }}</span></div><div class="libstrip"><sc-for list="{{ lg2.pics }}" as="pc"><span class="libpic" style="{{ pc.style }}" role="img" aria-label="{{ pc.name }}"></span></sc-for></div></div>
+                <div class="libgrp"><div class="libhead"><b>{{ lg2.name }}</b><span class="meta">{{ lg2.count }}</span></div><div class="libstrip"><sc-for list="{{ lg2.pics }}" as="pc"><img class="libpic" loading="lazy" decoding="async" sc-camel-src="{{ pc.src }}" alt="{{ pc.name }}" /></sc-for></div></div>
               </sc-for>
             </div>
           </section>
@@ -1131,6 +1134,17 @@
     </div>
   </sc-if>
 
+  <sc-if value="{{ cmdOpen }}">
+    <div class="cmdk" data-chrome="1" onClick="{{ cmdClose }}">
+      <div class="cmdk__box" role="dialog" aria-modal="true" aria-label="Search and commands" onClick="{{ stop }}">
+        <div class="cmdk__in"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input id="cmdk-input" value="{{ cmdQ }}" onChange="{{ cmdSetQ }}" onKeyDown="{{ cmdKeys }}" placeholder="Search designs and projects, or do something" autoComplete="off" role="combobox" aria-expanded="true" aria-controls="cmdk-list" aria-label="Search and commands" /><button class="cmdk__close" onClick="{{ cmdClose }}" aria-label="Close search"><span class="k">esc</span><span class="t">Close</span></button></div>
+        <div class="cmdk__list" id="cmdk-list" role="listbox" aria-label="Results">
+          <sc-for list="{{ cmdItems }}" as="ci"><button class="cmdk__item" role="option" aria-selected="{{ ci.on }}" onClick="{{ ci.run }}" onMouseMove="{{ ci.hover }}"><span class="cmdk__kind">{{ ci.kind }}</span><span class="cmdk__label">{{ ci.label }}</span><sc-if value="{{ ci.hint }}"><kbd>{{ ci.hint }}</kbd></sc-if></button></sc-for>
+          <sc-if value="{{ cmdNone }}"><p class="cmdk__none">Nothing by that name. Press Enter and the assistant will make it.</p></sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
   <div class="sr" role="status" aria-live="polite" aria-atomic="true">{{ announce }}</div>
   <sc-if value="{{ toast }}">
     <div class="toast" role="status" aria-live="polite"><span>{{ toast.text }}</span><sc-if value="{{ toast.hasAction }}"><button onClick="{{ toast.action }}">{{ toast.actionLabel }}</button></sc-if></div>
@@ -1147,7 +1161,7 @@
 /* Data, brand configuration and helpers live in home-studio.lib.js */
 class Component extends DCLogic {
   state = {
-    view: "projects",             // projects | project | templates | size | editor | designs | library
+    view: ({ "#/designs": "designs", "#/calendar": "calendar", "#/brand": "brand" })[typeof location !== "undefined" ? location.hash : ""] || "projects", // the address says which screen: a refresh or a shared link lands where you were
     drafts: [], uploads: [], projects: [],
     projectId: null, pill: "active", menuId: null, projDialog: null, deleteKind: "design", syncSizes: true,
     thumbs: {},
@@ -1157,7 +1171,7 @@ class Component extends DCLogic {
     tab: "content",
     zoom: 1, fitScale: 1, cardW: 0,
     gate: (typeof window !== "undefined" && window.__gate) ? (window.__gate.lift ? "lift" : "open") : null, gateColor: (typeof window !== "undefined" && window.__gate) ? window.__gate.c : "#245FFF", arriving: false, userMenuOpen: false,
-    batch: null, bbPrevTpl: "speaker", bbPrevWay: 0, chat: [], makeText: "", makeOpen: false, makePending: false,
+    cmd: null, batch: null, bbPrevTpl: "speaker", bbPrevWay: 0, chat: [], makeText: "", makeOpen: false, makePending: false,
     wsMenuOpen: false, bbMenuOpen: false, clientDialog: null, confirm: null, brandRev: 0, bbHex: {}, bbNewLabel: "", bbLogoError: "", bbPartnerError: "",
     saveState: "idle", savedAt: 0,
     past: [], future: [],
@@ -1288,6 +1302,8 @@ class Component extends DCLogic {
     window.addEventListener("resize", this._onResize);
     this._onKey = (e) => this.globalKeys(e);
     window.addEventListener("keydown", this._onKey);
+    this._onPop = () => { const v = ({ "#/designs": "designs", "#/calendar": "calendar", "#/brand": "brand" })[location.hash] || "projects"; this._addr = location.hash || ""; if (this.state.view !== v && !this.state.gate) this.setState({ view: v, reviewOpen: false, menuId: null, makeOpen: false, cmd: null }); };
+    window.addEventListener("popstate", this._onPop);
     this._onLeave = (e) => { if (this.state.view === "editor" && (this.state.saveState === "saving" || this.state.saveState === "error")) { e.preventDefault(); e.returnValue = ""; } };
     window.addEventListener("beforeunload", this._onLeave);
     if (typeof ResizeObserver !== "undefined") { this._ro = new ResizeObserver(() => this.measure()); }
@@ -1303,7 +1319,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this._onResize);
-    window.removeEventListener("keydown", this._onKey);
+    window.removeEventListener("keydown", this._onKey); window.removeEventListener("popstate", this._onPop);
     window.removeEventListener("beforeunload", this._onLeave);
     window.removeEventListener("click", this._onClickAway);
     document.removeEventListener("pointermove", this._onGlass);
@@ -1312,7 +1328,15 @@ class Component extends DCLogic {
     if (this._ro) this._ro.disconnect();
     clearTimeout(this._saveT); clearTimeout(this._toastT); clearTimeout(this._thumbT);
   }
-  componentDidUpdate() { requestAnimationFrame(() => { this.measure(); this.thumbBacklog(); }); }
+  componentDidUpdate() { this.syncAddress(); requestAnimationFrame(() => { this.measure(); this.thumbBacklog(); }); }
+  /* The four main screens each have an address, so refresh, back and forward behave as people expect. */
+  syncAddress() {
+    const want = { projects: "", designs: "#/designs", calendar: "#/calendar", brand: "#/brand" }[this.state.view];
+    if (want === undefined || this._addr === want) return;
+    const first = this._addr === undefined; this._addr = want;
+    if ((location.hash || "") === want || (want === "" && !location.hash)) return;
+    try { history[first ? "replaceState" : "pushState"](null, "", location.pathname + location.search + want); } catch (e) {}
+  }
 
   measure() {
     const s = this.state;
@@ -1544,7 +1568,29 @@ class Component extends DCLogic {
   }
   undo = () => { this.setState(s => { if (!s.past.length) return {}; const prev = s.past[s.past.length - 1]; return { design: prev, past: s.past.slice(0, -1), future: [s.design].concat(s.future) }; }); this._lastGroup = null; this.scheduleSave(); };
   redo = () => { this.setState(s => { if (!s.future.length) return {}; const nx = s.future[0]; return { design: nx, future: s.future.slice(1), past: s.past.concat([s.design]) }; }); this._lastGroup = null; this.scheduleSave(); };
+  /* Search and commands: everything in the app, one keystroke away. */
+  cmdList() {
+    const s = this.state, q = ((s.cmd && s.cmd.q) || "").trim().toLowerCase(), close = (fn) => () => { this.setState({ cmd: null }); fn(); };
+    const acts = [
+      ["Make", "New artwork", "", () => this.goTemplates()], ["Make", "New project", "", () => this.openNewProject()], ["Make", "Describe it to the assistant", "", () => this.goMake()],
+      ["Go to", "Drafts", "", () => this.goProjects()], ["Go to", "All designs", "", () => this.goDesigns()], ["Go to", "Calendar", "", () => this.goCalendar()], ["Go to", "Brand book", "", () => this.goBrand()],
+      ["Look", s.theme === "dark" ? "Light mode" : "Dark mode", "", () => this.setTheme(s.theme === "dark" ? "light" : "dark")]
+    ].concat(wsList().filter(w => w.id !== WS_ID).map(w => ["Client", "Switch to " + w.name, "", () => this.switchClient(w.id)]));
+    const projects = s.projects.filter(p => !p.archived).map(p => ["Project", p.name, "", () => this.setState({ view: "project", projectId: p.id, reviewOpen: false })]);
+    const seen = {}, designs = s.drafts.slice().sort((a, b) => b.updatedAt - a.updatedAt).filter(d => { const k = d.familyId || d.id; if (seen[k]) return false; seen[k] = 1; return true; }).map(d => ["Design", this.baseTitle(d.title), TPL[d.tpl] ? TPL[d.tpl].short || TPL[d.tpl].name : "", () => this.openDesign(d, false), [d.copy.headline, d.copy.name, d.copy.body].join(" ")]);
+    const hit = (x) => !q || (x[1] + " " + x[0] + " " + (x[4] || "")).toLowerCase().indexOf(q) >= 0, rank = (x) => x[1].toLowerCase().indexOf(q) === 0 ? 0 : 1;
+    const pool = q ? acts.concat(projects, designs).filter(hit).sort((a, b) => rank(a) - rank(b)) : acts.concat(projects.slice(0, 3), designs.slice(0, 4));
+    return pool.slice(0, 9).map(x => ({ kind: x[0], label: x[1], hint: x[2], go: close(x[3]) }));
+  }
+  cmdToggle = () => { if (this.state.gate) return; if (this.state.cmd) return this.setState({ cmd: null }); this._cmdReturn = document.activeElement; this.setState({ cmd: { q: "", i: 0 }, menuId: null, wsMenuOpen: false, userMenuOpen: false }); this.focusLater("cmdk-input"); };
+  cmdKeys = (e) => {
+    const list = this.cmdList(), c = this.state.cmd || { q: "", i: 0 };
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); const n = list.length || 1; this.setState({ cmd: Object.assign({}, c, { i: (c.i + (e.key === "ArrowDown" ? 1 : n - 1)) % n }) }); }
+    else if (e.key === "Enter") { e.preventDefault(); const it = list[Math.min(c.i, list.length - 1)]; if (it) it.go(); else if (c.q.trim()) { const text = c.q.trim(); this.setState({ cmd: null, makeOpen: true }); this.makeSend(text); } }
+    else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); this.setState({ cmd: null }); const r = this._cmdReturn; if (r && r.focus && document.body.contains(r)) r.focus(); }
+  };
   globalKeys(e) {
+    if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "k") { e.preventDefault(); return this.cmdToggle(); }
     const tag = (e.target && e.target.tagName || "").toLowerCase();
     const typing = tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable);
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z" && !typing && this.state.view === "editor") {
@@ -1555,6 +1601,7 @@ class Component extends DCLogic {
   escape() {
     const s = this.state;
     if (s.menuId || s.projMenuOpen || s.wsMenuOpen || s.bbMenuOpen || s.userMenuOpen) return this.setState({ menuId: null, projMenuOpen: false, wsMenuOpen: false, bbMenuOpen: false, userMenuOpen: false });
+    if (s.cmd) return this.setState({ cmd: null });
     if (s.confirm) return this.setState({ confirm: null });
     if (s.makeOpen && !s.clientDialog) return this.closeMake();
     if (s.clientDialog) return this.setState({ clientDialog: null });
@@ -1581,6 +1628,10 @@ class Component extends DCLogic {
     const c = s.clientDialog || {};
     const setC = (k) => (e) => { const v = e.target.value; this.setState(st => ({ clientDialog: Object.assign({}, st.clientDialog, { [k]: v, error: "" }) })); };
     return {
+      cmdOpen: !!s.cmd, cmdQ: s.cmd ? s.cmd.q : "", cmdOpenNow: this.cmdToggle, cmdClose: () => this.setState({ cmd: null }), cmdKeys: this.cmdKeys,
+      cmdSetQ: (e) => this.setState({ cmd: { q: e.target.value, i: 0 } }),
+      cmdItems: s.cmd ? this.cmdList().map((x, i) => ({ kind: x.kind, label: x.label, hint: x.hint, on: i === Math.min(s.cmd.i, 8), run: x.go, hover: () => { if (this.state.cmd && this.state.cmd.i !== i) this.setState({ cmd: Object.assign({}, this.state.cmd, { i }) }); } })) : [],
+      cmdNone: !!s.cmd && this.cmdList().length === 0,
       isBrand: view === "brand", brandCurrent: view === "brand" ? "page" : null, goBrand: this.goBrand,
       wsName: BRAND.name || "Untitled client", wsIsDefault: WS_ID === DEFAULT_WS, wsMenuOpen: s.wsMenuOpen, toggleWsMenu: this.toggleWsMenu, openNewClient: this.openNewClient,
       wsItems: wsList().map(w => ({ name: w.id === WS_ID ? (BRAND.name || w.name) : w.name, on: w.id === WS_ID, pick: (e) => { e.stopPropagation(); this.switchClient(w.id); } })),
@@ -1692,7 +1743,7 @@ class Component extends DCLogic {
           bbSetWording: (e) => { const v = e.target.value; this.editBrand(b => { b.compliance = Object.assign({}, b.compliance, { wording: v }); }, "Compliance"); },
           bbSetSocialLine: (e) => { const v = e.target.value; this.editBrand(b => { b.compliance = Object.assign({}, b.compliance, { social: v }); }, "Compliance"); },
           bbNoSocialLine: !(BRAND.compliance.social || "").trim(), bbHasPartners: (BRAND.templateSet || "core") === "core",
-          bbLibGroups: Array.from(new Set(BRAND.library.map(im => im.group))).map(g => ({ name: g, count: BRAND.library.filter(im => im.group === g).length, pics: BRAND.library.filter(im => im.group === g).slice(0, 6).map(im => ({ style: { backgroundImage: "url(\"" + im.src + "\")" }, name: im.name })) })), bbLibCount: BRAND.library.length,
+          bbLibGroups: Array.from(new Set(BRAND.library.map(im => im.group))).map(g => ({ name: g, count: BRAND.library.filter(im => im.group === g).length, pics: BRAND.library.filter(im => im.group === g).slice(0, 6).map(im => ({ src: im.src, name: im.name })) })), bbLibCount: BRAND.library.length,
           bbImagery: BRAND.imagery || "", bbSetImagery: (e) => { const v = e.target.value; this.editBrand(b => { b.imagery = v; }, "Layout"); },
           bbPrevTabs: TEMPLATES.filter(t => BRAND.templatesOn.indexOf(t.key) >= 0).map(t => ({ label: t.short || { speaker: "Speaker", event: "Event", listing: "Line-up", trio: "Sessions", partners: "Partners", lockup: "Logo" }[t.key] || t.name, on: prevTpl === t.key, pick: () => this.setState({ bbPrevTpl: t.key }) }))
         };
@@ -2477,8 +2528,8 @@ class Component extends DCLogic {
     const mask = (src, w, h) => ({ width: w, height: h, background: "currentColor", WebkitMaskImage: "url(\"" + logo(src) + "\")", maskImage: "url(\"" + logo(src) + "\")", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center", WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat" });
     const img = (id) => imgVals(d.images[id]);
     const isEdit = mode === "edit"; const isOff = mode === "offstage"; const live = isEdit || isOff;
-    // Card previews: fixed 16:10 box with the whole artwork sitting inside it, centred. Nothing is cropped.
-    const boxW = this.state.cardW || 380, boxH = Math.round(boxW * ((extra && extra.boxRatio) || 10 / 16)), boxPad = extra && extra.boxPad != null ? extra.boxPad : 18;
+    // Card previews: a 5:4 box with the whole artwork sitting inside it, centred and as large as it will go. Nothing is cropped.
+    const boxW = this.state.cardW || 380, boxH = Math.round(boxW * ((extra && extra.boxRatio) || CARD_RATIO)), boxPad = extra && extra.boxPad != null ? extra.boxPad : 14;
     const cover = Math.min((boxW - 2 * boxPad) / S.w, (boxH - 2 * boxPad) / S.h);
     const offX = Math.round((boxW - S.w * cover) / 2), offY = Math.round((boxH - S.h * cover) / 2);
     const scale = isOff ? 1 : (isEdit ? this.state.fitScale * this.state.zoom : cover);
@@ -2500,7 +2551,7 @@ class Component extends DCLogic {
       isCard: !live, canvasFlag: isOff ? "off" : (isEdit ? "1" : "0"),
       wrapClass: live ? "stage-item" : "card",
       wrapRole: live ? "group" : "button", tab: live ? -1 : 0,
-      artWrapClass: live ? "stage-item-wrap" : "art", artBoxStyle: live ? {} : { aspectRatio: "16 / 10" },
+      artWrapClass: live ? "stage-item-wrap" : "art", artBoxStyle: live ? {} : { aspectRatio: "5 / 4" },
       canvasStyle: Object.assign({
         width: S.w, height: S.h, flex: "0 0 auto", boxSizing: "border-box",
         padding: S.pad, background: th.ground, color: th.accent,
@@ -2561,10 +2612,12 @@ class Component extends DCLogic {
   /* Up to three thumbnails side by side at one height, sized to sit inside the preview box. */
   shelfFor(list) {
     const items = list.slice(0, 3); if (items.length < 2 || items.some(x => !this.state.thumbs[x.id])) return null;
-    const boxW = this.state.cardW || 380, boxH = Math.round(boxW * 10 / 16), pad = 18, gap = 12;
+    // A project shows its latest piece large, with the next two tucked behind it: a stack of work, not a row of stamps.
+    const boxW = this.state.cardW || 380, boxH = Math.round(boxW * CARD_RATIO), pad = 18, SCALE = [1, 0.86, 0.72], SHOW = 0.36;
     const ar = (x) => SIZES[x.size].w / SIZES[x.size].h;
-    const h = Math.min(boxH - 2 * pad, (boxW - 2 * pad - gap * (items.length - 1)) / items.reduce((t, x) => t + ar(x), 0));
-    return items.map(x => ({ url: this.state.thumbs[x.id], style: { height: Math.round(h), width: Math.round(h * ar(x)), flex: "0 0 auto", display: "block" } }));
+    const span = items.reduce((t, x, i) => t + SCALE[i] * ar(x) * (i ? SHOW : 1), 0);
+    const h = Math.min(boxH - 2 * pad, (boxW - 2 * pad) / span);
+    return items.map((x, i) => { const hh = Math.round(h * SCALE[i]), ww = Math.round(hh * ar(x)); return { url: this.state.thumbs[x.id], style: { height: hh, width: ww, marginLeft: i ? -Math.round(ww * (1 - SHOW)) : 0, position: "relative", zIndex: 3 - i, flex: "0 0 auto", display: "block" } }; });
   }
   withShelf(b, list) { const shelf = this.shelfFor(list); return shelf ? Object.assign(b, { hasShelf: true, shelf, hasArt: false, thumbUrl: "" }) : b; }
 
@@ -2599,7 +2652,7 @@ class Component extends DCLogic {
       title: pj.name, desc: (nFam ? nFam + (nFam === 1 ? " design" : " designs") : "No designs yet") + " · Edited " + fmtWhen(pj.updatedAt).split(",")[0],
       hasShelf: false, shelf: [], open, keys, isDraft: false
     };
-    if (!latest) return Object.assign({ hasArt: false, noArt: true, thumbUrl: "", isHeading: false, artWrapClass: "art", artBoxStyle: { aspectRatio: "16 / 10" }, cardStyle: {} }, chrome);
+    if (!latest) return Object.assign({ hasArt: false, noArt: true, thumbUrl: "", isHeading: false, artWrapClass: "art", artBoxStyle: { aspectRatio: "5 / 4" }, cardStyle: {} }, chrome);
     // Up to three designs on the card: one per design family, or the sizes of a single family.
     const fams = this.familyGroups(designs);
     const picks = fams.length > 1 ? fams.map(g => g.rep) : fams[0].members.slice().sort((a, b2) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b2.size));
@@ -2681,7 +2734,11 @@ class Component extends DCLogic {
     if (!isEditor && !s.sched && view !== "templates" && view !== "size") {
       // Sizes that never appear as a card have no stored thumbnail; draw one off stage at a time so the backlog can capture it.
       // While a capture is running the same design stays on the node, otherwise the picture and its id could part company.
-      const miss = (this._thumbBusyId && s.drafts.find(x => x.id === this._thumbBusyId)) || s.drafts.find(x => !s.thumbs[x.id] && !(this._thumbTried && this._thumbTried.has(x.id)));
+      // Only what this screen shows is drawn: a first visit on a phone should not fetch every photograph in every design.
+      const shelfIds = new Set(); if (view === "projects") s.projects.forEach(p => { const mine = s.drafts.filter(x => x.projectId === p.id); mine.slice().sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 4).concat(mine.slice(0, 4)).forEach(x => shelfIds.add(x.id)); });
+      const chatFams = new Set(s.chat.map(m => m.fam).filter(Boolean));
+      const wanted = (x) => view === "designs" || view === "calendar" || (view === "project" && x.projectId === s.projectId) || (view === "projects" && (!x.projectId || shelfIds.has(x.id) || !!x.scheduledAt)) || chatFams.has(x.familyId) || chatFams.has(x.setId);
+      const miss = (this._thumbBusyId && s.drafts.find(x => x.id === this._thumbBusyId)) || s.drafts.find(x => !s.thumbs[x.id] && wanted(x) && !(this._thumbTried && this._thumbTried.has(x.id)));
       if (miss) boards.push(this.boardVals(miss, "card", { wrapClass: "card offcard", open: null, keys: null, aria: "", title: "", desc: "", tab: -1, wrapRole: "presentation" }));
     }
 

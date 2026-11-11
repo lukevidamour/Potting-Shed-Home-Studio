@@ -553,6 +553,7 @@ function newDesign(tpl, size, projectId) {
 }
 /* The copy fields a design shows: a template's fields, less any that belong to a layout it is not using. */
 function fieldsFor(d) { const L = d.layout || 0; return (FIELDS[d.tpl] || []).filter(f => !f.on || f.on.indexOf(L) >= 0); }
+const CARD_RATIO = 4 / 5; // height over width of a card's artwork box
 function slotsFor(d) {
   if (packTpl(d.tpl) && PACK.slots) { const ps = PACK.slots(d); if (ps) return ps; }
   if (d.tpl === "speaker") return [{ id: "speaker-photo", label: "Speaker portrait" }];

@@ -1,0 +1,8 @@
+[
+  {"name": "assistant", "page": "Home%20Studio.dc.html?qa=home&client=CLIENT", "click": ".fab", "scope": ".makeover"},
+  {"name": "search and commands", "page": "Home%20Studio.dc.html?qa=home&client=CLIENT", "click": "button[aria-label='Search and commands']", "scope": ".cmdk__box"},
+  {"name": "client switcher", "page": "Home%20Studio.dc.html?qa=home&client=CLIENT", "click": ".wschip", "scope": ".wsswitch .menu"},
+  {"name": "account menu", "page": "Home%20Studio.dc.html?qa=home&client=CLIENT", "click": ".bead.avatar", "scope": ".gfoot .kebab .menu"},
+  {"name": "publish drawer", "page": "Home%20Studio.dc.html?qa=editor&client=CLIENT", "click": ".hdr.compact .btn.primary", "scope": ".drawer"},
+  {"name": "project chip menu", "page": "Home%20Studio.dc.html?qa=editor&client=CLIENT", "click": ".projchip", "scope": ".hdr.compact .menu"}
+]

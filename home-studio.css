@@ -1428,7 +1428,7 @@ select.input[data-open]{border-color:var(--hs-ink)}
 /* ---------- v9: QA fixes ---------- */
 /* The editor header kept a fixed height at narrow widths, so its wrapped rows ran over the stage.
    Tablet: one row, with the save state reduced to its dot. Phone: two rows, back and title and Publish above, the rest below. */
-@media (max-width:860px){
+@media (max-width:1100px){
   .hdr.compact{padding:0 12px;gap:8px;flex-wrap:nowrap}
   .sizepill{white-space:nowrap}
   .hdr.compact>.btn.sm.quiet{flex:none;width:40px;height:40px;padding:0;justify-content:center;font-size:0;gap:0}
@@ -1455,3 +1455,104 @@ select.input[data-open]{border-color:var(--hs-ink)}
 
 /* A whole project being drawn for download: one quiet line where the grid was. */
 .batchnote{margin:28px 0 0;font-size:15px;line-height:22px;color:var(--quiet);animation:fade 200ms var(--out)}
+
+/* ---------- v10: head-of-design pass ----------
+   1. Display titles a fifth smaller: they announced the page louder than the work on it.
+   2. The work is the hero: taller art boxes, a project shown as a stack with its latest piece large.
+   3. Search and commands (Cmd or Ctrl K): anything in the app without hunting for it.
+   4. Phones get a tab bar at the thumb, not a clipped row at the top. */
+h1.welcome{font-size:clamp(38px,5.3vw,84px);line-height:.97}
+@media (max-width:640px){h1.welcome{font-size:clamp(30px,8.4vw,40px);line-height:1.02}}
+.card .shelf{gap:0}
+.card .shelf img{transition:translate 360ms var(--out),scale 420ms var(--out)}
+.card:hover .shelf img:nth-child(2){translate:6px 0}
+.card:hover .shelf img:nth-child(3){translate:12px 0}
+.grid{gap:40px 28px}
+
+.cmdk{position:fixed;inset:0;z-index:400;display:flex;justify-content:center;align-items:flex-start;padding:14vh 16px 16px;background:color-mix(in srgb,var(--hs-page) 72%,transparent);animation:fade 140ms var(--out)}
+.cmdk__box{width:100%;max-width:620px;max-height:min(520px,70vh);display:flex;flex-direction:column;border-radius:16px;background:var(--hs-surface);box-shadow:inset 0 0 0 1px var(--key);overflow:hidden;animation:cmdk-in 200ms var(--out)}
+@keyframes cmdk-in{from{opacity:0;translate:0 -6px;scale:.985}}
+.cmdk__in{flex:none;display:flex;align-items:center;gap:12px;padding:0 16px 0 18px;height:58px;border-bottom:.5px solid var(--key)}
+.cmdk__in svg{flex:none;width:18px;height:18px;fill:none;stroke:var(--quiet);stroke-width:1.75;stroke-linecap:round}
+.cmdk__in input{flex:1;min-width:0;height:100%;padding:0;border:0;outline:0;background:none;color:inherit;font:inherit;font-size:17px;letter-spacing:-.005em}
+.cmdk__in input:focus-visible{outline:none;box-shadow:none}
+.cmdk__in input::placeholder{color:var(--quiet);opacity:1}
+.cmdk kbd{flex:none;padding:2px 7px;border-radius:6px;box-shadow:inset 0 0 0 1px var(--key);font:inherit;font-size:12px;line-height:18px;color:var(--quiet)}
+.cmdk__list{flex:1 1 auto;min-height:0;overflow-y:auto;padding:8px}
+.cmdk__item{display:flex;align-items:center;gap:14px;width:100%;min-height:44px;padding:0 12px;border:0;border-radius:10px;background:none;color:var(--hs-ink);font:inherit;font-size:15px;line-height:20px;text-align:left;cursor:pointer}
+.cmdk__item[aria-selected="true"]{background:color-mix(in srgb,var(--hs-ink) 7%,transparent)}
+.cmdk__kind{flex:0 0 62px;font-size:12px;line-height:16px;color:var(--quiet)}
+.cmdk__label{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmdk__none{margin:0;padding:18px 12px;font-size:15px;line-height:22px;color:var(--quiet)}
+@media (max-width:640px){.cmdk{padding:8px}.cmdk__box{max-height:72vh}.cmdk kbd{display:none}.cmdk__kind{flex-basis:54px}}
+@media (prefers-reduced-motion:reduce){.cmdk,.cmdk__box{animation:none}}
+
+@media (max-width:640px){
+  .gtabs{position:fixed;left:0;right:0;bottom:0;z-index:44;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:var(--hs-page);border-top:.5px solid var(--key);-webkit-mask-image:none;mask-image:none}
+  .gtab{height:44px;padding:0 4px;justify-content:center;border-radius:999px;font-size:13px;line-height:16px;letter-spacing:0;white-space:nowrap;translate:none}
+  .gtab[aria-current="page"]{translate:none;background:var(--hs-ink);color:var(--hs-on-ink)}
+  .page{padding-bottom:104px}
+  .fab{bottom:calc(72px + env(safe-area-inset-bottom));width:52px;height:52px}
+  .toast{bottom:calc(72px + env(safe-area-inset-bottom))}
+}
+@media (max-width:380px){.gfoot .themebtn{display:none}}
+
+/* ---------- v11: responsive QA (Potting Shed standard) ---------- */
+/* Fields are 16px on touch screens, so iOS does not zoom the page when one is tapped. */
+@media (max-width:1023px),(pointer:coarse){
+  input,select,textarea,.input,.title-in,.projtitle{font-size:16px!important}
+  /* Every control is a comfortable 44px to tap. */
+  .btn,.btn.sm,.btn.icon,.bead,.tplbtn,.pchip,.tab,.sizepill,.gtab,.mknew,.mkchips button,.makeover .mkchips.start button,.segs button,.bbjump button,.bbprevtabs button,.menu button,.cmdk__item,.viewtog button,.pill,.sw,.google{min-height:44px}
+  .makeover .mkchips button,.makeover .mkchips.start button{height:44px}
+  .btn.icon,.bead,.pchip,.tab,.viewtog button,.makeover .mkclose,.makeover .mkfield .go{min-width:44px}
+  .makeover .mkclose,.makeover .mkfield .go,.gfoot .bead{width:44px;height:44px}
+  .makeover .mkfield textarea{min-height:44px;padding:10px 0}
+  details.sect.more>summary,details.guardian>summary{min-height:44px;justify-content:center}
+  .palrow{grid-template-columns:44px minmax(0,1fr) 112px 44px}
+}
+details.sect.more>summary{min-height:44px}
+.btn.icon{flex:none}
+.wayrow select.input,.wayrow .input,.palrow .input{min-width:0;width:100%}
+.libpic{display:block;width:100%;object-fit:cover}
+/* A file picker hidden inside its label is the whole label to tap, not a 1px dot. */
+label:has(>input.sr[type="file"]){position:relative}
+label>input.sr[type="file"]{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;clip:auto;clip-path:none;white-space:normal;cursor:pointer}
+/* With the assistant open the page behind it is out of sight and out of reach, not just covered. */
+body:has(.makeover) .page:not(.grid),body:has(.makeover) .navwrap,body:has(.makeover) .grid>.card:not(.offcard),body:has(.makeover) .fab{visibility:hidden}
+@media (min-width:861px){
+  .gtabs{padding-right:20px}
+  .gfoot{gap:2px}
+  .gfoot .bead.round{width:36px;min-width:36px}
+}
+@media (max-width:860px){
+  .callayout{grid-template-columns:minmax(0,1fr)}
+  .cal,.caltray{min-width:0}
+  .pagehead{flex-wrap:wrap}
+  .calnav{flex-wrap:wrap;min-width:0}
+}
+@media (max-width:640px){
+  /* Menus opened from the top row span the screen instead of hanging off its edge. */
+  .gnav .wsswitch .menu,.gfoot .kebab .menu{position:fixed;left:12px;right:12px;top:64px;bottom:auto;width:auto;min-width:0;max-width:none}
+  .toolbar{flex-wrap:wrap;row-gap:6px}
+  .sizepill{max-width:100%}
+}
+@media (max-width:400px){
+  .calcell{min-height:60px;padding:2px}
+  .drawer .btn .dims{display:none}
+}
+/* second pass */
+@media (min-width:861px){.gtabs{padding-right:0}.gtab{width:calc(100% - 20px)}}
+@media (max-width:300px){.gtab{font-size:12px;padding:0 1px;letter-spacing:-.01em}}
+.toolbar{flex-wrap:wrap;row-gap:6px}
+.sizestrip{flex:0 1 auto}
+@media (max-width:1080px){.wayrow{grid-template-columns:64px minmax(0,1fr) minmax(0,1fr) 44px}}
+.wayrow select.input{max-width:100%;box-sizing:border-box}
+/* third pass: overlays behave as overlays; last spills */
+body:has(.makeover),body:has(.cmdk){overflow:hidden}
+.cmdk__close{flex:none;min-width:44px;height:32px;padding:0 9px;border:0;border-radius:8px;background:none;box-shadow:inset 0 0 0 1px var(--key);font:inherit;font-size:12px;line-height:18px;color:var(--quiet);cursor:pointer}
+.cmdk__close:hover{color:var(--hs-ink);box-shadow:inset 0 0 0 1px var(--hs-ink)}
+.cmdk__close .t{display:none}
+@media (max-width:1023px),(pointer:coarse){.cmdk__close{height:44px;font-size:14px;line-height:20px}.cmdk__close .k{display:none}.cmdk__close .t{display:inline}}
+.wayrow{grid-template-columns:64px minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr) 118px 44px}
+@media (max-width:1080px){.wayrow{grid-template-columns:64px minmax(0,1fr) minmax(0,1fr) 44px}}
+.bbsec div:has(>.btn.sm){flex-wrap:wrap}
