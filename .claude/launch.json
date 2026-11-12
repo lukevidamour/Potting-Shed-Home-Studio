@@ -18,6 +18,15 @@
         "exec python3 /private/tmp/home-studio-preview/tools/qa/serve.py 8766 /private/tmp/home-studio-public"
       ],
       "port": 8766
+    },
+    {
+      "name": "audit",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "exec python3 /private/tmp/home-studio-audit/tools/qa/serve.py 8768 /private/tmp/home-studio-audit"
+      ],
+      "port": 8768
     }
   ]
 }

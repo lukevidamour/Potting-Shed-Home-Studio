@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Write the ready-made thumbnails of the example designs, so a first visit shows the wall at once.
 Serve the folder first (python3 tools/qa/serve.py), then:
-    python3 tools/seed_thumbs.py                                  TEKEX examples  -> assets/seed/tekex-NN.jpg
-    python3 tools/seed_thumbs.py <client id> <folder/prefix>      a client pack   -> <folder/prefix>NN.jpg
+    python3 tools/seed_thumbs.py                                  TEKEX examples  -> assets/seed/tekex-NN.webp
+    python3 tools/seed_thumbs.py <client id> <folder/prefix>      a client pack   -> <folder/prefix>NN.webp
 Run it again whenever the example designs or their templates change. The count it prints must match SEED_THUMBS.n
 in home-studio.lib.js (or seedThumbs.n in the client's pack)."""
-import base64, os, sys, time
+import base64, io, os, sys, time
+from PIL import Image
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'qa'))
 from cdp import browser, size, go
 
@@ -30,9 +31,9 @@ try:
     os.makedirs(os.path.dirname(os.path.join(root, out)), exist_ok=True)
     total = 0
     for n, url in pics:
-        data = base64.b64decode(url.split(',', 1)[1]); total += len(data)
-        with open(os.path.join(root, f'{out}{n:02d}.jpg'), 'wb') as f:
-            f.write(data)
-    print(f'{len(pics)} thumbnails written to {out}NN.jpg ({total // 1024}KB)')
+        im = Image.open(io.BytesIO(base64.b64decode(url.split(',', 1)[1]))).convert('RGB')
+        path = os.path.join(root, f'{out}{n:02d}.webp')
+        im.save(path, 'WEBP', quality=78, method=6); total += os.path.getsize(path)
+    print(f'{len(pics)} thumbnails written to {out}NN.webp ({total // 1024}KB)')
 finally:
     p.terminate()

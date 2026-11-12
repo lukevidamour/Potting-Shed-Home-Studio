@@ -11,13 +11,13 @@
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261112p"></script>
+<script src="home-studio.lib.js?v=20261112w"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261112p">
+<link rel="stylesheet" href="home-studio.css?v=20261112w">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -132,7 +132,7 @@
             </section>
           </sc-if>
 
-          <section class="sect" aria-labelledby="sl-col"><h3 class="stitle" id="sl-col">Colourway</h3>
+          <section class="sect" aria-labelledby="sl-col"><h3 class="stitle" id="sl-col">Colourway<span class="meta">{{ themeName }}</span></h3>
             <div class="swatches" role="radiogroup" aria-label="Colour combination" onKeyDown="{{ themeKeys }}">
               <sc-for list="{{ themeTiles }}" as="th">
                 <button class="sw" role="radio" aria-checked="{{ th.on }}" tabIndex="{{ th.tab }}" onClick="{{ th.pick }}" title="{{ th.name }}">
@@ -463,6 +463,12 @@
             </span>
           </div>
 
+          <div class="bbcover" style="{{ bbCoverStyle }}">
+            <sc-if value="{{ wsLogoMask }}"><span class="bbcover__logo"><i style="{{ wsLogoMaskStyle }}"></i></span></sc-if>
+            <sc-if value="{{ bbCoverName }}"><span class="bbcover__name">{{ wsName }}</span></sc-if>
+            <p class="bbcover__line">{{ bbCoverLine }}</p>
+            <span class="bbcover__dots" aria-hidden="true"><sc-for list="{{ bbPalette }}" as="c"><i style="{{ c.chipStyle }}"></i></sc-for></span>
+          </div>
           <div class="bbtop"><span class="bbscore">{{ bbScore }}</span><sc-if value="{{ bbMissing }}"><span class="meta">Still to define: {{ bbMissing }}</span></sc-if></div>
           <nav class="bbjump" aria-label="Sections"><sc-for list="{{ bbJump }}" as="jp"><button onClick="{{ jp.go }}">{{ jp.label }}</button></sc-for></nav>
           <div class="bbprevtabs" role="group" aria-label="Preview template"><sc-for list="{{ bbPrevTabs }}" as="pv"><button aria-pressed="{{ pv.on }}" onClick="{{ pv.pick }}">{{ pv.label }}</button></sc-for></div>
@@ -683,7 +689,7 @@
             <sc-if value="{{ !a.isHeading }}">
             <div class="{{ a.wrapClass }}" style="{{ a.cardStyle }}" role="{{ a.wrapRole }}" tabIndex="{{ a.tab }}" aria-label="{{ a.aria }}" onClick="{{ a.open }}" onKeyDown="{{ a.keys }}">
               <div class="{{ a.artWrapClass }}" style="{{ a.artBoxStyle }}">
-              <sc-if value="{{ a.isCard }}"><sc-if value="{{ a.hasShelf }}"><div class="shelf"><sc-for list="{{ a.shelf }}" as="sh"><img class="thumbimg" sc-camel-src="{{ sh.url }}" alt="" loading="{{ sh.lazy }}" decoding="async" style="{{ sh.style }}" /></sc-for></div></sc-if><sc-if value="{{ a.noArt }}"><div class="noart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M12 9v6M9 12h6"/></svg><span>No designs yet</span></div></sc-if><sc-if value="{{ a.thumbUrl }}"><img class="thumbimg" sc-camel-src="{{ a.thumbUrl }}" alt="" loading="{{ a.lazy }}" decoding="async" style="{{ a.thumbStyle }}" onError="{{ a.thumbFailed }}" /></sc-if></sc-if>
+              <sc-if value="{{ a.isCard }}"><sc-if value="{{ a.hasShelf }}"><div class="shelf"><sc-for list="{{ a.shelf }}" as="sh"><img class="thumbimg" sc-camel-src="{{ sh.url }}" alt="" loading="{{ sh.lazy }}" decoding="async" style="{{ sh.style }}" /></sc-for></div></sc-if><sc-if value="{{ a.noArt }}"><div class="noart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M12 9v6M9 12h6"/></svg><span>No designs yet</span></div></sc-if><sc-if value="{{ a.thumbUrl }}"><img class="thumbimg" sc-camel-src="{{ a.thumbUrl }}" alt="" loading="{{ a.lazy }}" fetchpriority="{{ a.prio }}" decoding="async" style="{{ a.thumbStyle }}" onError="{{ a.thumbFailed }}" /></sc-if></sc-if>
               <sc-if value="{{ a.hasArt }}">
               <div data-canvas="{{ a.canvasFlag }}" data-design="{{ a.designId }}" style="{{ a.canvasStyle }}" onClick="{{ a.canvasClick }}">
                 <sc-if value="{{ !a.isPack }}">
@@ -958,13 +964,13 @@
           <sc-for list="{{ addSizeTiles }}" as="s">
             <button class="tile" role="radio" aria-checked="{{ s.on }}" aria-disabled="{{ s.added }}" tabIndex="{{ s.tab }}" onClick="{{ s.pick }}">
               <span class="ratio" aria-hidden="true"><i style="{{ s.ratioStyle }}"></i></span>
-              <span><span class="lbl" style="display:block">{{ s.label }} <span class="dims" style="display:inline">· {{ s.ratio }}</span></span><span class="dims">{{ s.dims }} px</span></span>
+              <span><span class="lbl" style="display:block">{{ s.label }}</span><span class="dims">{{ s.ratio }} · {{ s.dims }} px</span></span>
               <sc-if value="{{ s.added }}"><span class="added">Added</span></sc-if>
               <sc-if value="{{ !s.added }}"><span class="chk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span></sc-if>
             </button>
           </sc-for>
         </div>
-        <div class="dactions"><button class="btn" onClick="{{ closeSizeDialog }}">Cancel</button><button class="btn primary" onClick="{{ applySize }}" disabled="{{ !canApplySize }}">Add {{ pendingSizeLabel }}</button></div>
+        <div class="dactions"><button class="btn" onClick="{{ closeSizeDialog }}">Cancel</button><sc-if value="{{ manySizesLeft }}"><button class="btn" onClick="{{ addAllSizes }}">Add all {{ sizesLeft }}</button></sc-if><button class="btn primary" onClick="{{ applySize }}" disabled="{{ !canApplySize }}">Add {{ pendingSizeLabel }}</button></div>
       </div>
     </div>
   </sc-if>
@@ -1208,7 +1214,7 @@ class Component extends DCLogic {
     let seeded = []; // examples made on this visit: [design id, ready-made thumbnail file]
     if (WS_ID === DEFAULT_WS && !Store.raw("hs-seed-v2")) {
       const ex = seedExamples(projects);
-      if (ex.drafts.length === SEED_THUMBS.n) { ex.drafts.forEach((d, i) => { d.seedN = i; }); seeded = ex.drafts.map(d => [d.id, SEED_THUMBS.dir + ("0" + d.seedN).slice(-2) + ".jpg"]); }
+      if (ex.drafts.length === SEED_THUMBS.n) { ex.drafts.forEach((d, i) => { d.seedN = i; }); seeded = ex.drafts.map(d => [d.id, SEED_THUMBS.dir + ("0" + d.seedN).slice(-2) + ".webp"]); }
       projects = projects.concat(ex.projects); drafts = drafts.concat(ex.drafts);
       try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag("hs-seed-v2"); Store.set("hs-redate-w", seedWeeks()); } catch (e) {}
     }
@@ -1240,7 +1246,7 @@ class Component extends DCLogic {
     if (drafts.some(d => !d.familyId)) { drafts = drafts.map(d => d.familyId ? d : Object.assign({}, d, { familyId: uid("f") })); try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
     // Thumbnails live in their own store; lift any that older drafts carried inline.
     let thumbs = Store.get(THUMBS_KEY, {});
-    Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || !(realThumb(v) ? v.length >= 1500 : /^assets\/[\w\/-]+\.jpg$/.test(v))) delete thumbs[k]; });
+    Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || !(realThumb(v) ? v.length >= 1500 : /^assets\/[\w\/-]+\.(?:jpg|webp)$/.test(v))) delete thumbs[k]; });
     if (drafts.some(d => d.thumb)) { drafts.forEach(d => { if (d.thumb) thumbs[d.id] = d.thumb; }); drafts = drafts.map(d => { const c = Object.assign({}, d); delete c.thumb; return c; }); try { Store.set(THUMBS_KEY, thumbs); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
     const seedKey = PACK ? "hs-seed-pack" + ((PACK.seedVersion || 1) > 1 ? "-" + PACK.seedVersion : "") : "";
     if (PACK && WS_ID === PACK.id && PACK.seed && !Store.raw(seedKey)) {
@@ -1252,7 +1258,7 @@ class Component extends DCLogic {
         design: (p, tpl, title, theme, copy, pics, layout) => { const d = newDesign(tpl, (TPL[tpl].sizes || ["square"])[0], p.id); d.title = title; d.theme = theme; d.layout = layout || 0; d.copy = Object.assign({}, d.copy, copy || {}); d.images = {}; Object.keys(pics || {}).forEach(k => { const im = libImg(pics[k]); if (im) d.images[k] = im; }); d.images = fillImages(d); return d; }
       });
       const st = PACK.seedThumbs;
-      if (st && ex.drafts.length === st.n) { ex.drafts.forEach((d, i) => { d.seedN = i; }); seeded = seeded.concat(ex.drafts.map(d => [d.id, st.dir + ("0" + d.seedN).slice(-2) + ".jpg"])); }
+      if (st && ex.drafts.length === st.n) { ex.drafts.forEach((d, i) => { d.seedN = i; }); seeded = seeded.concat(ex.drafts.map(d => [d.id, st.dir + ("0" + d.seedN).slice(-2) + ".webp"])); }
       projects = projects.concat(ex.projects); drafts = drafts.concat(ex.drafts);
       try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag(seedKey); } catch (e) {}
     }
@@ -1773,6 +1779,7 @@ class Component extends DCLogic {
           bbCorners: seg([[0, "Square"], [18, "Soft"], [44, "Round"]], ST.radius || 0, (b, v) => { b.style = Object.assign({}, b.style, { radius: v }); }, "Layout", true),
           bbPhotos: seg([["colour", "Colour"], ["mono", "Black and white"]], ST.photo || "colour", (b, v) => { b.style = Object.assign({}, b.style, { photo: v }); }, "Layout", true),
           bbSpecStyle: { fontWeight: T.headWeight || 600 },
+          bbCoverStyle: { background: (BRAND.themes[0] || {}).ground || "#171717", color: (BRAND.themes[0] || {}).accent || "#FFFFFF" }, bbCoverLine: (BRAND.strategy.strapline || "").trim() || BRAND.name, bbCoverName: !BRAND.logo && !!(BRAND.strategy.strapline || "").trim(), // with no strapline yet, the name is the line
           bbStrap: BRAND.strategy.strapline || "", bbPositioning: BRAND.strategy.positioning || "", bbMessages: (BRAND.strategy.messages || []).join("\n"), bbAudiences: (BRAND.strategy.audiences || []).join("\n"),
           bbSetStrap: (e) => { const v = e.target.value; this.editBrand(b => { b.strategy = Object.assign({}, b.strategy, { strapline: v }); }, "Strategy"); },
           bbSetPositioning: (e) => { const v = e.target.value; this.editBrand(b => { b.strategy = Object.assign({}, b.strategy, { positioning: v }); }, "Strategy"); },
@@ -1807,6 +1814,7 @@ class Component extends DCLogic {
     src.style.viewTransitionName = "hs-art";
     let vt; try { vt = document.startViewTransition(() => new Promise(res => { this.openDesign(d, false); setTimeout(res, 140); })); } catch (e) { src.style.viewTransitionName = ""; return this.openDesign(d, false); }
     const clear = () => { src.style.viewTransitionName = ""; }; vt.finished.then(clear, clear);
+    if (vt.ready) vt.ready.catch(() => {}); if (vt.updateCallbackDone) vt.updateCallbackDone.catch(() => {}); // a move that could not start is not an error: the editor is open either way
   }
 
   /* A dropdown list drawn by the app: the same ink menu as everywhere else, anchored to its field. The real <select>
@@ -1955,13 +1963,17 @@ class Component extends DCLogic {
   /* ---------- welcome gate and the curtain ---------- */
   /* The wordmark, cut into its letters so each can move on its own: every letter is the whole word seen through its own window. */
   wordmarkSvg() {
-    const D = ["M1413.66,631.47c-16.59,0-23.33,9.64-24.89,15.13s-6.22,23.43-6.22,23.43h28.51c16.59,0,23.32-9.64,24.89-15.14s6.23-23.41,6.23-23.41Z", "M1029.35,616.18c-16.6,0-23.33,9.63-24.9,15.13s-6.22,23.43-6.22,23.43h28.51c16.59,0,23.32-9.64,24.89-15.15s6.23-23.4,6.23-23.4Z", "M783.19,616.18H754.68s4.67,17.88,6.22,23.4,8.3,15.15,24.89,15.15H814.3s-4.66-17.93-6.22-23.43-8.29-15.13-24.89-15.13Z", "M2057.05,851.24c41.93,0,69.37-21.93,83.08-49.12h0a96.36,96.36,0,0,0,10.3-42.92c0-13.15.07-104.42.09-134.1a9.29,9.29,0,0,0-9.31-9.31H2099v59.8c-11.88-5.55-25.86-8.82-42-8.82-63.17,0-93.5,49.72-93.5,92.24s30.33,92.23,93.5,92.23Zm0-136c22.5,0,41.58,18.45,41.58,43.77s-19.08,43.76-41.58,43.76-41.58-18.43-41.58-43.76,19.06-43.77,41.58-43.77Zm-527.54,6.43c-.32-3.75-.93-13.14-16.26-13.14-11,0-14.69,6.89-14.69,11.58,0,9.38,12.82,14.7,26.57,18.76,29.39,8.12,60.67,16.88,60.67,54.41,0,36.56-32.23,59.06-70.69,59.06-26.23,0-66-11.87-70.64-57.52h51.59c2.17,15.95,17.49,15.95,19.69,15.95,8.75,0,18.13-5,18.13-13.45,0-13.44-12.82-15-46-27.82-22.52-7.17-41.26-21.88-41.26-45.33,0-34.39,31.25-57.21,67.2-57.21,22.82,0,62.23,9.06,66.59,54.71Zm68.25-106.6h42.61a9.3,9.3,0,0,1,9.31,9.3v64.47h.62c8.75-15.62,26.25-21.88,44.7-21.88,16.57,0,36.26,5.94,47.21,19.06,14.69,17.21,16.24,32.52,16.24,63.47v96.92h-51.88V752c0-8.43,0-36.26-27.82-36.26-29.07,0-29.07,26-29.07,34.4v96.29h-51.92V615.07Zm350,157.14c-.35,4.35-.55,9.25-1.13,12.9a1,1,0,0,1-1,.81H1852.5V742.3H1895c0-12.41-12.68-30.25-35.22-30.25-33.71,0-41.2,29.13-41.2,48.07,0,35.39,23.74,49.24,44,49.24l27.4.25V853h-27.4c-49.6,0-91.71-40.24-91.71-91.71,0-48.33,30.47-93,88.51-93C1924.73,668.38,1952.06,719.45,1947.81,772.21Z", "M956.38,624.32l.26,48.58h25v39.4h-25V846.41h-51.9L904.57,615l42.51,0A9.3,9.3,0,0,1,956.38,624.32Zm-112.89-9.17a9.3,9.3,0,0,0-9.3,9.31v53.88l-38.14-14-6.69,8.38,44.83,40.63V846.51H886l0-108.34,0-35.08.06-87.94ZM802.84,760.7c0,42.52-30.33,92.23-93.47,92.23s-93.49-49.71-93.49-92.23,30.33-92.22,93.49-92.22S802.84,718.19,802.84,760.7Zm-51.89,0c0-25.33-19.07-43.77-41.58-43.77s-41.58,18.44-41.58,43.77,19.07,43.77,41.58,43.77S751,786,751,760.7ZM996.9,846.41h51.89V682.21a9.31,9.31,0,0,0-9.31-9.31H996.9V846.41Zm73.78-173.51V846.41h51.89V752c0-10.62,0-36.26,29.71-36.26,27.19,0,27.19,23.77,27.19,36v94.73h51.9V737.94c0-34.09-10.63-47.85-20-56s-27.81-15-44.38-15c-31,0-41.89,15.94-47.2,24.38h-.64v-9.13a9.31,9.31,0,0,0-9.31-9.31Zm-466,87.8c0,42.52-30.32,92.23-93.48,92.23-16.13,0-30.11-3.26-42-8.81v59.81H417.74l.11-143.43a96.6,96.6,0,0,1,10.29-42.92h0c13.71-27.18,41.15-49.1,83.09-49.1C574.38,668.48,604.7,718.19,604.7,760.7Zm-51.9,0c0-25.33-19.08-43.77-41.58-43.77s-41.58,18.44-41.58,43.77,19.07,43.77,41.58,43.77S552.8,786,552.8,760.7Zm891.1,165a60.42,60.42,0,0,1-14.36,39c-7.71,9.06-22.87,14.43-32.83,14.43l-61.51,1.07c-19.16,0-34.73-3.79-44.55-15.26a60.34,60.34,0,0,1-14.59-39.27,61,61,0,0,1,4.88-23.56c-9.26-3.81-34.08-16.73-34.08-42.64,0-8.58,1.38-27.84,20.43-40.11a96.14,96.14,0,0,1-20.13-58.51c0-42.52,30.33-92.23,93.47-92.23s93.49,49.71,93.49,92.23c0,42-29.59,90.91-91.1,92.16h-43.37c-3,.36-5.57,2.79-5.66,7,.09,4.33,2.83,6.75,6,7h86.12c18.58.33,33.64,8.23,43.26,19.42A60.36,60.36,0,0,1,1443.9,925.71ZM1299.06,760.89c0,25.32,19.07,43.76,41.57,43.76s41.61-18.44,41.61-43.76-19.09-43.78-41.61-43.78S1299.06,735.56,1299.06,760.89Zm95.56,164.82c-.12-6.79-4.38-10.62-9.26-11.12h-51c-4.78.57-8.89,4.44-9,11.12.15,6.91,4.53,10.79,9.52,11.16H1385C1390.08,936.52,1394.5,932.66,1394.62,925.71Z"], T = "translate(-417.74 -615.03)";
-    const L = [[0, 192, 288], [192, 366, 236], [366, 477, 236], [477, 571, 232], [571, 641, 232], [641, 821, 232], [821, 994, 365], [994, 1173, 238], [1173, 1346, 232], [1346, 1537, 238], [1537, 1733, 237]]; // [left, right, foot] of p o t t i n g s h e d
-    const clips = L.map((l, i) => '<clipPath id="wm-c' + i + '"><rect x="' + l[0] + '" y="-600" width="' + (l[1] - l[0] + 0.8) + '" height="1600"/></clipPath>').join("");
-    const letters = L.map((l, i) => '<g class="wm__l" data-o="' + ((l[0] + l[1]) / 2) + ' ' + l[2] + '"><g class="wm__s" clip-path="url(#wm-c' + i + ')"><use href="#wm-all"/></g></g>').join("");
+    /* The three leaves, then each letter of the word as its own shape. The letters were once cut out of the whole word with
+       upright windows, but neighbours overlap each other's column (the o reaches under the t, the g under the s), so a
+       sliver of one letter moved with the next and showed as a vertical line. Whole letters cannot do that. */
+    const D = ["M1413.66,631.47c-16.59,0-23.33,9.64-24.89,15.13s-6.22,23.43-6.22,23.43h28.51c16.59,0,23.32-9.64,24.89-15.14s6.23-23.41,6.23-23.41Z", "M1029.35,616.18c-16.6,0-23.33,9.63-24.9,15.13s-6.22,23.43-6.22,23.43h28.51c16.59,0,23.32-9.64,24.89-15.15s6.23-23.4,6.23-23.4Z", "M783.19,616.18H754.68s4.67,17.88,6.22,23.4,8.3,15.15,24.89,15.15H814.3s-4.66-17.93-6.22-23.43-8.29-15.13-24.89-15.13Z"], T = "translate(-417.74 -615.03)";
+    const W = ["M604.68,760.7c0,42.52-30.32,92.23-93.48,92.23-16.13,0-30.11-3.26-42-8.81v59.81H417.74l.11-143.43a96.6,96.6,0,0,1,10.29-42.92h0c13.71-27.18,41.15-49.1,83.09-49.1C574.38,668.48,604.7,718.19,604.7,760.7Z M552.78,760.7c0-25.33-19.08-43.77-41.58-43.77s-41.58,18.44-41.58,43.77,19.07,43.77,41.58,43.77S552.8,786,552.8,760.7Z", "M802.84,760.7c0,42.52-30.33,92.23-93.47,92.23s-93.49-49.71-93.49-92.23,30.33-92.22,93.49-92.22S802.84,718.19,802.84,760.7Z M750.95,760.7c0-25.33-19.07-43.77-41.58-43.77s-41.58,18.44-41.58,43.77,19.07,43.77,41.58,43.77S751,786,751,760.7Z", "M843.49,615.15a9.3,9.3,0,0,0-9.3,9.31v53.88l-38.14-14-6.69,8.38,44.83,40.63V846.51H886l0-108.34,0-35.08.06-87.94Z", "M956.38,624.32l.26,48.58h25v39.4h-25V846.41h-51.9L904.57,615l42.51,0A9.3,9.3,0,0,1,956.38,624.32Z", "M996.9,846.41h51.89V682.21a9.31,9.31,0,0,0-9.31-9.31H996.9V846.41Z", "M1070.68,672.9V846.41h51.89V752c0-10.62,0-36.26,29.71-36.26,27.19,0,27.19,23.77,27.19,36v94.73h51.9V737.94c0-34.09-10.63-47.85-20-56s-27.81-15-44.38-15c-31,0-41.89,15.94-47.2,24.38h-.64v-9.13a9.31,9.31,0,0,0-9.31-9.31Z", "M1443.88,925.7a60.42,60.42,0,0,1-14.36,39c-7.71,9.06-22.87,14.43-32.83,14.43l-61.51,1.07c-19.16,0-34.73-3.79-44.55-15.26a60.34,60.34,0,0,1-14.59-39.27,61,61,0,0,1,4.88-23.56c-9.26-3.81-34.08-16.73-34.08-42.64,0-8.58,1.38-27.84,20.43-40.11a96.14,96.14,0,0,1-20.13-58.51c0-42.52,30.33-92.23,93.47-92.23s93.49,49.71,93.49,92.23c0,42-29.59,90.91-91.1,92.16h-43.37c-3,.36-5.57,2.79-5.66,7,.09,4.33,2.83,6.75,6,7h86.12c18.58.33,33.64,8.23,43.26,19.42A60.36,60.36,0,0,1,1443.9,925.71Z M1299.06,760.89c0,25.32,19.07,43.76,41.57,43.76s41.61-18.44,41.61-43.76-19.09-43.78-41.61-43.78S1299.06,735.56,1299.06,760.89Z M1394.62,925.71c-.12-6.79-4.38-10.62-9.26-11.12h-51c-4.78.57-8.89,4.44-9,11.12.15,6.91,4.53,10.79,9.52,11.16H1385C1390.08,936.52,1394.5,932.66,1394.62,925.71Z", "M1529.51,721.67c-.32-3.75-.93-13.14-16.26-13.14-11,0-14.69,6.89-14.69,11.58,0,9.38,12.82,14.7,26.57,18.76,29.39,8.12,60.67,16.88,60.67,54.41,0,36.56-32.23,59.06-70.69,59.06-26.23,0-66-11.87-70.64-57.52h51.59c2.17,15.95,17.49,15.95,19.69,15.95,8.75,0,18.13-5,18.13-13.45,0-13.44-12.82-15-46-27.82-22.52-7.17-41.26-21.88-41.26-45.33,0-34.39,31.25-57.21,67.2-57.21,22.82,0,62.23,9.06,66.59,54.71Z", "M1597.76,615.07h42.61a9.3,9.3,0,0,1,9.31,9.3v64.47h.62c8.75-15.62,26.25-21.88,44.7-21.88,16.57,0,36.26,5.94,47.21,19.06,14.69,17.21,16.24,32.52,16.24,63.47v96.92h-51.88V752c0-8.43,0-36.26-27.82-36.26-29.07,0-29.07,26-29.07,34.4v96.29h-51.92V615.07Z", "M1947.76,772.21c-.35,4.35-.55,9.25-1.13,12.9a1,1,0,0,1-1,.81H1852.5V742.3H1895c0-12.41-12.68-30.25-35.22-30.25-33.71,0-41.2,29.13-41.2,48.07,0,35.39,23.74,49.24,44,49.24l27.4.25V853h-27.4c-49.6,0-91.71-40.24-91.71-91.71,0-48.33,30.47-93,88.51-93C1924.73,668.38,1952.06,719.45,1947.81,772.21Z", "M2057.05,851.24c41.93,0,69.37-21.93,83.08-49.12h0a96.36,96.36,0,0,0,10.3-42.92c0-13.15.07-104.42.09-134.1a9.29,9.29,0,0,0-9.31-9.31H2099v59.8c-11.88-5.55-25.86-8.82-42-8.82-63.17,0-93.5,49.72-93.5,92.24s30.33,92.23,93.5,92.23Z M2057.05,715.24c22.5,0,41.58,18.45,41.58,43.77s-19.08,43.76-41.58,43.76-41.58-18.43-41.58-43.76,19.06-43.77,41.58-43.77Z"];
+    const L = [[0,192,288],[192,366,236],[366,477,236],[477,571,232],[571,641,232],[641,821,232],[821,994,365],[994,1173,238],[1173,1346,232],[1346,1537,238],[1537,1733,237]]; // [left, right, foot] of p o t t i n g s h e d
+    const letters = L.map((l, i) => '<g class="wm__l" data-o="' + ((l[0] + l[1]) / 2) + ' ' + l[2] + '"><g class="wm__s"><path transform="' + T + '" d="' + W[i] + '"/></g></g>').join("");
     const leaves = [2, 1, 0].map(k => '<path class="wm__leaf" transform="' + T + '" d="' + D[k] + '"/>').join(""); // left to right: over the t, the i, the g
-    return '<svg class="wm" viewBox="0 0 1732.76 365.21" fill="currentColor" aria-hidden="true"><defs><g id="wm-all"><path transform="' + T + '" d="' + D[3] + '"/><path transform="' + T + '" d="' + D[4] + '"/></g>' + clips + '</defs><g class="wm__word">' + letters + leaves + '</g></svg>';
+    return '<svg class="wm" viewBox="0 0 1732.76 365.21" fill="currentColor" aria-hidden="true"><g class="wm__word">' + letters + leaves + '</g></svg>';
   }
+
   /* The sign-in intro, as on Pinboard: real springs, letters rising and stretching, each leaf dropping in like a pin. */
   playGateIntro() {
     const gate = document.querySelector(".gate"); if (!gate || gate.__intro) return;
@@ -1980,6 +1992,10 @@ class Component extends DCLogic {
       const stems = [skins[2], skins[4], skins[6]]; // the letter under each leaf takes its weight
       const tl = gsap.timeline().timeScale(1.12);
       this._gateTl = tl;
+      // However the entrance ends (finished, skipped, or interrupted by a tab switch), the three leaves end up on the word.
+      const rest = leaves.map(el => ({ y: gsap.getProperty(el, "y"), rotation: gsap.getProperty(el, "rotation") })); // where each leaf belongs, read before anything moves
+      const settle = () => { leaves.forEach((el, i) => { if (!gsap.isTweening(el)) gsap.set(el, { opacity: 1, y: rest[i].y, rotation: rest[i].rotation }); }); };
+      tl.eventCallback("onComplete", settle); setTimeout(settle, 4200);
       tl.call(show, null, 0)
         .from(gate.querySelector(".gate__leaf"), { scale: 0, rotation: -35, transformOrigin: "50% 50%", duration: 1.3, ease: jelly }, 0.05)
         .add(() => {}, 0);
@@ -2264,8 +2280,10 @@ class Component extends DCLogic {
       await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
       for (let i = 0; i < 30 && !node.querySelector("[data-fit],[data-field]"); i++) await new Promise(r => setTimeout(r, 50));
       await Promise.all(Array.from(node.querySelectorAll("img")).map(im => im.complete ? 0 : new Promise(r => { im.addEventListener("load", r, { once: true }); im.addEventListener("error", r, { once: true }); setTimeout(r, 3000); })));
+      // Never photograph it part-way through an entrance: wait for anything moving on it to finish.
+      await Promise.all((node.getAnimations ? node.getAnimations({ subtree: true }) : []).filter(a => a.effect && a.effect.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {})));
       if (!node.isConnected) throw new Error("gone");
-      url = await shot.domToDataUrl(node, shotOpts({ width: S.w, height: S.h, scale: 320 / Math.max(S.w, S.h), type: "image/jpeg", quality: 0.8, backgroundColor: BRAND.themes[w.v.theme].ground, style: { transform: "none", boxShadow: "none", margin: "0", position: "static" }, filter: (el) => !(el.getAttribute && el.getAttribute("data-guide")) }));
+      url = await shot.domToDataUrl(node, shotOpts({ width: S.w, height: S.h, scale: 320 / Math.max(S.w, S.h), type: "image/jpeg", quality: 0.8, backgroundColor: BRAND.themes[w.v.theme].ground, style: { transform: "none", boxShadow: "none", margin: "0", position: "static", opacity: "1", animation: "none" }, filter: (el) => !(el.getAttribute && el.getAttribute("data-guide")) }));
     } catch (e) {}
     const picks = this._picks || (this._picks = new Map());
     const tries = this._pickTries || (this._pickTries = {}); tries[w.sig] = (tries[w.sig] || 0) + 1;
@@ -2433,6 +2451,21 @@ class Component extends DCLogic {
     this._sizeReturn = document.activeElement; this.setState({ sizeDialogOpen: true, pendingSize: first }); this.focusDialog();
   };
   closeSizeDialog = () => { this.setState({ sizeDialogOpen: false }); if (this._sizeReturn && this._sizeReturn.focus) this._sizeReturn.focus(); };
+  /* Every remaining format in one go: the design is translated into each shape, grouped as one family, and you stay where you are. */
+  addAllSizes = async () => {
+    if (!this.state.design) return;
+    clearTimeout(this._saveT); await this.captureThumb(); this.saveNow();
+    const d = this.state.design, fam = d.familyId || uid("f");
+    const taken = [d.size].concat(this.siblings(d).map(x => x.size)), add = (TPL[d.tpl].sizes || SIZE_ORDER).filter(k => taken.indexOf(k) < 0);
+    if (!add.length) return this.setState({ sizeDialogOpen: false });
+    const base = d.title.replace(/( · (Square post|Portrait post|Story|Landscape|LinkedIn post|Square|Portrait|LinkedIn))+$/, ""), now = Date.now();
+    const made = add.map((k, i) => Object.assign(JSON.parse(JSON.stringify(d)), { id: uid("d"), size: k, familyId: fam, title: base + " · " + SIZES[k].label, updatedAt: now - i - 1 }));
+    const cur = Object.assign({}, d, { familyId: fam });
+    const drafts = made.concat(this.state.drafts.map(x => x.id === d.id ? cur : x));
+    try { this.persistDrafts(drafts); } catch (e) {}
+    this.setState({ drafts, design: cur, sizeDialogOpen: false, reviewOpen: false, exportDone: false });
+    this.showToast(made.length + " sizes added: " + add.map(k => SIZES[k].label).join(", ") + "." + (Object.keys(d.images || {}).length ? " Check the image crop in each." : ""));
+  };
   applySize = async () => {
     const d0 = this.state.design; const k = this.state.pendingSize;
     const taken = [d0.size].concat(this.siblings(d0).map(x => x.size));
@@ -2817,7 +2850,7 @@ class Component extends DCLogic {
     }
     if (view === "brand") boards.push(this.brandPreviewBoard());
     // Only the first tiles are fetched straight away; the rest wait until they are scrolled near.
-    boards.forEach((b0, i) => { b0.lazy = i > 5 ? "lazy" : "eager"; (b0.shelf || []).forEach(sh => { sh.lazy = b0.lazy; }); });
+    boards.forEach((b0, i) => { b0.lazy = i > 5 ? "lazy" : "eager"; b0.prio = i < 2 ? "high" : "auto"; (b0.shelf || []).forEach(sh => { sh.lazy = b0.lazy; }); });
     const realBoards = boards.length;
     if (!isEditor && !s.sched && view !== "templates" && view !== "size") {
       // Sizes that never appear as a card have no stored thumbnail; draw one off stage at a time so the backlog can capture it.
@@ -3077,7 +3110,7 @@ class Component extends DCLogic {
       lowContrast: ratio < 4.5, contrastRatio: ratio.toFixed(1),
       showBar: d.showBar, showPowered: d.showPowered, showHero: d.showHero, showPortraits: d.showPortraits,
       toggleBar: () => this.toggleFlag("showBar"), togglePowered: () => this.toggleFlag("showPowered"), toggleHero: () => this.toggleFlag("showHero"), togglePortraits: () => this.toggleFlag("showPortraits"),
-      openSizeDialog: this.openSizeDialog, closeSizeDialog: this.closeSizeDialog, sizeDialogOpen: s.sizeDialogOpen, applySize: this.applySize, pendingSizeLabel: SIZES[s.pendingSize].label,
+      openSizeDialog: this.openSizeDialog, closeSizeDialog: this.closeSizeDialog, sizeDialogOpen: s.sizeDialogOpen, applySize: this.applySize, addAllSizes: this.addAllSizes, sizesLeft: (TPL[d.tpl].sizes || SIZE_ORDER).filter(k => [d.size].concat(this.siblings(d).map(x => x.size)).indexOf(k) < 0).length, manySizesLeft: (TPL[d.tpl].sizes || SIZE_ORDER).filter(k => [d.size].concat(this.siblings(d).map(x => x.size)).indexOf(k) < 0).length > 1, pendingSizeLabel: SIZES[s.pendingSize].label,
       sizeStrip: [d].concat(this.siblings(d)).sort((a, b) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)).map(x => { const Z = SIZES[x.size]; const rr = Z.w / Z.h; return { label: Z.label, ratio: Z.ratio, dims: Z.dims, on: x.id === d.id, open: () => { if (x.id !== d.id) this.switchSize(x.id); }, glyph: { width: rr >= 1 ? 16 : Math.round(16 * rr), height: rr >= 1 ? Math.round(16 / rr) : 16 } }; }),
       hasSiblings: this.siblings(d).length > 0, canAddSize: !TPL[d.tpl].sizes && [d.size].concat(this.siblings(d).map(x => x.size)).length < SIZE_ORDER.length,
       syncSizes: s.syncSizes, toggleSync: () => this.setState(st => ({ syncSizes: !st.syncSizes })),

@@ -1603,3 +1603,145 @@ body:has(.gate.is-intro) .app>:not(.gate),body:has(.gate.is-intro) .fab{visibili
 /* The partner remove button is simply 40px, with no invisible extension hanging outside its box. */
 .ptile .prow .btn.icon{width:40px;height:40px;flex:0 0 40px}
 .ptile .prow .btn.icon::after{content:none}
+
+/* ---------- v12 motion, reviewed moving rather than as stills ----------
+   Anything a person triggers settles within about 300ms. A wall of tiles arrives as one gesture, not a queue:
+   the stagger stops after eight tiles, so the last tile of thirty lands with the eighth. Hover answers at once. */
+.grid>.card:not(.offcard),.weekstrip>.weekcard{animation:cascade-tile 300ms var(--out) calc(40ms + min(var(--i,0),8)*30ms) backwards}
+.card .art>.thumbimg,.card .shelf{transition:scale 240ms var(--out)}
+.card .shelf img{transition:translate 240ms var(--out),scale 240ms var(--out)}
+.makeover .mkintro,.makeover .thread{animation-delay:60ms}
+.makeover .composer{animation-delay:100ms}
+.mkchips button:nth-child(n){animation-delay:140ms}.mkchips button:nth-child(2){animation-delay:170ms}.mkchips button:nth-child(3){animation-delay:200ms}.mkchips button:nth-child(n+4){animation-delay:230ms}
+.drawer{animation:drawer-in 220ms var(--out)}
+@media (prefers-reduced-motion:reduce){
+  .grid>.card:not(.offcard),.weekstrip>.weekcard,.makeover .mkintro,.makeover .thread,.makeover .composer,.mkchips button,.drawer,.tplpic img{animation:none}
+  .card .art>.thumbimg,.card .shelf,.card .shelf img{transition:none}
+}
+/* The off-stage copy that picker pictures are drawn from is not the artwork on stage: no entrance, and no share in the move between screens. */
+.boards.stage-boards .offcard [data-canvas]{animation:none;view-transition-name:none}
+
+/* ---------- v12 editor: denser where it can be, so the copy fields come sooner ----------
+   Colourways are a single row of swatches; the name of the one in use sits in the heading, the others on hover. */
+.panel .sect .swatches{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.panel .sect .sw{padding:3px;gap:0;border-radius:6px}
+.panel .sect .sw .mini{height:40px;padding:6px 8px;border-radius:3px}
+.panel .sect .sw .mini b{font-size:15px;line-height:18px}
+.panel .sect .sw .nm{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.panel .stitle .meta{font-weight:400;color:var(--quiet);font-size:13px;line-height:18px}
+/* Size pills and zoom share one line and one centre. On a phone zoom is the pinch you already have, so its buttons go
+   and the sizes scroll sideways in a single row. */
+@media (min-width:861px){.toolbar{align-items:center}}
+@media (max-width:640px){
+  .toolbar>.btn,.toolbar>.zoomv,.toolbar .spacer{display:none}
+  .toolbar{flex-wrap:nowrap}
+  .toolbar .sizestrip{flex:1 1 0;min-width:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .toolbar .sizestrip::-webkit-scrollbar{display:none}
+  .toolbar .sizestrip>*{flex:none}
+}
+/* A chosen option is marked by its ink outline and tick, on a quiet neutral: no colour wash. */
+.tile[aria-checked="true"]{background:var(--hs-field-hover)}
+/* Size tiles: the ratio and pixel size always sit on one line. Figures keep their own widths here (no column to line up),
+   the tracking is closed up, and the tile's padding gives way before the line would break. */
+.tile .dims{white-space:nowrap;letter-spacing:-.01em;font-variant-numeric:normal;font-size:12.5px}
+.tile>span:not(.ratio):not(.added):not(.chk){min-width:0}
+.dialog .tile{gap:14px;padding:16px 14px}
+.dialog .tile .ratio{flex:none}
+@media (max-width:560px){.dialog .tiles{grid-template-columns:1fr}}
+/* The profile picture needs no ring: it is a photograph, and that is edge enough. Keyboard focus still shows. */
+.gfoot .bead.avatar,.gfoot .bead.avatar:hover,.gfoot .bead.avatar[aria-expanded="true"]{outline:0}
+.gfoot .bead.avatar:hover,.gfoot .bead.avatar[aria-expanded="true"]{scale:1.05}
+.gfoot .bead.avatar:focus-visible{outline:2px solid var(--hs-ink);outline-offset:2px}
+/* The stage toolbar answers to its own width, not the screen's: when the publish drawer or a phone leaves it narrow,
+   the zoom buttons step aside and the sizes scroll in one row. */
+main[data-stage],.toolbar{min-width:0}
+.toolbar{container-type:inline-size}
+@container (max-width:560px){
+  .toolbar>.btn,.toolbar>.zoomv,.toolbar .spacer{display:none}
+  .toolbar .sizestrip{flex:1 1 0;min-width:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .toolbar .sizestrip::-webkit-scrollbar{display:none}
+  .toolbar .sizestrip>*{flex:none}
+}
+
+/* ============ v13: soft rounded fields and quiet pills; the brand book reads as a book ============
+   Fields that hold work are rounded and calm, the work inside them keeps its true square corners, and controls are pills. */
+.card .art,.weekcard{border-radius:16px}
+.weekcard .wart{border-radius:10px;overflow:hidden}
+.dialog{border-radius:22px}
+.tile{border-radius:16px}
+.menu{border-radius:14px}
+.tplnow{border-radius:14px}.tplnow .tplpic{border-radius:8px}
+.picopt .tplpic{border-radius:10px}
+.panel .input,.panel .sect .sw{border-radius:10px}.panel .sect .sw .mini{border-radius:7px}
+.filters select.input,.search input.input{border-radius:999px}
+.filters select.input{border:1px solid var(--key);padding-left:16px;background-color:transparent}
+.slot-card{border-radius:14px}
+
+/* ---- brand book ---- */
+.bb .pagehead{margin-bottom:28px}
+/* The cover: the client's own colour, their mark, their line, their palette. The first thing you see is the brand, not a form. */
+.bbcover{position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:18px;min-height:340px;max-width:940px;padding:40px 44px;border-radius:20px;overflow:hidden;animation:cascade var(--t-enter) var(--out) 60ms backwards}
+.bbcover__logo{position:absolute;left:44px;top:40px;width:min(300px,46%);height:76px;display:block}
+.bbcover__logo i{display:block;width:100%;height:100%;-webkit-mask-position:left center!important;mask-position:left center!important}
+.bbcover__name{position:absolute;left:44px;top:36px;font-size:28px;line-height:34px;letter-spacing:-.02em}
+.bbcover__line{margin:0;max-width:16ch;font-size:clamp(34px,4.4vw,60px);line-height:1.02;letter-spacing:-.035em;text-wrap:balance}
+.bbcover__dots{display:flex;gap:8px}
+.bbcover__dots i{width:22px;height:22px;border-radius:999px;box-shadow:0 0 0 1.5px currentColor}
+.bb .bbtop{margin-top:22px}
+.bb .bbscore{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 14px;border-radius:999px;background:var(--hs-surface);font-size:13px;line-height:18px}
+/* Chapters as quiet pills that stay with you down the page. */
+.bb .bbjump{position:sticky;top:0;z-index:6;flex-wrap:nowrap;gap:6px;margin:18px -8px 8px;padding:10px 8px;overflow-x:auto;scrollbar-width:none;background:linear-gradient(var(--hs-page) 78%,transparent)}
+.bb .bbjump::-webkit-scrollbar{display:none}
+.bb .bbjump button{flex:none;height:32px;padding:0 14px;border-radius:999px;background:var(--hs-surface);font-size:13.5px;line-height:18px;color:var(--hs-ink);transition:background-color var(--t) var(--out),color var(--t) var(--out)}
+.bb .bbjump button:hover{background:var(--hs-ink);color:var(--hs-on-ink)}
+/* Chapters breathe: space does the dividing, and each title is one word in the serif. */
+.bb .bbsec{border-top:0;padding:52px 0 20px;grid-template-columns:200px minmax(0,700px);gap:20px 40px;scroll-margin-top:64px}
+.bb .bbsec>h2{font-family:"Quarto",Georgia,serif;font-style:italic;font-weight:500;font-size:30px;line-height:34px;letter-spacing:-.02em}
+.bb .bbsec>h2 span{font-family:"PP Neue Montreal","Helvetica Neue",Helvetica,Arial,sans-serif;font-style:normal;font-weight:400;margin-top:10px;max-width:22ch;color:var(--quiet)}
+/* Read first, edit in place: a value looks like writing until you point at it, then it is a field. */
+.bb .field label,.bb .field .lab{font-size:12.5px;line-height:16px;color:var(--quiet);font-weight:400}
+.bb .bbbody .field .input{border-color:transparent;background:transparent;border-radius:12px;margin-left:-14px;width:calc(100% + 14px);padding-left:14px;padding-right:14px;font-size:17px;line-height:25px;transition:background-color var(--t) var(--out),border-color var(--t) var(--out)}
+.bb .bbbody .field .input:hover{background:var(--hs-surface)}
+.bb .bbbody .field .input:focus{background:var(--hs-surface);border-color:var(--hs-ink);outline:none}
+.bb .bbbody .field textarea.input{field-sizing:content;min-height:54px;max-height:none;height:auto;resize:none;padding-top:8px;padding-bottom:8px}
+.bb .bbbody .field{gap:2px}
+.bb .bbbody{gap:22px}
+.bb #bb-strap{font-size:clamp(26px,2.6vw,36px);line-height:1.12;letter-spacing:-.03em;height:auto;padding-top:8px;padding-bottom:8px}
+.bb #bb-name{font-size:24px;line-height:30px;letter-spacing:-.02em;height:auto;padding-top:8px;padding-bottom:8px}
+/* Colours as swatches you could pin to a wall. */
+.bb .pal{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px}
+.bb .palrow{position:relative;display:flex;flex-direction:column;gap:0;padding:6px 6px 12px;border-radius:18px;background:var(--hs-surface)}
+.bb .palrow .chip{width:100%;height:auto;aspect-ratio:5/4;border-radius:13px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.bb .palrow .input{height:26px;border:0;background:none;padding:0 8px;font-size:15px;line-height:22px;border-radius:8px;margin-top:10px}
+.bb .palrow .input.hex{margin-top:0;height:22px;font-size:12.5px;line-height:18px;color:var(--quiet);letter-spacing:.02em;width:100%}
+.bb .palrow .input:hover,.bb .palrow .input:focus{background:var(--hs-page);outline:none}
+.bb .palrow .btn.icon{position:absolute;top:12px;right:12px;width:30px;height:30px;min-height:0;border-radius:999px;background:rgba(255,255,255,.9);color:#171717;opacity:0;transition:opacity var(--t) var(--out)}
+.bb .palrow:hover .btn.icon,.bb .palrow:focus-within .btn.icon{opacity:1}
+.bb .palrow .btn.icon[disabled]{display:none}
+@media (hover:none){.bb .palrow .btn.icon{opacity:1;width:36px;height:36px}}
+/* Marks, type and pictures sit on the same soft fields as the work. */
+.bb .markbox{border-radius:16px;outline:0;box-shadow:inset 0 0 0 1px var(--key)}
+.bb .types{grid-template-columns:1fr;gap:12px}
+.bb .type{border:0;border-radius:18px;padding:30px 34px;gap:28px;align-items:flex-end}
+.bb .type .spec{flex:0 0 auto;font-size:112px;line-height:.86}
+.bb .type b{display:block;font-size:17px;line-height:24px;font-weight:500}
+.bb .libpic{border-radius:10px;outline:0}
+.bb .libstrip{gap:8px}
+.bb .bblogo .tile{border-radius:16px}
+.bb .wayrow .mini,.bb .ways .mini{border-radius:10px}
+.bb .wayrow .input,.bb .wayrow select.input{border-radius:999px}
+.bb .verdict{font-size:12.5px}
+.bb .tplrows{border-radius:18px;overflow:hidden}
+.bb .person{border-radius:14px}
+@media (max-width:860px){
+  .bbcover{min-height:260px;padding:28px 24px;border-radius:16px}
+  .bbcover__logo{left:24px;top:26px;height:56px}.bbcover__name{left:24px;top:24px}
+  .bb .bbsec{grid-template-columns:1fr;padding-top:36px}
+  .bb .bbsec>h2 span{max-width:none}
+}
+@media (prefers-reduced-motion:reduce){.bbcover{animation:none}}
+/* The brand book's preview is artwork, not a field: true corners. The strapline is read on the cover, and edited here at a calmer size. */
+.bbcard .art,.bbcard:hover .art,.boards.bbpreview .card .art{border-radius:0}
+.bb #bb-strap{font-size:22px;line-height:28px;letter-spacing:-.02em}
+.bb .palrow .input.hex{letter-spacing:0;font-variant-numeric:normal}
+.card.bbcard,.card.bbcard .art,.card.bbcard .art>*{border-radius:0!important}
