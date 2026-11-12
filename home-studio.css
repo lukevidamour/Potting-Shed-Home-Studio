@@ -1797,3 +1797,4 @@ main[data-stage],.toolbar{min-width:0}
 .input,.title-in,.projtitle,.cal .chip,.calcell .chip,.bb .bbbody .field .input,.bb .palrow .input,.drawer .input{border-radius:10px}
 .search input.input{border-radius:0}
 .filters select.input,.bb .wayrow .input,.bb .wayrow select.input{border-radius:999px}
+.emptyacts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}

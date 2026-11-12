@@ -11,13 +11,13 @@
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261112zc"></script>
+<script src="home-studio.lib.js?v=20261112zd"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261112zc">
+<link rel="stylesheet" href="home-studio.css?v=20261112zd">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -88,6 +88,7 @@
               <div class="menu" role="menu">
                 <div class="mlabel">Ed · saved in this browser</div>
                 <button role="menuitem" onClick="{{ toggleTheme }}">{{ themeToggleLabel }}</button>
+                <sc-if value="{{ canRestoreExamples }}"><button role="menuitem" onClick="{{ restoreExamples }}">Bring back the examples</button></sc-if>
                 <button role="menuitem" onClick="{{ signOut }}">Sign out</button>
               </div>
             </sc-if>
@@ -299,7 +300,7 @@
             </div>
           </div>
           <sc-if value="{{ noProjectsShown }}">
-            <div class="empty" style="margin-top:24px"><svg class="illo" viewBox="0 0 120 80" aria-hidden="true"><rect x="8" y="14" width="56" height="52" rx="6"/><rect x="40" y="6" width="56" height="40" rx="6"/><path d="M52 66V46h32"/><circle cx="24" cy="30" r="5"/></svg><p>{{ emptyProjectsMsg }}</p><sc-if value="{{ pillActive }}"><button class="btn primary" onClick="{{ newArtwork }}">New artwork</button></sc-if></div>
+            <div class="empty" style="margin-top:24px"><svg class="illo" viewBox="0 0 120 80" aria-hidden="true"><rect x="8" y="14" width="56" height="52" rx="6"/><rect x="40" y="6" width="56" height="40" rx="6"/><path d="M52 66V46h32"/><circle cx="24" cy="30" r="5"/></svg><p>{{ emptyProjectsMsg }}</p><sc-if value="{{ pillActive }}"><div class="emptyacts"><button class="btn primary" onClick="{{ newArtwork }}">New artwork</button><sc-if value="{{ canRestoreExamples }}"><button class="btn" onClick="{{ restoreExamples }}">Bring back the examples</button></sc-if></div></sc-if></div>
           </sc-if>
         </div>
       </sc-if>
@@ -359,7 +360,7 @@
               </div>
             </div></div></sc-if>
           <sc-if value="{{ noDrafts }}">
-            <div class="empty" style="margin-top:32px"><svg class="illo" viewBox="0 0 120 80" aria-hidden="true"><rect x="8" y="14" width="56" height="52" rx="6"/><rect x="40" y="6" width="56" height="40" rx="6"/><path d="M52 66V46h32"/><circle cx="24" cy="30" r="5"/></svg><p>Your artwork will live here. Let's make the first one.</p><button class="btn primary" onClick="{{ newArtwork }}">New artwork</button></div>
+            <div class="empty" style="margin-top:32px"><svg class="illo" viewBox="0 0 120 80" aria-hidden="true"><rect x="8" y="14" width="56" height="52" rx="6"/><rect x="40" y="6" width="56" height="40" rx="6"/><path d="M52 66V46h32"/><circle cx="24" cy="30" r="5"/></svg><p>Your artwork will live here. Let's make the first one.</p><div class="emptyacts"><button class="btn primary" onClick="{{ newArtwork }}">New artwork</button><sc-if value="{{ canRestoreExamples }}"><button class="btn" onClick="{{ restoreExamples }}">Bring back the examples</button></sc-if></div></div>
           </sc-if>
         </div>
       </sc-if>
@@ -1253,10 +1254,7 @@ class Component extends DCLogic {
       // An earlier example set that nobody has scheduled or sent for approval is replaced, not doubled up.
       const olds = projects.filter(p => p.example).map(p => p.id), oldDrafts = drafts.filter(d => olds.indexOf(d.projectId) >= 0);
       if (olds.length && !oldDrafts.some(d => d.scheduledAt || (d.approval && d.approval.status && d.approval.status !== "none"))) { projects = projects.filter(p => olds.indexOf(p.id) < 0); drafts = drafts.filter(d => olds.indexOf(d.projectId) < 0); }
-      const ex = PACK.seed({
-        project: (name, brief) => { const p = newProject(name, brief, ""); p.example = true; return p; },
-        design: (p, tpl, title, theme, copy, pics, layout) => { const d = newDesign(tpl, (TPL[tpl].sizes || ["square"])[0], p.id); d.title = title; d.theme = theme; d.layout = layout || 0; d.copy = Object.assign({}, d.copy, copy || {}); d.images = {}; Object.keys(pics || {}).forEach(k => { const im = libImg(pics[k]); if (im) d.images[k] = im; }); d.images = fillImages(d); return d; }
-      });
+      const ex = PACK.seed(this.packSeedApi());
       const st = PACK.seedThumbs;
       if (st && ex.drafts.length === st.n) { ex.drafts.forEach((d, i) => { d.seedN = i; }); seeded = seeded.concat(ex.drafts.map(d => [d.id, st.dir + ("0" + d.seedN).slice(-2) + ".webp"])); }
       projects = projects.concat(ex.projects); drafts = drafts.concat(ex.drafts);
@@ -1621,7 +1619,7 @@ class Component extends DCLogic {
       ["Make", "New artwork", "", () => this.goTemplates()], ["Make", "New project", "", () => this.openNewProject()], ["Make", "Describe it to the assistant", "", () => this.goMake()],
       ["Go to", "Drafts", "", () => this.goProjects()], ["Go to", "All designs", "", () => this.goDesigns()], ["Go to", "Calendar", "", () => this.goCalendar()], ["Go to", "Brand book", "", () => this.goBrand()],
       ["Look", s.theme === "dark" ? "Light mode" : "Dark mode", "", () => this.setTheme(s.theme === "dark" ? "light" : "dark")]
-    ].concat(wsList().filter(w => w.id !== WS_ID).map(w => ["Client", "Switch to " + w.name, "", () => this.switchClient(w.id)]));
+    ].concat((q || !s.drafts.length) && (WS_ID === DEFAULT_WS || (PACK && WS_ID === PACK.id)) ? [["Make", "Bring back the example designs", "", () => this.restoreExamples(), "restore examples reinstate deleted samples templates"]] : []).concat(wsList().filter(w => w.id !== WS_ID).map(w => ["Client", "Switch to " + w.name, "", () => this.switchClient(w.id)]));
     const projects = s.projects.filter(p => !p.archived).map(p => ["Project", p.name, "", () => this.setState({ view: "project", projectId: p.id, reviewOpen: false })]);
     const seen = {}, designs = s.drafts.slice().sort((a, b) => b.updatedAt - a.updatedAt).filter(d => { const k = d.familyId || d.id; if (seen[k]) return false; seen[k] = 1; return true; }).map(d => ["Design", this.baseTitle(d.title), TPL[d.tpl] ? TPL[d.tpl].short || TPL[d.tpl].name : "", () => this.openDesign(d, false), [d.copy.headline, d.copy.name, d.copy.body].join(" ")]);
     const hit = (x) => !q || (x[1] + " " + x[0] + " " + (x[4] || "")).toLowerCase().indexOf(q) >= 0, rank = (x) => x[1].toLowerCase().indexOf(q) === 0 ? 0 : 1;
@@ -1741,7 +1739,7 @@ class Component extends DCLogic {
       closeClient: () => this.setState({ clientDialog: null }), saveClient: this.saveClient,
       gateOpen: !!s.gate, gateClass: s.gate === "open" ? "is-intro" : "is-down", gateStyle: { "--gate-c": s.gateColor },
       enterApp: this.enterApp,
-      userMenuOpen: s.userMenuOpen, toggleUserMenu: this.toggleUserMenu, signOut: this.signOut, logoTap: this.logoTap,
+      userMenuOpen: s.userMenuOpen, toggleUserMenu: this.toggleUserMenu, signOut: this.signOut, canRestoreExamples: WS_ID === DEFAULT_WS || !!(PACK && WS_ID === PACK.id && PACK.seed), restoreExamples: this.restoreExamples, logoTap: this.logoTap,
       isMake: s.makeOpen, goMake: this.goMake, closeMake: this.closeMake, makeEmpty: s.chat.length === 0, fabShow: view !== "editor" && !s.makeOpen && !s.gate,
       makeText: s.makeText, makeSetText: (e) => { this.growComposer(e.target); this.setState({ makeText: e.target.value }); }, makeSubmit: (e) => { e.preventDefault(); this.makeSend(); },
       makeKeys: (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); this.makeSend(); } },
@@ -1958,6 +1956,40 @@ class Component extends DCLogic {
     const mark = e && e.currentTarget && e.currentTarget.querySelector(".mark");
     if (mark && mark.animate) mark.animate([{ transform: "scale(1)" }, { transform: "scale(1.06, .94)", offset: 0.3 }, { transform: "scale(.98, 1.03)", offset: 0.6 }, { transform: "scale(1)" }], { duration: 420, easing: "cubic-bezier(.2,.8,.2,1)" });
     this.goProjects();
+  };
+
+  /* ---------- the example designs ---------- */
+  packSeedApi() {
+    return {
+      project: (name, brief) => { const p = newProject(name, brief, ""); p.example = true; return p; },
+      design: (p, tpl, title, theme, copy, pics, layout) => { const d = newDesign(tpl, (TPL[tpl].sizes || ["square"])[0], p.id); d.title = title; d.theme = theme; d.layout = layout || 0; d.copy = Object.assign({}, d.copy, copy || {}); d.images = {}; Object.keys(pics || {}).forEach(k => { const im = libImg(pics[k]); if (im) d.images[k] = im; }); d.images = fillImages(d); return d; }
+    };
+  }
+  /* The full example set for this client, freshly made, with the ready-made thumbnail that belongs to each design. */
+  exampleSet() {
+    let ex = null, st = null;
+    if (WS_ID === DEFAULT_WS) { ex = seedExamples([]); st = SEED_THUMBS; }
+    else if (PACK && WS_ID === PACK.id && PACK.seed) { ex = PACK.seed(this.packSeedApi()); st = PACK.seedThumbs || null; }
+    if (!ex) return null;
+    const pics = {}; if (st && ex.drafts.length === st.n) ex.drafts.forEach((d, i) => { d.seedN = i; pics[d.id] = st.dir + ("0" + i).slice(-2) + ".webp"; });
+    return { projects: ex.projects, drafts: ex.drafts, pics };
+  }
+  /* Bring back any example that has been deleted. Nothing that exists is touched: an example project that is still here
+     keeps its designs and only regains the ones that are missing; a deleted project comes back whole. */
+  restoreExamples = () => {
+    const set = this.exampleSet(); if (!set) return;
+    let projects = this.state.projects.slice(), drafts = this.state.drafts.slice(); const thumbs = Object.assign({}, this.state.thumbs); let added = 0;
+    set.projects.forEach(ep => {
+      const mine = set.drafts.filter(d => d.projectId === ep.id), here = projects.find(p => p.name === ep.name);
+      if (!here) { projects.push(ep); mine.forEach(d => { drafts.push(d); if (set.pics[d.id]) thumbs[d.id] = set.pics[d.id]; added++; }); return; }
+      const titles = new Set(drafts.filter(d => d.projectId === here.id).map(d => d.title));
+      mine.filter(d => !titles.has(d.title)).forEach(d => { const c = Object.assign({}, d, { projectId: here.id }); drafts.push(c); if (set.pics[d.id]) thumbs[c.id] = set.pics[d.id]; added++; });
+      if (here.archived && mine.length && !ep.archived) projects = projects.map(p => p.id === here.id ? Object.assign({}, p, { archived: false }) : p);
+    });
+    if (!added) return this.showToast("Every example is already here.");
+    try { Store.set(PROJECTS_KEY, projects); this.persistDrafts(drafts); Store.set(THUMBS_KEY, thumbs); } catch (e) {}
+    this.setState({ projects, drafts, thumbs, menuId: null });
+    this.showToast(added + (added === 1 ? " example is back." : " examples are back."));
   };
 
   /* ---------- welcome gate and the curtain ---------- */
@@ -2893,7 +2925,7 @@ class Component extends DCLogic {
       q: s.q, setQ: (e) => this.setState({ q: e.target.value, menuId: null }), clearQ: () => this.setState({ q: "" }),
       isGrid: s.layout === "grid", pickGrid: () => { this.setState({ layout: "grid" }); this.say("Grid view"); }, pickList: () => { this.setState({ layout: "list" }); this.say("List view"); },
       boards,
-      noDrafts: s.drafts.length === 0,
+      noDrafts: s.drafts.length === 0, canRestoreExamples: WS_ID === DEFAULT_WS || !!(PACK && WS_ID === PACK.id && PACK.seed), restoreExamples: this.restoreExamples,
       /* projects */
       hasWeek: view === "projects" && weekItems.length > 0, weekCount: weekItems.length, weekItems,
       pillActive: s.pill === "active", pickActive: () => this.setState({ pill: "active", menuId: null }), pickArchived: () => this.setState({ pill: "archived", menuId: null }),
