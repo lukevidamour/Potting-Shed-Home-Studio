@@ -11,13 +11,13 @@
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261112zd"></script>
+<script src="home-studio.lib.js?v=20261112zf"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261112zd">
+<link rel="stylesheet" href="home-studio.css?v=20261112zf">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -1827,7 +1827,7 @@ class Component extends DCLogic {
     const close = (refocus) => { document.removeEventListener("mousedown", away, true); window.removeEventListener("resize", onMove); window.removeEventListener("scroll", onMove, true); menu.remove(); sel.removeAttribute("data-open"); this._selMenu = null; if (refocus) sel.focus(); };
     const choose = (i) => { const o = opts[i]; if (o && !o.disabled && sel.value !== o.value) { Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(sel, o.value); sel.dispatchEvent(new Event("change", { bubbles: true })); } close(true); };
     const away = (e) => { if (!menu.contains(e.target)) { const same = e.target === sel; close(false); if (same) { e.preventDefault(); e.stopPropagation(); } } };
-    const onMove = (e) => { if (e && e.target && menu.contains(e.target)) return; close(false); };
+    const onMove = (e) => { if (e && e.target instanceof Node && menu.contains(e.target)) return; close(false); }; // a window resize has the window as its target, which is not a node
     items.forEach((b, i) => b.addEventListener("click", () => choose(i)));
     menu.addEventListener("keydown", (e) => {
       const cur = items.indexOf(document.activeElement);

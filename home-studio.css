@@ -1798,3 +1798,20 @@ main[data-stage],.toolbar{min-width:0}
 .search input.input{border-radius:0}
 .filters select.input,.bb .wayrow .input,.bb .wayrow select.input{border-radius:999px}
 .emptyacts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+
+/* ============ v15: menus follow the theme. Light in light mode, dark in dark mode: a menu is part of the surface it
+   opens from, not an inverted panel. Flat, with a hairline to lift it off whatever is underneath. ============ */
+.menu,:root[data-theme="dark"] .menu{background:var(--hs-surface);color:var(--hs-ink);border:1px solid var(--hs-menu-line)}
+:root{--hs-menu-line:rgba(23,23,23,.16);--hs-menu-hover:#EDEDEA}
+:root[data-theme="dark"]{--hs-menu-line:rgba(255,255,255,.16);--hs-menu-hover:#2E2E2C}
+:root[data-theme="dark"] .menu{background:#1F1F1E}
+.menu button,:root[data-theme="dark"] .menu button{color:inherit}
+.menu button:hover,:root[data-theme="dark"] .menu button:hover,
+.menu button[role="menuitemradio"][aria-checked="true"]:hover,
+.menu.selmenu button:focus-visible,:root[data-theme="dark"] .menu.selmenu button:focus-visible{background:var(--hs-menu-hover)}
+.menu button:focus-visible{outline:2px solid var(--hs-ink);outline-offset:-2px}
+.menu button.danger{color:#B3261E}
+:root[data-theme="dark"] .menu button.danger{color:#FFADA2}
+.menu .mlabel{color:var(--quiet)}
+.menu .msep{background:var(--hs-menu-line)}
+.menu button[role="menuitemradio"][aria-checked="true"]::after,:root[data-theme="dark"] .menu button[role="menuitemradio"][aria-checked="true"]::after{border-color:currentColor}
