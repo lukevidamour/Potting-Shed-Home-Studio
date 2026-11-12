@@ -11,13 +11,13 @@
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261112zg"></script>
+<script src="home-studio.lib.js?v=20261112zl"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261112zg">
+<link rel="stylesheet" href="home-studio.css?v=20261112zl">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -1247,7 +1247,7 @@ class Component extends DCLogic {
     if (drafts.some(d => !d.familyId)) { drafts = drafts.map(d => d.familyId ? d : Object.assign({}, d, { familyId: uid("f") })); try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
     // Thumbnails live in their own store; lift any that older drafts carried inline.
     let thumbs = Store.get(THUMBS_KEY, {});
-    Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || !(realThumb(v) ? v.length >= 1500 : /^assets\/[\w\/-]+\.(?:jpg|webp)$/.test(v))) delete thumbs[k]; });
+    Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || !(realThumb(v) ? v.length >= 5000 : /^assets\/[\w\/-]+\.(?:jpg|webp)$/.test(v))) delete thumbs[k]; });
     if (drafts.some(d => d.thumb)) { drafts.forEach(d => { if (d.thumb) thumbs[d.id] = d.thumb; }); drafts = drafts.map(d => { const c = Object.assign({}, d); delete c.thumb; return c; }); try { Store.set(THUMBS_KEY, thumbs); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
     const seedKey = PACK ? "hs-seed-pack" + ((PACK.seedVersion || 1) > 1 ? "-" + PACK.seedVersion : "") : "";
     if (PACK && WS_ID === PACK.id && PACK.seed && !Store.raw(seedKey)) {
@@ -1391,7 +1391,7 @@ class Component extends DCLogic {
       const stage = document.querySelector("main[data-stage]");
       const S = SIZES[s.design.size];
       if (stage && stage.clientWidth) {
-        const pad = stage.clientWidth < 1100 ? 48 : 64;
+        const pad = stage.clientWidth < 700 ? 20 : stage.clientWidth < 1100 ? 48 : 64;
         const fit = Math.min((stage.clientWidth - pad) / S.w, (stage.clientHeight - pad) / S.h, 1);
         if (fit > 0 && Math.abs(fit - s.fitScale) > 0.002) patch.fitScale = fit;
       }
@@ -1962,6 +1962,8 @@ class Component extends DCLogic {
   packSeedApi() {
     return {
       project: (name, brief) => { const p = newProject(name, brief, ""); p.example = true; return p; },
+      // the same design in other formats, grouped as one family so its tile shows them layered
+      sizes: (d, keys) => { if (!d.familyId) d.familyId = uid("f"); return keys.filter(k => SIZES[k] && k !== d.size).map(k => Object.assign(JSON.parse(JSON.stringify(d)), { id: uid("d"), size: k, title: d.title + " · " + SIZES[k].label })); },
       design: (p, tpl, title, theme, copy, pics, layout) => { const d = newDesign(tpl, (TPL[tpl].sizes || ["square"])[0], p.id); d.title = title; d.theme = theme; d.layout = layout || 0; d.copy = Object.assign({}, d.copy, copy || {}); d.images = {}; Object.keys(pics || {}).forEach(k => { const im = libImg(pics[k]); if (im) d.images[k] = im; }); d.images = fillImages(d); return d; }
     };
   }
@@ -2222,13 +2224,20 @@ class Component extends DCLogic {
   scheduleThumb() { clearTimeout(this._thumbT); this._thumbT = setTimeout(() => { if (this.state.view === "editor") this.captureThumb(); }, 2500); }
   /* Cards without a stored thumbnail render live artwork; capture them one at a time so later visits are cheap. */
   async thumbBacklog() {
-    if (this._thumbBusy || this.state.view === "editor") return;
+    if (this._thumbBusy || this.state.view === "editor" || this.state.gate) return; // never while the sign-in screen is up: the app behind it is hidden, and hidden artwork photographs as a flat colour
     const tried = this._thumbTried || (this._thumbTried = new Set());
-    const node = Array.from(document.querySelectorAll("[data-canvas='0'][data-design]")).find(n => { const id = n.getAttribute("data-design"); return !realThumb(this.state.thumbs[id]) && !tried.has(id) && this.state.drafts.some(x => x.id === id); });
+    const node = Array.from(document.querySelectorAll("[data-canvas='0'][data-design]")).find(n => { const id = n.getAttribute("data-design"); if (getComputedStyle(n).visibility === "hidden") return false; return !realThumb(this.state.thumbs[id]) && !tried.has(id) && this.state.drafts.some(x => x.id === id); });
     if (!node) return;
     const d = this.state.drafts.find(x => x.id === node.getAttribute("data-design")); if (!d) return;
-    this._thumbBusy = true; this._thumbBusyId = d.id; tried.add(d.id); // one attempt per visit: a capture that cannot be stored must not loop
-    try { const url = await this.renderThumb(node, d); if (node.isConnected && node.getAttribute("data-design") === d.id) this.storeThumb(d.id, url); } catch (e) {}
+    this._thumbBusy = true; this._thumbBusyId = d.id;
+    const goes = this._thumbGoes || (this._thumbGoes = {}); goes[d.id] = (goes[d.id] || 0) + 1;
+    if (goes[d.id] >= 2) tried.add(d.id); // two attempts per visit at most: a capture that cannot be stored must not loop
+    try {
+      const ready = await this.settleArt(node);
+      const url = ready ? await this.renderThumb(node, d) : "";
+      // a picture this small is a flat colour, not artwork: leave it for the second attempt rather than keep it
+      if (url && url.length >= 5000 && node.isConnected && node.getAttribute("data-design") === d.id) { this.storeThumb(d.id, url); tried.add(d.id); }
+    } catch (e) {}
     this._thumbBusy = false; this._thumbBusyId = null;
     this.setState({ thumbTick: (this.state.thumbTick || 0) + 1 }); // draw the next missing one
     setTimeout(() => this.thumbBacklog(), 120);
@@ -2298,6 +2307,16 @@ class Component extends DCLogic {
     const picks = this._picks || (this._picks = new Map()), last = this._pickLast || (this._pickLast = {});
     out.forEach(o => { o.sig = this.pickSig(o.v); const url = picks.get(o.sig); if (url) last[o.key] = url; o.pic = url || last[o.key] || ""; o.fresh = picks.has(o.sig); });
     return out;
+  }
+  /* Before any artwork is photographed it must actually be there: on the page, laid out, not mid-entrance, pictures arrived.
+     The first tile drawn after a design is made used to be caught a moment too early and came out as a flat colour. */
+  async settleArt(node) {
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    for (let i = 0; i < 30 && node.isConnected && !node.querySelector("[data-fit],[data-field]"); i++) await new Promise(r => setTimeout(r, 50));
+    await Promise.all(Array.from(node.querySelectorAll("img")).map(im => im.complete ? 0 : new Promise(r => { im.addEventListener("load", r, { once: true }); im.addEventListener("error", r, { once: true }); setTimeout(r, 3000); })));
+    await Promise.all((node.getAnimations ? node.getAnimations({ subtree: true }) : []).filter(a => a.effect && a.effect.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {})));
+    return node.isConnected && getComputedStyle(node).visibility !== "hidden";
   }
   async pickBacklog() {
     const w = this._pickWant; if (this._pickBusy || !w || this.state.view !== "editor") return;
@@ -2898,7 +2917,7 @@ class Component extends DCLogic {
     const delDesigns = s.deleteKind === "project" && delTarget ? this.projectDesigns(delTarget.id).length : 0;
     const out = {
       viewClass: (isEditor ? "is-editor" : "is-" + view) + (s.arriving ? " is-arriving" : "") + (s.gate ? " is-gated" : "") + (this.freshView(view) ? " is-fresh" : ""),
-      appStyle: isEditor && d ? { "--stage-tint": (BRAND.themes[d.theme] || BRAND.themes[0]).ground } : {},
+      appStyle: isEditor && d ? { "--stage-tint": (BRAND.themes[d.theme] || BRAND.themes[0]).ground, "--art-ar": String(SIZES[d.size].w / SIZES[d.size].h) } : {},
       isProjects: view === "projects", isProject: view === "project" && !!project, isTemplates: view === "templates" && !!project,
       isDesigns: view === "designs", isLibrary: view === "library", isCalendar: view === "calendar", isSize: view === "size", isEditor,
       ...this.brandVals(),

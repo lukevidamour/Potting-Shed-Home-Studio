@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Consolidate a stylesheet that has grown in layers into one section per component, without changing what it does.
 
-    python3 tools/css_consolidate.py home-studio.css out.css [--pin a,b,c]
+    python3 tools/css_consolidate.py home-studio.css out.css
 
 1. Every rule is read with its conditions (@media, @container). Selector lists that span components are split, which
    changes nothing: `a, b { x }` and `a { x } b { x }` are the same.
 2. A declaration that the same selector overrides later under the same conditions can never win, so it is removed.
-3. Rules are gathered by component, keeping their original order inside each component. Components are ordered by where
-   their last rule stood, so "later layers win" still holds between components wherever it did.
+3. An earlier rule is merged into the last rule that has the same selectors and conditions, declaration by declaration,
+   and only where no rule in between sets that property at the same weight, so no other rule can change from winning to
+   losing. Rule order is otherwise untouched.
 Prove the result with tools/qa/snap.mjs (record before, record after, compare)."""
 import re, sys
 from collections import OrderedDict, defaultdict
@@ -104,64 +105,87 @@ def component(sel):
     return 'base'
 
 
+def specificity(sel):
+    """(ids, classes, elements) of one selector; :not/:is/:has count their most specific argument, :where counts nothing."""
+    s = re.sub(r'::?(before|after|placeholder|selection|first-line|first-letter|-webkit-[\w-]+|-moz-[\w-]+)', ' E ', sel)
+    def inner(m):
+        fn, args = m.group(1), m.group(2)
+        if fn == 'where': return ''
+        best = max((specificity(a) for a in split_top(args, ',')), default=(0, 0, 0))
+        return ' ' + '#' * best[0] + '.' * 0 + ''.join(' .x' for _ in range(best[1])) + ''.join(' e' for _ in range(best[2])) + ''.join(' #x' for _ in range(0))
+    prev = None
+    while prev != s:
+        prev = s; s = re.sub(r':(not|is|has|where)\(((?:[^()]|\([^()]*\))*)\)', inner, s)
+    s = re.sub(r':(nth-[\w-]+|lang|dir)\([^)]*\)', ':x', s)
+    a = len(re.findall(r'#[\w-]+', s)); b = len(re.findall(r'\.[\w-]+|\[[^\]]*\]|:[\w-]+', s))
+    c = len(re.findall(r'(?:^|[\s>+~])([a-zA-Z][\w-]*)', re.sub(r'\.[\w-]+|\[[^\]]*\]|:[\w-]+|#[\w-]+', '', ' ' + s)))
+    return (a, b, c)
+
+
+def covers(q, p):
+    return q == p or p in SHORT.get(q, ()) or q in SHORT.get(p, ())
+
+
 def main():
     src, dst = sys.argv[1], sys.argv[2]
-    pins = sys.argv[sys.argv.index('--pin') + 1].split(',') if '--pin' in sys.argv else []
     text = open(src).read()
     items, notes = [], []
     parse(text, (), items, notes)
-    rules = []
-    for pos, it in enumerate(items):
-        if 'raw' in it: it['pos'] = pos; it['comp'] = 'motion' if it.get('at', '').startswith('@keyframes') else 'base'; rules.append(it); continue
-        groups = OrderedDict()
-        for s in it['sels']: groups.setdefault(component(s), []).append(s)
-        for gi, (comp, sels) in enumerate(groups.items()):
-            rules.append({'sels': sels, 'decls': [d[:] for d in it['decls']], 'ctx': it['ctx'], 'notes': it['notes'] if gi == 0 else [], 'pos': pos, 'comp': comp})
-    # dead declarations: overridden later by the same selector under the same conditions
-    later = defaultdict(list)  # (ctx, selector) -> [(index, prop, important)]
+    rules = [dict(it, pos=pos) for pos, it in enumerate(items)]
+    # 1. dead declarations: overridden later by the same selector under the same conditions
+    later = defaultdict(list)
     for idx, r in enumerate(rules):
         if 'raw' in r: continue
-        for s in r['sels']:
-            for p, v, imp in r['decls']: later[(r['ctx'], s)].append((idx, p, imp))
+        for sl in r['sels']:
+            for p, v, imp in r['decls']: later[(r['ctx'], sl)].append((idx, p, imp))
     removed = 0
     for idx, r in enumerate(rules):
         if 'raw' in r: continue
         keep = []
         for di, (p, v, imp) in enumerate(r['decls']):
-            dead_everywhere = True
-            if any(q == p or p in SHORT.get(q, ()) for q, _, _ in r['decls'][di + 1:] if True) and any((q == p or p in SHORT.get(q, ())) and (i2 >= imp) for q, _, i2 in r['decls'][di + 1:]):
-                removed += 1; continue                                   # overridden further down the same rule
-            for s in r['sels']:
-                if not any(j > idx and (q == p or p in SHORT.get(q, ())) and (i2 or not imp) for j, q, i2 in later[(r['ctx'], s)]): dead_everywhere = False; break
-            if dead_everywhere: removed += 1
+            if any((q == p or p in SHORT.get(q, ())) and (i2 or not imp) for q, _, i2 in r['decls'][di + 1:]): removed += 1; continue
+            if all(any(j > idx and (q == p or p in SHORT.get(q, ())) and (i2 or not imp) for j, q, i2 in later[(r['ctx'], sl)]) for sl in r['sels']): removed += 1
             else: keep.append([p, v, imp])
         r['decls'] = keep
+    # 2. one rule per selector: an earlier rule's declarations move into the last rule with the same selectors and conditions,
+    #    but only when nothing in between could then lose to them (no rule in between sets that property at equal weight)
+    spec = {}
+    for r in rules:
+        if 'raw' not in r: r['spec'] = set(specificity(x) for x in r['sels'])
+    last = {}
+    for idx, r in enumerate(rules):
+        if 'raw' not in r: last[(r['ctx'], tuple(r['sels']))] = idx
+    moved = 0
+    for idx, r in enumerate(rules):
+        if 'raw' in r or not r['decls']: continue
+        tgt = last[(r['ctx'], tuple(r['sels']))]
+        if tgt == idx: continue
+        between = [x for x in rules[idx + 1:tgt] if 'raw' not in x and x['decls'] and (x['spec'] & r['spec'])]
+        stay, go = [], []
+        for d in r['decls']:
+            (stay if any(covers(q, d[0]) and i2 == d[2] for x in between for q, _, i2 in x['decls']) else go).append(d)
+        if go:
+            # they go in front of the last rule's own declarations, so those still win
+            rules[tgt]['decls'] = go + rules[tgt]['decls']; rules[tgt]['notes'] = r.get('notes', []) + rules[tgt].get('notes', []) if not stay else rules[tgt].get('notes', [])
+            r['decls'] = stay; moved += len(go)
+            if not stay: r['notes'] = []
     rules = [r for r in rules if 'raw' in r or r['decls']]
-    # keyframes: the last definition of a name is the one in force
     lastkf = {}
     for idx, r in enumerate(rules):
         if 'raw' in r and r.get('at', '').startswith('@keyframes'): lastkf[r['at']] = idx
     rules = [r for idx, r in enumerate(rules) if not ('raw' in r and r.get('at', '').startswith('@keyframes') and lastkf[r['at']] != idx)]
-    # gather by component; components ordered by where their last rule stood
-    comps = OrderedDict()
-    for r in rules: comps.setdefault(r['comp'], []).append(r)
-    order = sorted(comps, key=lambda c: (0 if c == 'tokens' else 1 if c == 'base' else 2 if c == 'motion' else 3, pins.index(c) if c in pins else -1, max(x['pos'] for x in comps[c]) if c not in pins else 0))
-    order = [c for c in order if c not in pins] + [c for c in pins if c in comps]
-    out = ['/* Home Studio styles. One section per component, in the order that later sections may override earlier ones.\n   Made from the layered stylesheet by tools/css_consolidate.py; edit a component in its own section. */\n']
-    for c in order:
-        out.append('\n/* ===== ' + c + ' ===== */')
-        cur = ()
-        for r in comps[c]:
-            if r['ctx'] != cur:
-                out.extend('}' for _ in cur); cur = r['ctx']; out.extend(a + '{' for a in cur)
-            for nt in r.get('notes', []):
-                if re.match(r'/\*\s*(=+|-{4,})', nt) and len(nt) < 90: continue      # bare layer banners
-                out.append(('  ' if cur else '') + nt)
-            if 'raw' in r: out.append(('  ' if cur else '') + r['raw'])
-            else: out.append(('  ' if cur else '') + ','.join(r['sels']) + '{' + ';'.join(p + ':' + v for p, v, _ in r['decls']) + '}')
-        out.extend('}' for _ in cur)
+    out = ['/* Home Studio styles. Each selector is written once wherever that is safe: a later rule for the same selector has\n   absorbed the earlier ones, and declarations that could never win have been removed (tools/css_consolidate.py).\n   Order still matters between different selectors of equal weight, so add to a component beside its existing rules. */\n']
+    cur = ()
+    for r in rules:
+        if r['ctx'] != cur:
+            out.extend('}' for _ in cur); cur = r['ctx']; out.extend(a + '{' for a in cur)
+        for nt in r.get('notes', []): out.append(('  ' if cur else '') + nt)
+        if 'raw' in r: out.append(('  ' if cur else '') + r['raw'])
+        else: out.append(('  ' if cur else '') + ','.join(r['sels']) + '{' + ';'.join(p + ':' + v for p, v, _ in r['decls']) + '}')
+    out.extend('}' for _ in cur)
     open(dst, 'w').write('\n'.join(out) + '\n')
-    print(f'{len(items)} rules read, {removed} dead declarations removed, {len(rules)} rules written in {len(order)} components; {len(text) // 1024}KB -> {len(open(dst).read()) // 1024}KB')
+    sels = [tuple(r['sels']) + r['ctx'] for r in rules if 'raw' not in r]
+    print(f'{len(items)} rules read; {removed} dead declarations removed; {moved} declarations merged into their selector\'s last rule; {len(rules)} rules written ({len(sels) - len(set(sels))} selectors still appear more than once, kept apart for safety); {len(text) // 1024}KB -> {len(open(dst).read()) // 1024}KB')
 
 
 if __name__ == '__main__':
