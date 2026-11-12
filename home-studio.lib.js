@@ -84,95 +84,95 @@ const BRAND = {
     { id: "tk-oliver-le-brun", name: "Oliver Le Brun — speaker portrait", src: "assets/photos/oliver-le-brun.webp", group: "Speakers" },
     { id: "tk-austin-gibbs", name: "Austin Gibbs — speaker portrait", src: "assets/photos/austin-gibbs.webp", group: "Speakers" },
     { id: "tk-dr-omar", name: "Dr Omar — speaker portrait", src: "assets/photos/dr-omar.webp", group: "Speakers" },
-    { id: "tk-serena-guthrie-cutout", name: "Serena Guthrie — cut-out", src: "assets/photos/serena-guthrie-cutout.png", group: "Speakers" },
-    { id: "tk-serena-guthrie", name: "Serena Guthrie — portrait", src: "assets/photos/serena-guthrie.jpg", group: "Speakers" },
-    { id: "tk-tim-huelin-cutout", name: "Tim Huelin — cut-out", src: "assets/photos/tim-huelin-cutout.png", group: "Speakers" },
+    { id: "tk-serena-guthrie-cutout", name: "Serena Guthrie — cut-out", src: "assets/photos/serena-guthrie-cutout.webp", group: "Speakers" },
+    { id: "tk-serena-guthrie", name: "Serena Guthrie — portrait", src: "assets/photos/serena-guthrie.webp", group: "Speakers" },
+    { id: "tk-tim-huelin-cutout", name: "Tim Huelin — cut-out", src: "assets/photos/tim-huelin-cutout.webp", group: "Speakers" },
     { id: "tk-event-photo-bw", name: "Event — audience, black and white", src: "assets/photos/event-photo-bw.webp", group: "Events" },
     { id: "tk-audience-photo-bw", name: "Audience — black and white", src: "assets/photos/audience-photo-bw.webp", group: "Events" },
-    { id: "tk-hero-loop-poster", name: "Health Innovation hero still", src: "assets/photos/hero-loop-poster.jpg", group: "Events" },
-    { id: "tk-overview-4-5-poster", name: "Overview still — portrait", src: "assets/photos/overview-4-5-poster.jpg", group: "Events" },
-    { id: "tk-closing-loop-poster", name: "Closing still", src: "assets/photos/closing-loop-poster.jpg", group: "Events" },
-    { id: "tk-reasons-1", name: "Venue — detail 1", src: "assets/photos/reasons-1.jpg", group: "Events" },
-    { id: "tk-reasons-2", name: "Venue — detail 2", src: "assets/photos/reasons-2.jpg", group: "Events" },
-    { id: "tk-reasons-3", name: "Venue — detail 3", src: "assets/photos/reasons-3.jpg", group: "Events" },
-    { id: "tk-reasons-4", name: "Venue — detail 4", src: "assets/photos/reasons-4.jpg", group: "Events" },
-    { id: "tk-event-01", name: "TEKEX event — 01", src: "assets/photos/event-01.jpg", group: "Events" },
-    { id: "tk-event-02", name: "TEKEX event — 02", src: "assets/photos/event-02.jpg", group: "Events" },
-    { id: "tk-event-03", name: "TEKEX event — 03", src: "assets/photos/event-03.jpg", group: "Events" },
-    { id: "tk-event-04", name: "TEKEX event — 04", src: "assets/photos/event-04.jpg", group: "Events" },
-    { id: "tk-event-05", name: "TEKEX event — 05", src: "assets/photos/event-05.jpg", group: "Events" },
-    { id: "tk-event-06", name: "TEKEX event — 06", src: "assets/photos/event-06.jpg", group: "Events" },
-    { id: "tk-event-07", name: "TEKEX event — 07", src: "assets/photos/event-07.jpg", group: "Events" },
-    { id: "tk-event-08", name: "TEKEX event — 08", src: "assets/photos/event-08.jpg", group: "Events" },
-    { id: "tk-event-09", name: "TEKEX event — 09", src: "assets/photos/event-09.jpg", group: "Events" },
-    { id: "tk-event-10", name: "TEKEX event — 10", src: "assets/photos/event-10.jpg", group: "Events" },
-    { id: "tk-event-11", name: "TEKEX event — 11", src: "assets/photos/event-11.jpg", group: "Events" },
-    { id: "tk-event-12", name: "TEKEX event — 12", src: "assets/photos/event-12.jpg", group: "Events" },
-    { id: "tk-event-13", name: "TEKEX event — 13", src: "assets/photos/event-13.jpg", group: "Events" },
-    { id: "tk-event-14", name: "TEKEX event — 14 (mono)", src: "assets/photos/event-14.jpg", group: "Events" },
-    { id: "tk-event-15", name: "TEKEX event — 15", src: "assets/photos/event-15.jpg", group: "Events" },
-    { id: "tk-iom-01", name: "Isle of Man launch — 01", src: "assets/photos/iom-launch-01.jpg", group: "Events" },
-    { id: "tk-iom-02", name: "Isle of Man launch — 02", src: "assets/photos/iom-launch-02.jpg", group: "Events" },
-    { id: "tk-iom-03", name: "Isle of Man launch — 03", src: "assets/photos/iom-launch-03.jpg", group: "Events" },
-    { id: "tk-iom-04", name: "Isle of Man launch — 04", src: "assets/photos/iom-launch-04.jpg", group: "Events" },
-    { id: "tk-iom-05", name: "Isle of Man launch — 05", src: "assets/photos/iom-launch-05.jpg", group: "Events" },
-    { id: "tk-iom-06", name: "Isle of Man launch — 06", src: "assets/photos/iom-launch-06.jpg", group: "Events" },
-    { id: "tk-iom-07", name: "Isle of Man launch — 07", src: "assets/photos/iom-launch-07.jpg", group: "Events" },
-    { id: "tk-iom-08", name: "Isle of Man launch — 08", src: "assets/photos/iom-launch-08.jpg", group: "Events" },
-    { id: "tk-iom-09", name: "Isle of Man launch — 09", src: "assets/photos/iom-launch-09.jpg", group: "Events" },
-    { id: "tk-iom-10", name: "Isle of Man launch — 10", src: "assets/photos/iom-launch-10.jpg", group: "Events" },
-    { id: "tk-iom-11", name: "Isle of Man launch — 11", src: "assets/photos/iom-launch-11.jpg", group: "Events" },
-    { id: "tk-iom-12", name: "Isle of Man launch — 12", src: "assets/photos/iom-launch-12.jpg", group: "Events" },
-    { id: "tk-iom-13", name: "Isle of Man launch — 13", src: "assets/photos/iom-launch-13.jpg", group: "Events" },
-    { id: "tk-event-extra-01", name: "TEKEX event — extra 01", src: "assets/photos/event-extra-01.jpg", group: "Events" },
-    { id: "tk-event-extra-02", name: "TEKEX event — extra 02", src: "assets/photos/event-extra-02.jpg", group: "Events" },
-    { id: "tk-reel-1", name: "TEKEX reel — frame 1", src: "assets/photos/reel-1.jpg", group: "Reel" },
-    { id: "tk-reel-7", name: "TEKEX reel — frame 7", src: "assets/photos/reel-7.jpg", group: "Reel" },
-    { id: "tk-reel-13", name: "TEKEX reel — frame 13", src: "assets/photos/reel-13.jpg", group: "Reel" },
-    { id: "tk-reel-19", name: "TEKEX reel — frame 19", src: "assets/photos/reel-19.jpg", group: "Reel" },
-    { id: "tk-reel-25", name: "TEKEX reel — frame 25", src: "assets/photos/reel-25.jpg", group: "Reel" },
-    { id: "tk-reel-31", name: "TEKEX reel — frame 31", src: "assets/photos/reel-31.jpg", group: "Reel" },
-    { id: "tk-reel-37", name: "TEKEX reel — frame 37", src: "assets/photos/reel-37.jpg", group: "Reel" },
-    { id: "tk-reel-43", name: "TEKEX reel — frame 43", src: "assets/photos/reel-43.jpg", group: "Reel" },
-    { id: "tk-reel-49", name: "TEKEX reel — frame 49", src: "assets/photos/reel-49.jpg", group: "Reel" },
-    { id: "tk-reel-55", name: "TEKEX reel — frame 55", src: "assets/photos/reel-55.jpg", group: "Reel" },
-    { id: "tk-reel-61", name: "TEKEX reel — frame 61", src: "assets/photos/reel-61.jpg", group: "Reel" },
-    { id: "tk-reel-67", name: "TEKEX reel — frame 67", src: "assets/photos/reel-67.jpg", group: "Reel" },
-    { id: "tk-reel-73", name: "TEKEX reel — frame 73", src: "assets/photos/reel-73.jpg", group: "Reel" },
-    { id: "tk-reel-79", name: "TEKEX reel — frame 79", src: "assets/photos/reel-79.jpg", group: "Reel" },
-    { id: "tk-reel-85", name: "TEKEX reel — frame 85", src: "assets/photos/reel-85.jpg", group: "Reel" },
-    { id: "tk-reel-91", name: "TEKEX reel — frame 91", src: "assets/photos/reel-91.jpg", group: "Reel" },
-    { id: "tk-reel-97", name: "TEKEX reel — frame 97", src: "assets/photos/reel-97.jpg", group: "Reel" },
-    { id: "tk-reel-103", name: "TEKEX reel — frame 103", src: "assets/photos/reel-103.jpg", group: "Reel" },
-    { id: "tk-reel-109", name: "TEKEX reel — frame 109", src: "assets/photos/reel-109.jpg", group: "Reel" },
-    { id: "tk-reel-115", name: "TEKEX reel — frame 115", src: "assets/photos/reel-115.jpg", group: "Reel" },
-    { id: "tk-reel-121", name: "TEKEX reel — frame 121", src: "assets/photos/reel-121.jpg", group: "Reel" },
-    { id: "tk-reel-127", name: "TEKEX reel — frame 127", src: "assets/photos/reel-127.jpg", group: "Reel" },
-    { id: "tk-reel-133", name: "TEKEX reel — frame 133", src: "assets/photos/reel-133.jpg", group: "Reel" },
-    { id: "tk-reel-139", name: "TEKEX reel — frame 139", src: "assets/photos/reel-139.jpg", group: "Reel" },
-    { id: "tk-reel-138-sq", name: "TEKEX reel — frame 138 (square)", src: "assets/photos/reel-138-square.jpg", group: "Reel" },
-    { id: "tk-reel-26-sq", name: "TEKEX reel — frame 26 (square)", src: "assets/photos/reel-26-square.jpg", group: "Reel" },
-    { id: "tk-swirl-1", name: "Gradient swirl 1", src: "assets/graphics/swirl-1.png", group: "Graphics" },
-    { id: "tk-swirl-2", name: "Gradient swirl 2", src: "assets/graphics/swirl-2.png", group: "Graphics" },
-    { id: "tk-swirl-3", name: "Gradient swirl 3", src: "assets/graphics/swirl-3.png", group: "Graphics" },
-    { id: "tk-swirl-4", name: "Gradient swirl 4", src: "assets/graphics/swirl-4.png", group: "Graphics" },
-    { id: "tk-swirl-5", name: "Gradient swirl 5", src: "assets/graphics/swirl-5.png", group: "Graphics" },
-    { id: "tk-swirl-6", name: "Gradient swirl 6", src: "assets/graphics/swirl-6.png", group: "Graphics" },
-    { id: "tk-swirl-7", name: "Gradient swirl 7", src: "assets/graphics/swirl-7.png", group: "Graphics" },
-    { id: "tk-swirl-8", name: "Gradient swirl 8", src: "assets/graphics/swirl-8.png", group: "Graphics" },
-    { id: "tk-swirl-9", name: "Gradient swirl 9", src: "assets/graphics/swirl-9.png", group: "Graphics" },
-    { id: "tk-gradient", name: "TEKEX gradient", src: "assets/graphics/tekex-gradient.png", group: "Graphics" },
+    { id: "tk-hero-loop-poster", name: "Health Innovation hero still", src: "assets/photos/hero-loop-poster.webp", group: "Events" },
+    { id: "tk-overview-4-5-poster", name: "Overview still — portrait", src: "assets/photos/overview-4-5-poster.webp", group: "Events" },
+    { id: "tk-closing-loop-poster", name: "Closing still", src: "assets/photos/closing-loop-poster.webp", group: "Events" },
+    { id: "tk-reasons-1", name: "Venue — detail 1", src: "assets/photos/reasons-1.webp", group: "Events" },
+    { id: "tk-reasons-2", name: "Venue — detail 2", src: "assets/photos/reasons-2.webp", group: "Events" },
+    { id: "tk-reasons-3", name: "Venue — detail 3", src: "assets/photos/reasons-3.webp", group: "Events" },
+    { id: "tk-reasons-4", name: "Venue — detail 4", src: "assets/photos/reasons-4.webp", group: "Events" },
+    { id: "tk-event-01", name: "TEKEX event — 01", src: "assets/photos/event-01.webp", group: "Events" },
+    { id: "tk-event-02", name: "TEKEX event — 02", src: "assets/photos/event-02.webp", group: "Events" },
+    { id: "tk-event-03", name: "TEKEX event — 03", src: "assets/photos/event-03.webp", group: "Events" },
+    { id: "tk-event-04", name: "TEKEX event — 04", src: "assets/photos/event-04.webp", group: "Events" },
+    { id: "tk-event-05", name: "TEKEX event — 05", src: "assets/photos/event-05.webp", group: "Events" },
+    { id: "tk-event-06", name: "TEKEX event — 06", src: "assets/photos/event-06.webp", group: "Events" },
+    { id: "tk-event-07", name: "TEKEX event — 07", src: "assets/photos/event-07.webp", group: "Events" },
+    { id: "tk-event-08", name: "TEKEX event — 08", src: "assets/photos/event-08.webp", group: "Events" },
+    { id: "tk-event-09", name: "TEKEX event — 09", src: "assets/photos/event-09.webp", group: "Events" },
+    { id: "tk-event-10", name: "TEKEX event — 10", src: "assets/photos/event-10.webp", group: "Events" },
+    { id: "tk-event-11", name: "TEKEX event — 11", src: "assets/photos/event-11.webp", group: "Events" },
+    { id: "tk-event-12", name: "TEKEX event — 12", src: "assets/photos/event-12.webp", group: "Events" },
+    { id: "tk-event-13", name: "TEKEX event — 13", src: "assets/photos/event-13.webp", group: "Events" },
+    { id: "tk-event-14", name: "TEKEX event — 14 (mono)", src: "assets/photos/event-14.webp", group: "Events" },
+    { id: "tk-event-15", name: "TEKEX event — 15", src: "assets/photos/event-15.webp", group: "Events" },
+    { id: "tk-iom-01", name: "Isle of Man launch — 01", src: "assets/photos/iom-launch-01.webp", group: "Events" },
+    { id: "tk-iom-02", name: "Isle of Man launch — 02", src: "assets/photos/iom-launch-02.webp", group: "Events" },
+    { id: "tk-iom-03", name: "Isle of Man launch — 03", src: "assets/photos/iom-launch-03.webp", group: "Events" },
+    { id: "tk-iom-04", name: "Isle of Man launch — 04", src: "assets/photos/iom-launch-04.webp", group: "Events" },
+    { id: "tk-iom-05", name: "Isle of Man launch — 05", src: "assets/photos/iom-launch-05.webp", group: "Events" },
+    { id: "tk-iom-06", name: "Isle of Man launch — 06", src: "assets/photos/iom-launch-06.webp", group: "Events" },
+    { id: "tk-iom-07", name: "Isle of Man launch — 07", src: "assets/photos/iom-launch-07.webp", group: "Events" },
+    { id: "tk-iom-08", name: "Isle of Man launch — 08", src: "assets/photos/iom-launch-08.webp", group: "Events" },
+    { id: "tk-iom-09", name: "Isle of Man launch — 09", src: "assets/photos/iom-launch-09.webp", group: "Events" },
+    { id: "tk-iom-10", name: "Isle of Man launch — 10", src: "assets/photos/iom-launch-10.webp", group: "Events" },
+    { id: "tk-iom-11", name: "Isle of Man launch — 11", src: "assets/photos/iom-launch-11.webp", group: "Events" },
+    { id: "tk-iom-12", name: "Isle of Man launch — 12", src: "assets/photos/iom-launch-12.webp", group: "Events" },
+    { id: "tk-iom-13", name: "Isle of Man launch — 13", src: "assets/photos/iom-launch-13.webp", group: "Events" },
+    { id: "tk-event-extra-01", name: "TEKEX event — extra 01", src: "assets/photos/event-extra-01.webp", group: "Events" },
+    { id: "tk-event-extra-02", name: "TEKEX event — extra 02", src: "assets/photos/event-extra-02.webp", group: "Events" },
+    { id: "tk-reel-1", name: "TEKEX reel — frame 1", src: "assets/photos/reel-1.webp", group: "Reel" },
+    { id: "tk-reel-7", name: "TEKEX reel — frame 7", src: "assets/photos/reel-7.webp", group: "Reel" },
+    { id: "tk-reel-13", name: "TEKEX reel — frame 13", src: "assets/photos/reel-13.webp", group: "Reel" },
+    { id: "tk-reel-19", name: "TEKEX reel — frame 19", src: "assets/photos/reel-19.webp", group: "Reel" },
+    { id: "tk-reel-25", name: "TEKEX reel — frame 25", src: "assets/photos/reel-25.webp", group: "Reel" },
+    { id: "tk-reel-31", name: "TEKEX reel — frame 31", src: "assets/photos/reel-31.webp", group: "Reel" },
+    { id: "tk-reel-37", name: "TEKEX reel — frame 37", src: "assets/photos/reel-37.webp", group: "Reel" },
+    { id: "tk-reel-43", name: "TEKEX reel — frame 43", src: "assets/photos/reel-43.webp", group: "Reel" },
+    { id: "tk-reel-49", name: "TEKEX reel — frame 49", src: "assets/photos/reel-49.webp", group: "Reel" },
+    { id: "tk-reel-55", name: "TEKEX reel — frame 55", src: "assets/photos/reel-55.webp", group: "Reel" },
+    { id: "tk-reel-61", name: "TEKEX reel — frame 61", src: "assets/photos/reel-61.webp", group: "Reel" },
+    { id: "tk-reel-67", name: "TEKEX reel — frame 67", src: "assets/photos/reel-67.webp", group: "Reel" },
+    { id: "tk-reel-73", name: "TEKEX reel — frame 73", src: "assets/photos/reel-73.webp", group: "Reel" },
+    { id: "tk-reel-79", name: "TEKEX reel — frame 79", src: "assets/photos/reel-79.webp", group: "Reel" },
+    { id: "tk-reel-85", name: "TEKEX reel — frame 85", src: "assets/photos/reel-85.webp", group: "Reel" },
+    { id: "tk-reel-91", name: "TEKEX reel — frame 91", src: "assets/photos/reel-91.webp", group: "Reel" },
+    { id: "tk-reel-97", name: "TEKEX reel — frame 97", src: "assets/photos/reel-97.webp", group: "Reel" },
+    { id: "tk-reel-103", name: "TEKEX reel — frame 103", src: "assets/photos/reel-103.webp", group: "Reel" },
+    { id: "tk-reel-109", name: "TEKEX reel — frame 109", src: "assets/photos/reel-109.webp", group: "Reel" },
+    { id: "tk-reel-115", name: "TEKEX reel — frame 115", src: "assets/photos/reel-115.webp", group: "Reel" },
+    { id: "tk-reel-121", name: "TEKEX reel — frame 121", src: "assets/photos/reel-121.webp", group: "Reel" },
+    { id: "tk-reel-127", name: "TEKEX reel — frame 127", src: "assets/photos/reel-127.webp", group: "Reel" },
+    { id: "tk-reel-133", name: "TEKEX reel — frame 133", src: "assets/photos/reel-133.webp", group: "Reel" },
+    { id: "tk-reel-139", name: "TEKEX reel — frame 139", src: "assets/photos/reel-139.webp", group: "Reel" },
+    { id: "tk-reel-138-sq", name: "TEKEX reel — frame 138 (square)", src: "assets/photos/reel-138-square.webp", group: "Reel" },
+    { id: "tk-reel-26-sq", name: "TEKEX reel — frame 26 (square)", src: "assets/photos/reel-26-square.webp", group: "Reel" },
+    { id: "tk-swirl-1", name: "Gradient swirl 1", src: "assets/graphics/swirl-1.webp", group: "Graphics" },
+    { id: "tk-swirl-2", name: "Gradient swirl 2", src: "assets/graphics/swirl-2.webp", group: "Graphics" },
+    { id: "tk-swirl-3", name: "Gradient swirl 3", src: "assets/graphics/swirl-3.webp", group: "Graphics" },
+    { id: "tk-swirl-4", name: "Gradient swirl 4", src: "assets/graphics/swirl-4.webp", group: "Graphics" },
+    { id: "tk-swirl-5", name: "Gradient swirl 5", src: "assets/graphics/swirl-5.webp", group: "Graphics" },
+    { id: "tk-swirl-6", name: "Gradient swirl 6", src: "assets/graphics/swirl-6.webp", group: "Graphics" },
+    { id: "tk-swirl-7", name: "Gradient swirl 7", src: "assets/graphics/swirl-7.webp", group: "Graphics" },
+    { id: "tk-swirl-8", name: "Gradient swirl 8", src: "assets/graphics/swirl-8.webp", group: "Graphics" },
+    { id: "tk-swirl-9", name: "Gradient swirl 9", src: "assets/graphics/swirl-9.webp", group: "Graphics" },
+    { id: "tk-gradient", name: "TEKEX gradient", src: "assets/graphics/tekex-gradient.webp", group: "Graphics" },
     { id: "tk-motif-star", name: "Motif — star", src: "assets/graphics/motif-star.svg", group: "Graphics" },
     { id: "tk-motif-tri", name: "Motif — tri", src: "assets/graphics/motif-tri.svg", group: "Graphics" },
     { id: "tk-motif-rings", name: "Motif — rings", src: "assets/graphics/motif-rings.svg", group: "Graphics" },
     { id: "tk-motif-square", name: "Motif — square", src: "assets/graphics/motif-square.svg", group: "Graphics" },
     { id: "lib-al-mitchell", name: "Al Mitchell — speaker portrait", src: "assets/speaker-al-mitchell.jpg", w: 675, h: 900, group: "Team" },
-    { id: "tk-ed", name: "Ed — portrait", src: "assets/photos/ed-profile.jpg", group: "Team" },
-    { id: "tk-ed-bw", name: "Ed — portrait, mono", src: "assets/photos/ed-profile-bw.jpg", group: "Team" },
-    { id: "tk-tom", name: "Tom — portrait", src: "assets/photos/tom-profile.jpg", group: "Team" },
-    { id: "tk-tom-bw", name: "Tom — portrait, mono", src: "assets/photos/tom-profile-bw.jpg", group: "Team" },
-    { id: "tk-louis", name: "Louis Pike — portrait", src: "assets/photos/louis-pike.jpg", group: "Team" },
-    { id: "tk-al-mitchell-portrait", name: "Al Mitchell — portrait", src: "assets/photos/al-mitchell-portrait.jpg", group: "Team" }
+    { id: "tk-ed", name: "Ed — portrait", src: "assets/photos/ed-profile.webp", group: "Team" },
+    { id: "tk-ed-bw", name: "Ed — portrait, mono", src: "assets/photos/ed-profile-bw.webp", group: "Team" },
+    { id: "tk-tom", name: "Tom — portrait", src: "assets/photos/tom-profile.webp", group: "Team" },
+    { id: "tk-tom-bw", name: "Tom — portrait, mono", src: "assets/photos/tom-profile-bw.webp", group: "Team" },
+    { id: "tk-louis", name: "Louis Pike — portrait", src: "assets/photos/louis-pike.webp", group: "Team" },
+    { id: "tk-al-mitchell-portrait", name: "Al Mitchell — portrait", src: "assets/photos/al-mitchell-portrait.webp", group: "Team" }
   ]
 };
 const LIB = Object.fromEntries(BRAND.library.map(im => [im.id, im]));
@@ -566,8 +566,20 @@ function slotsFor(d) {
   }
   return [];
 }
-function imgVals(im) {
+/* Library photographs were JPEG and PNG until November 2026; they are WebP now. Designs saved before then still name the
+   old file, so every place that shows an image asks liveSrc for the file that exists today. */
+function liveSrc(src) { return typeof src === "string" ? src.replace(/^(assets\/(?:photos|graphics)\/[\w-]+)\.(?:jpe?g|png)$/, "$1.webp") : src; }
+/* Each library image has a small version beside it (sm/name.webp, made by tools/images.py). Tiles, thumbnails and pickers
+   use it, so a first visit downloads kilobytes, not the full photographs. Uploads and anything else are used as they are. */
+const SMALL_DIRS = ["assets/photos/", "assets/graphics/", "assets/"];
+function smallSrc(src) {
+  src = liveSrc(src);
+  const m = typeof src === "string" && /^(.*\/)([^\/]+)\.(?:jpe?g|png|webp)$/i.exec(src);
+  return m && (SMALL_DIRS.indexOf(m[1]) >= 0 || (PACK && PACK.smallDirs && PACK.smallDirs.indexOf(m[1]) >= 0)) ? m[1] + "sm/" + m[2] + ".webp" : src;
+}
+function imgVals(im, small) {
   if (!im || !im.src) return { has: false, src: "", style: {} };
+  if (small || liveSrc(im.src) !== im.src) im = Object.assign({}, im, { src: small ? smallSrc(im.src) : liveSrc(im.src) });
   const x = im.x == null ? 50 : im.x, y = im.y == null ? 50 : im.y, z = im.zoom || 1;
   if (im.cut) return {
     has: true, src: im.src, cut: true,
@@ -699,6 +711,8 @@ try {
 } catch (e) {}
 const WS_ID = wsCurrentId();
 Store.ns = WS_ID === DEFAULT_WS ? "" : "hs-ws-" + WS_ID + ":";
+/* A client pack can bring its own dimensions for the five formats. They apply only while that client is open. */
+if (PACK && WS_ID === PACK.id && PACK.ownSizes) Object.assign(SIZES, PACK.ownSizes);
 if (WS_ID !== DEFAULT_WS) {
   // A client added later starts from a blank book: none of the first client's imagery, partners or copy carries over.
   const meta = wsList().find(w => w.id === WS_ID) || {};
@@ -713,11 +727,21 @@ if (WS_ID !== DEFAULT_WS) {
 }
 applyBrand(Store.get(BRAND_KEY, null));
 const THUMBS_KEY = "hs-thumbs-v1";
+/* Ready-made pictures of the example designs (tools/seed_thumbs.py writes them). n must equal the number of examples. */
+const SEED_THUMBS = { dir: "assets/seed/tekex-", n: 27 };
+const realThumb = (u) => typeof u === "string" && u.indexOf("data:image/") === 0;
 /* Lazy-load the export/thumbnail renderer only when first needed. */
 let __shotP = null;
+/* One download cache for every render in this visit: a photograph or font is fetched once, however many thumbnails use it. */
+const SHOT_SHARED = { sharedRequests: new Map(), sharedFontCss: new Map() };
+function shotOpts(o) {
+  const rq = SHOT_SHARED.sharedRequests; // full photographs are held as text, so keep the cache to a sensible size
+  if (rq.size > 60) Array.from(rq.keys()).slice(0, rq.size - 40).forEach(k => rq.delete(k));
+  return Object.assign({}, o, SHOT_SHARED);
+}
 function ensureShot() {
   if (window.modernScreenshot) return Promise.resolve(window.modernScreenshot);
-  if (!__shotP) __shotP = new Promise((res, rej) => { const el = document.createElement("script"); el.src = "vendor/modern-screenshot.js"; el.onload = () => res(window.modernScreenshot); el.onerror = () => { __shotP = null; rej(new Error("renderer failed to load")); }; document.head.appendChild(el); });
+  if (!__shotP) __shotP = new Promise((res, rej) => { const el = document.createElement("script"); el.src = "vendor/modern-screenshot.js?v=2"; el.onload = () => res(window.modernScreenshot); el.onerror = () => { __shotP = null; rej(new Error("renderer failed to load")); }; document.head.appendChild(el); });
   return __shotP;
 }
 
@@ -797,4 +821,4 @@ function ensureGsap() {
 }
 
 /* expose for tests (node) */
-if (typeof module !== 'undefined') module.exports = { zipStore, crc32, fieldsFor, portraitMatch, readBrief, PRESETS, PACK, packTpl, imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
+if (typeof module !== 'undefined') module.exports = { liveSrc, smallSrc, shotOpts, zipStore, crc32, fieldsFor, portraitMatch, readBrief, PRESETS, PACK, packTpl, imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };

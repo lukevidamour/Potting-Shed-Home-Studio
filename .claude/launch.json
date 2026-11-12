@@ -6,7 +6,7 @@
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "-c",
-        "cd /private/tmp/home-studio-preview && exec python3 -m http.server 8765 --bind 127.0.0.1"
+        "exec python3 /private/tmp/home-studio-preview/tools/qa/serve.py 8765 /private/tmp/home-studio-preview"
       ],
       "port": 8765
     },
@@ -15,7 +15,7 @@
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "-c",
-        "cd /private/tmp/home-studio-public && exec python3 -m http.server 8766 --bind 127.0.0.1"
+        "exec python3 /private/tmp/home-studio-preview/tools/qa/serve.py 8766 /private/tmp/home-studio-public"
       ],
       "port": 8766
     }

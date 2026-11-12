@@ -11,13 +11,13 @@
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261112b"></script>
+<script src="home-studio.lib.js?v=20261112p"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261112k">
+<link rel="stylesheet" href="home-studio.css?v=20261112p">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -83,7 +83,7 @@
           <span class="navgap"></span>
           <div class="gfoot">
           <div class="kebab" onClick="{{ stop }}">
-            <button class="bead avatar" onClick="{{ toggleUserMenu }}" aria-label="Ed, account" aria-haspopup="menu" aria-expanded="{{ userMenuOpen }}"><sc-if value="{{ !avatarMissing }}"><img sc-camel-src="assets/ed.jpg" alt="" onError="{{ avatarFailed }}" /></sc-if><sc-if value="{{ avatarMissing }}">E</sc-if></button>
+            <button class="bead avatar" onClick="{{ toggleUserMenu }}" aria-label="Ed, account" aria-haspopup="menu" aria-expanded="{{ userMenuOpen }}"><sc-if value="{{ !avatarMissing }}"><img sc-camel-src="assets/sm/ed.webp" alt="" width="36" height="36" decoding="async" onError="{{ avatarFailed }}" /></sc-if><sc-if value="{{ avatarMissing }}">E</sc-if></button>
             <sc-if value="{{ userMenuOpen }}">
               <div class="menu" role="menu">
                 <div class="mlabel">Ed · saved in this browser</div>
@@ -111,17 +111,23 @@
           </sc-if>
 
           <section class="sect" aria-labelledby="sl-tpl"><h3 class="stitle" id="sl-tpl">Template</h3>
-            <div class="tpl-grid">
-              <sc-for list="{{ templateTiles }}" as="tt"><button class="tplbtn" aria-pressed="{{ tt.on }}" onClick="{{ tt.pick }}">{{ tt.name }}</button></sc-for>
-            </div>
+            <button class="tplnow" onClick="{{ toggleTplPick }}" aria-expanded="{{ tplPickOpen }}" aria-controls="tpl-picks">
+              <span class="tplpic"><sc-if value="{{ tplNow.hasPic }}"><img sc-camel-src="{{ tplNow.pic }}" alt="" /></sc-if></span>
+              <span class="tplname">{{ tplNow.name }}</span><span class="tplchg">{{ tplPickLabel }}</span>
+            </button>
+            <sc-if value="{{ tplPickOpen }}">
+              <div class="picgrid" id="tpl-picks">
+                <sc-for list="{{ templateTiles }}" as="tt"><button class="picopt" aria-pressed="{{ tt.on }}" onClick="{{ tt.pick }}"><span class="tplpic"><sc-if value="{{ tt.hasPic }}"><img sc-camel-src="{{ tt.pic }}" alt="" /></sc-if></span><span class="tplname">{{ tt.name }}</span></button></sc-for>
+              </div>
+            </sc-if>
           </section>
 
 
 
           <sc-if value="{{ hasLayouts }}">
             <section class="sect" aria-labelledby="sl-lay"><h3 class="stitle" id="sl-lay">Layout</h3>
-              <div class="tpl-grid">
-                <sc-for list="{{ layoutTiles }}" as="lt"><button class="tplbtn" aria-pressed="{{ lt.on }}" onClick="{{ lt.pick }}">{{ lt.name }}</button></sc-for>
+              <div class="picgrid">
+                <sc-for list="{{ layoutTiles }}" as="lt"><button class="picopt" aria-pressed="{{ lt.on }}" onClick="{{ lt.pick }}"><span class="tplpic"><sc-if value="{{ lt.hasPic }}"><img sc-camel-src="{{ lt.pic }}" alt="" /></sc-if></span><span class="tplname">{{ lt.name }}</span></button></sc-for>
               </div>
             </section>
           </sc-if>
@@ -242,7 +248,7 @@
               <button class="sizepill" role="tab" aria-selected="{{ ss.on }}" onClick="{{ ss.open }}" title="{{ ss.dims }} px"><i style="{{ ss.glyph }}" aria-hidden="true"></i>{{ ss.label }}<span class="r">{{ ss.ratio }}</span></button>
             </sc-for>
             <sc-if value="{{ canAddSize }}"><button class="sizepill add" onClick="{{ openSizeDialog }}" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add size</button></sc-if>
-            <sc-if value="{{ hasSiblings }}"><label class="synccheck"><input type="checkbox" checked="{{ syncSizes }}" onChange="{{ toggleSync }}" />Keep copy in sync across sizes</label></sc-if>
+            <sc-if value="{{ hasSiblings }}"><label class="synccheck"><input type="checkbox" checked="{{ syncSizes }}" onChange="{{ toggleSync }}" />Keep copy in sync<span class="more"> across sizes</span></label></sc-if>
           </div>
           <span class="spacer"></span>
           <button class="btn icon" onClick="{{ zoomOut }}" aria-label="Zoom out"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
@@ -677,7 +683,7 @@
             <sc-if value="{{ !a.isHeading }}">
             <div class="{{ a.wrapClass }}" style="{{ a.cardStyle }}" role="{{ a.wrapRole }}" tabIndex="{{ a.tab }}" aria-label="{{ a.aria }}" onClick="{{ a.open }}" onKeyDown="{{ a.keys }}">
               <div class="{{ a.artWrapClass }}" style="{{ a.artBoxStyle }}">
-              <sc-if value="{{ a.isCard }}"><sc-if value="{{ a.hasShelf }}"><div class="shelf"><sc-for list="{{ a.shelf }}" as="sh"><img class="thumbimg" sc-camel-src="{{ sh.url }}" alt="" style="{{ sh.style }}" /></sc-for></div></sc-if><sc-if value="{{ a.noArt }}"><div class="noart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M12 9v6M9 12h6"/></svg><span>No designs yet</span></div></sc-if><sc-if value="{{ a.thumbUrl }}"><img class="thumbimg" sc-camel-src="{{ a.thumbUrl }}" alt="" style="{{ a.thumbStyle }}" onError="{{ a.thumbFailed }}" /></sc-if></sc-if>
+              <sc-if value="{{ a.isCard }}"><sc-if value="{{ a.hasShelf }}"><div class="shelf"><sc-for list="{{ a.shelf }}" as="sh"><img class="thumbimg" sc-camel-src="{{ sh.url }}" alt="" loading="{{ sh.lazy }}" decoding="async" style="{{ sh.style }}" /></sc-for></div></sc-if><sc-if value="{{ a.noArt }}"><div class="noart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M12 9v6M9 12h6"/></svg><span>No designs yet</span></div></sc-if><sc-if value="{{ a.thumbUrl }}"><img class="thumbimg" sc-camel-src="{{ a.thumbUrl }}" alt="" loading="{{ a.lazy }}" decoding="async" style="{{ a.thumbStyle }}" onError="{{ a.thumbFailed }}" /></sc-if></sc-if>
               <sc-if value="{{ a.hasArt }}">
               <div data-canvas="{{ a.canvasFlag }}" data-design="{{ a.designId }}" style="{{ a.canvasStyle }}" onClick="{{ a.canvasClick }}">
                 <sc-if value="{{ !a.isPack }}">
@@ -1161,7 +1167,7 @@
 /* Data, brand configuration and helpers live in home-studio.lib.js */
 class Component extends DCLogic {
   state = {
-    view: ({ "#/designs": "designs", "#/calendar": "calendar", "#/brand": "brand" })[typeof location !== "undefined" ? location.hash : ""] || "projects", // the address says which screen: a refresh or a shared link lands where you were
+    view: ({ "#/designs": "designs", "#/calendar": "calendar", "#/brand": "brand" })[typeof location !== "undefined" ? location.hash : ""] || (typeof location !== "undefined" && /^#\/(project|design)\//.test(location.hash) ? "boot" : "projects"), // "boot" draws nothing for the instant before a project or design address is read, so the home screen never flashes first // the address says which screen: a refresh or a shared link lands where you were
     drafts: [], uploads: [], projects: [],
     projectId: null, pill: "active", menuId: null, projDialog: null, deleteKind: "design", syncSizes: true,
     thumbs: {},
@@ -1199,8 +1205,10 @@ class Component extends DCLogic {
     if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__hs = this; // a handle for local testing only
     this.applyTheme(this.state.theme);
     let drafts = Store.get(DRAFTS_KEY, []), projects = Store.get(PROJECTS_KEY, []);
+    let seeded = []; // examples made on this visit: [design id, ready-made thumbnail file]
     if (WS_ID === DEFAULT_WS && !Store.raw("hs-seed-v2")) {
       const ex = seedExamples(projects);
+      if (ex.drafts.length === SEED_THUMBS.n) { ex.drafts.forEach((d, i) => { d.seedN = i; }); seeded = ex.drafts.map(d => [d.id, SEED_THUMBS.dir + ("0" + d.seedN).slice(-2) + ".jpg"]); }
       projects = projects.concat(ex.projects); drafts = drafts.concat(ex.drafts);
       try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag("hs-seed-v2"); Store.set("hs-redate-w", seedWeeks()); } catch (e) {}
     }
@@ -1232,7 +1240,7 @@ class Component extends DCLogic {
     if (drafts.some(d => !d.familyId)) { drafts = drafts.map(d => d.familyId ? d : Object.assign({}, d, { familyId: uid("f") })); try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
     // Thumbnails live in their own store; lift any that older drafts carried inline.
     let thumbs = Store.get(THUMBS_KEY, {});
-    Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || v.indexOf("data:image/") !== 0 || v.length < 1500) delete thumbs[k]; });
+    Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || !(realThumb(v) ? v.length >= 1500 : /^assets\/[\w\/-]+\.jpg$/.test(v))) delete thumbs[k]; });
     if (drafts.some(d => d.thumb)) { drafts.forEach(d => { if (d.thumb) thumbs[d.id] = d.thumb; }); drafts = drafts.map(d => { const c = Object.assign({}, d); delete c.thumb; return c; }); try { Store.set(THUMBS_KEY, thumbs); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
     const seedKey = PACK ? "hs-seed-pack" + ((PACK.seedVersion || 1) > 1 ? "-" + PACK.seedVersion : "") : "";
     if (PACK && WS_ID === PACK.id && PACK.seed && !Store.raw(seedKey)) {
@@ -1243,9 +1251,15 @@ class Component extends DCLogic {
         project: (name, brief) => { const p = newProject(name, brief, ""); p.example = true; return p; },
         design: (p, tpl, title, theme, copy, pics, layout) => { const d = newDesign(tpl, (TPL[tpl].sizes || ["square"])[0], p.id); d.title = title; d.theme = theme; d.layout = layout || 0; d.copy = Object.assign({}, d.copy, copy || {}); d.images = {}; Object.keys(pics || {}).forEach(k => { const im = libImg(pics[k]); if (im) d.images[k] = im; }); d.images = fillImages(d); return d; }
       });
+      const st = PACK.seedThumbs;
+      if (st && ex.drafts.length === st.n) { ex.drafts.forEach((d, i) => { d.seedN = i; }); seeded = seeded.concat(ex.drafts.map(d => [d.id, st.dir + ("0" + d.seedN).slice(-2) + ".jpg"])); }
       projects = projects.concat(ex.projects); drafts = drafts.concat(ex.drafts);
       try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag(seedKey); } catch (e) {}
     }
+    // The examples arrive with ready-made pictures, so a first visit shows the wall at once instead of drawing every tile.
+    // Each is redrawn from the real design in a quiet moment (see thumbBacklog), which also brings its dates up to today.
+    if (seeded.length) { seeded.forEach(([id, file]) => { if (!thumbs[id]) thumbs[id] = file; }); try { Store.set(THUMBS_KEY, thumbs); } catch (e) {} }
+    this._quietAt = Date.now() + 3500; setTimeout(() => this.setState({ thumbTick: (this.state.thumbTick || 0) + 1 }), 3600);
     drafts = drafts.map(x => BRAND.themes[x.theme] ? x : Object.assign({}, x, { theme: 0 }));
     // Example content keeps itself current: fields nobody has edited move with today, the first time and then whenever they drift by four weeks.
     if (WS_ID === DEFAULT_WS) {
@@ -1256,6 +1270,14 @@ class Component extends DCLogic {
         try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.set(THUMBS_KEY, thumbs); Store.set("hs-redate-w", wNow); } catch (e) {}
       }
     }
+    // A client pack that once had its own format names now uses the standard five: older designs are renamed to match.
+    if (PACK && WS_ID === PACK.id && PACK.sizeAlias && drafts.some(x => PACK.sizeAlias[x.size])) { drafts = drafts.map(x => PACK.sizeAlias[x.size] ? Object.assign({}, x, { size: PACK.sizeAlias[x.size] }) : x); try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
+    // Library photographs moved from JPEG and PNG to WebP: designs saved before then are pointed at the new files.
+    { let any = false;
+      drafts = drafts.map(x => { let changed = false; const images = Object.assign({}, x.images || {});
+        Object.keys(images).forEach(k => { const im = images[k]; if (im && im.src && liveSrc(im.src) !== im.src) { images[k] = Object.assign({}, im, { src: liveSrc(im.src) }); changed = true; } });
+        if (changed) any = true; return changed ? Object.assign({}, x, { images }) : x; });
+      if (any) { try { Store.set(DRAFTS_KEY, drafts); } catch (e) {} } }
     // Images that are cut-outs are marked as such, so they stand in their frame instead of being stretched across it.
     if (!Store.raw("hs-cut-v1")) {
       const cutUploads = {}; Store.get(UPLOADS_KEY, []).forEach(u => { if (u.cut) cutUploads[u.src] = true; });
@@ -1283,7 +1305,10 @@ class Component extends DCLogic {
       Store.flag("hs-focus-v1");
     }
     let land = ""; try { land = sessionStorage.getItem("hs-land") || ""; sessionStorage.removeItem("hs-land"); } catch (e) {}
-    this.setState(Object.assign({ drafts, projects, thumbs, uploads: Store.get(UPLOADS_KEY, []) }, land === "brand" ? { view: "brand" } : {}));
+    // A project or a design has its own address too; it can only be read once the work is loaded.
+    const route = this.routeState(typeof location !== "undefined" ? location.hash : "", drafts, projects);
+    this._routed = true;
+    this.setState(Object.assign({ drafts, projects, thumbs, uploads: Store.get(UPLOADS_KEY, []) }, route && (route.view === "project" || route.view === "editor") ? route : (this.state.view === "boot" ? { view: "projects" } : {}), land === "brand" ? { view: "brand" } : {}));
     document.title = "Home Studio · " + BRAND.name + " · Potting Shed";
     this._onClickAway = () => { const st = this.state; if (st.menuId || st.projMenuOpen || st.wsMenuOpen || st.bbMenuOpen || st.userMenuOpen) this.setState({ menuId: null, projMenuOpen: false, wsMenuOpen: false, bbMenuOpen: false, userMenuOpen: false }); };
     // Dropdowns open the app's own menu instead of the operating system's (mouse and keyboard; touch keeps the native picker).
@@ -1302,7 +1327,10 @@ class Component extends DCLogic {
     window.addEventListener("resize", this._onResize);
     this._onKey = (e) => this.globalKeys(e);
     window.addEventListener("keydown", this._onKey);
-    this._onPop = () => { const v = ({ "#/designs": "designs", "#/calendar": "calendar", "#/brand": "brand" })[location.hash] || "projects"; this._addr = location.hash || ""; if (this.state.view !== v && !this.state.gate) this.setState({ view: v, reviewOpen: false, menuId: null, makeOpen: false, cmd: null }); };
+    this._onPop = () => { this._addr = location.hash || ""; if (this.state.gate) return; const r = this.routeState(location.hash, this.state.drafts, this.state.projects) || { view: "projects" };
+      const cur = this.state, same = r.view === cur.view && (r.view !== "project" || r.projectId === cur.projectId) && (r.view !== "editor" || (cur.design && r.design.id === cur.design.id));
+      if (same) return; if (cur.view === "editor" && cur.design) { clearTimeout(this._saveT); this.saveNow(); }
+      this.setState(Object.assign({ reviewOpen: false, menuId: null, makeOpen: false, cmd: null }, r)); };
     window.addEventListener("popstate", this._onPop);
     this._onLeave = (e) => { if (this.state.view === "editor" && (this.state.saveState === "saving" || this.state.saveState === "error")) { e.preventDefault(); e.returnValue = ""; } };
     window.addEventListener("beforeunload", this._onLeave);
@@ -1328,10 +1356,20 @@ class Component extends DCLogic {
     if (this._ro) this._ro.disconnect();
     clearTimeout(this._saveT); clearTimeout(this._toastT); clearTimeout(this._thumbT);
   }
-  componentDidUpdate() { this.syncAddress(); requestAnimationFrame(() => { this.measure(); this.thumbBacklog(); }); }
-  /* The four main screens each have an address, so refresh, back and forward behave as people expect. */
+  componentDidUpdate() { this.syncAddress(); requestAnimationFrame(() => { this.measure(); this.thumbBacklog(); this.pickBacklog(); }); }
+  /* Every screen you can come back to has an address, so refresh, back, forward and a shared link behave as people expect. */
+  routeState(hash, drafts, projects) {
+    const simple = { "#/designs": "designs", "#/calendar": "calendar", "#/brand": "brand" }[hash || ""];
+    if (simple) return { view: simple };
+    const m = /^#\/(project|design)\/([\w-]+)$/.exec(hash || ""); if (!m) return null;
+    if (m[1] === "project") { const p = (projects || []).find(x => x.id === m[2]); return p ? { view: "project", projectId: p.id } : null; }
+    const d = (drafts || []).find(x => x.id === m[2]);
+    return d ? { view: "editor", design: d, projectId: d.projectId || null, tab: "content", zoom: 1, past: [], future: [], overflow: [], exportDone: false, exportError: "", saveState: "saved", savedAt: d.updatedAt || 0, fileName: "" } : null;
+  }
   syncAddress() {
-    const want = { projects: "", designs: "#/designs", calendar: "#/calendar", brand: "#/brand" }[this.state.view];
+    if (!this._routed) return; // not until the address we arrived on has been read
+    const st = this.state;
+    const want = st.view === "project" && st.projectId ? "#/project/" + st.projectId : st.view === "editor" && st.design ? "#/design/" + st.design.id : { projects: "", designs: "#/designs", calendar: "#/calendar", brand: "#/brand" }[st.view];
     if (want === undefined || this._addr === want) return;
     const first = this._addr === undefined; this._addr = want;
     if ((location.hash || "") === want || (want === "" && !location.hash)) return;
@@ -1554,6 +1592,8 @@ class Component extends DCLogic {
   commit(patch, groupKey) {
     const d = this.state.design; if (!d) return;
     const now = Date.now();
+    // picker pictures wait for a pause in the editing, then redraw one at a time
+    this._pickQuietAt = now + 700; clearTimeout(this._pickT); this._pickT = setTimeout(() => this.setState({ pickTick: (this.state.pickTick || 0) + 1 }), 760);
     const grouped = groupKey && this._lastGroup === groupKey && now - (this._lastCommit || 0) < 1500;
     this._lastGroup = groupKey || null; this._lastCommit = now;
     const next = Object.assign({}, d, patch);
@@ -1743,7 +1783,7 @@ class Component extends DCLogic {
           bbSetWording: (e) => { const v = e.target.value; this.editBrand(b => { b.compliance = Object.assign({}, b.compliance, { wording: v }); }, "Compliance"); },
           bbSetSocialLine: (e) => { const v = e.target.value; this.editBrand(b => { b.compliance = Object.assign({}, b.compliance, { social: v }); }, "Compliance"); },
           bbNoSocialLine: !(BRAND.compliance.social || "").trim(), bbHasPartners: (BRAND.templateSet || "core") === "core",
-          bbLibGroups: Array.from(new Set(BRAND.library.map(im => im.group))).map(g => ({ name: g, count: BRAND.library.filter(im => im.group === g).length, pics: BRAND.library.filter(im => im.group === g).slice(0, 6).map(im => ({ src: im.src, name: im.name })) })), bbLibCount: BRAND.library.length,
+          bbLibGroups: Array.from(new Set(BRAND.library.map(im => im.group))).map(g => ({ name: g, count: BRAND.library.filter(im => im.group === g).length, pics: BRAND.library.filter(im => im.group === g).slice(0, 6).map(im => ({ src: smallSrc(im.src), name: im.name })) })), bbLibCount: BRAND.library.length,
           bbImagery: BRAND.imagery || "", bbSetImagery: (e) => { const v = e.target.value; this.editBrand(b => { b.imagery = v; }, "Layout"); },
           bbPrevTabs: TEMPLATES.filter(t => BRAND.templatesOn.indexOf(t.key) >= 0).map(t => ({ label: t.short || { speaker: "Speaker", event: "Event", listing: "Line-up", trio: "Sessions", partners: "Partners", lockup: "Logo" }[t.key] || t.name, on: prevTpl === t.key, pick: () => this.setState({ bbPrevTpl: t.key }) }))
         };
@@ -2107,7 +2147,7 @@ class Component extends DCLogic {
   async renderThumb(node, d) {
     const shot = await ensureShot();
     const S = SIZES[d.size];
-    return shot.domToDataUrl(node, { width: S.w, height: S.h, scale: 480 / S.w, type: "image/jpeg", quality: 0.74, backgroundColor: BRAND.themes[d.theme].ground, style: { transform: "none", boxShadow: "none", margin: "0", position: "static" }, filter: (el) => !(el.getAttribute && el.getAttribute("data-guide")) });
+    return shot.domToDataUrl(node, shotOpts({ width: S.w, height: S.h, scale: 480 / S.w, type: "image/jpeg", quality: 0.74, backgroundColor: BRAND.themes[d.theme].ground, style: { transform: "none", boxShadow: "none", margin: "0", position: "static" }, filter: (el) => !(el.getAttribute && el.getAttribute("data-guide")) }));
   }
   storeThumb(id, url) {
     if (!url || url.length < 1500 || url.length > 140000 || url.indexOf("data:image/") !== 0) return;
@@ -2138,7 +2178,7 @@ class Component extends DCLogic {
   async thumbBacklog() {
     if (this._thumbBusy || this.state.view === "editor") return;
     const tried = this._thumbTried || (this._thumbTried = new Set());
-    const node = Array.from(document.querySelectorAll("[data-canvas='0'][data-design]")).find(n => { const id = n.getAttribute("data-design"); return !this.state.thumbs[id] && !tried.has(id) && this.state.drafts.some(x => x.id === id); });
+    const node = Array.from(document.querySelectorAll("[data-canvas='0'][data-design]")).find(n => { const id = n.getAttribute("data-design"); return !realThumb(this.state.thumbs[id]) && !tried.has(id) && this.state.drafts.some(x => x.id === id); });
     if (!node) return;
     const d = this.state.drafts.find(x => x.id === node.getAttribute("data-design")); if (!d) return;
     this._thumbBusy = true; this._thumbBusyId = d.id; tried.add(d.id); // one attempt per visit: a capture that cannot be stored must not loop
@@ -2164,8 +2204,9 @@ class Component extends DCLogic {
     this.showToast(pj ? "Added to “" + pj.name + "”" + (ids.length > 1 ? " with its other sizes." : ".") : "Kept as a draft.");
     this.scheduleSave();
   }
-  switchTemplate(key) {
-    const d = this.state.design; if (!d || d.tpl === key) return;
+  /* What changing template or layout would do to a design, without doing it: the pickers draw their pictures from this,
+     and the buttons apply exactly the same change, so the picture is always what you get. */
+  templatePatch(d, key) {
     const oldName = TPL[d.tpl].name;
     const title = d.title.indexOf(oldName) === 0 ? TPL[key].name + d.title.slice(oldName.length) : d.title;
     const patch = { tpl: key, title };
@@ -2175,8 +2216,15 @@ class Component extends DCLogic {
     if (TPL[key].layouts || d.layout) patch.layout = 0;
     const copy = this.exampleSwap(d, key, 0); if (copy) patch.copy = copy;
     patch.images = fillImages(Object.assign({}, d, patch)); // new template, new image areas: start them filled too
-    this.commit(patch);
+    return patch;
   }
+  layoutPatch(d, i) {
+    const patch = { layout: i }, copy = this.exampleSwap(d, d.tpl, i); if (copy) patch.copy = copy;
+    const next = Object.assign({}, d, patch), keep = {}; slotsFor(next).forEach(sl => { if (d.images[sl.id]) keep[sl.id] = d.images[sl.id]; });
+    next.images = keep; patch.images = fillImages(next);
+    return patch;
+  }
+  switchTemplate(key) { const d = this.state.design; if (!d || d.tpl === key) return; this.commit(this.templatePatch(d, key)); }
   /* A field still holding its example text takes the new template's or layout's example; anything someone typed is kept. */
   exampleSwap(d, tpl, layout) {
     if (!PACK || !PACK.exampleFor || !packTpl(tpl)) return null;
@@ -2185,12 +2233,46 @@ class Component extends DCLogic {
     Object.keys(now).forEach(k => { const cur = String(copy[k] || ""); if (!cur.trim() || (was && cur === String(was[k] || "")) || cur === String(EXAMPLE_COPY[k] || "")) copy[k] = now[k]; });
     return copy;
   }
-  setLayout(i) {
-    const d = this.state.design; if (!d || (d.layout || 0) === i) return;
-    const patch = { layout: i }, copy = this.exampleSwap(d, d.tpl, i); if (copy) patch.copy = copy;
-    const next = Object.assign({}, d, patch), keep = {}; slotsFor(next).forEach(sl => { if (d.images[sl.id]) keep[sl.id] = d.images[sl.id]; });
-    next.images = keep; patch.images = fillImages(next);
-    this.commit(patch);
+  setLayout(i) { const d = this.state.design; if (!d || (d.layout || 0) === i) return; this.commit(this.layoutPatch(d, i)); }
+  /* ---------- picture pickers: each template and layout is shown as this design would look in it ---------- */
+  toggleTplPick = () => this.setState(s => ({ tplPickOpen: !s.tplPickOpen }));
+  pickSig(v) {
+    const im = v.images || {};
+    const str = [v.tpl, v.layout || 0, v.size, v.theme, JSON.stringify(v.copy || {}), JSON.stringify(v.speakers || ""), JSON.stringify(v.trio || ""), (v.partnersOn || []).join(), v.showHero ? 1 : 0, BRAND.updatedAt || "",
+      Object.keys(im).sort().map(k => { const x = im[k]; return x && x.src ? k + ":" + x.src.length + x.src.slice(-24) + [x.x, x.y, x.zoom].join() : k; }).join("|")].join("~");
+    let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+    return (h >>> 0).toString(36);
+  }
+  pickOptions(d) {
+    const out = [];
+    const tpls = this.state.tplPickOpen ? TEMPLATES.filter(t => BRAND.templatesOn.indexOf(t.key) >= 0 || d.tpl === t.key) : [TPL[d.tpl]];
+    tpls.forEach(t => out.push({ key: "t:" + t.key, v: d.tpl === t.key ? d : Object.assign({}, d, this.templatePatch(d, t.key)) }));
+    const lays = TPL[d.tpl].layouts || [];
+    if (lays.length > 1) lays.forEach((n, i) => out.push({ key: "l:" + d.tpl + ":" + i, v: (d.layout || 0) === i ? d : Object.assign({}, d, this.layoutPatch(d, i)) }));
+    const picks = this._picks || (this._picks = new Map()), last = this._pickLast || (this._pickLast = {});
+    out.forEach(o => { o.sig = this.pickSig(o.v); const url = picks.get(o.sig); if (url) last[o.key] = url; o.pic = url || last[o.key] || ""; o.fresh = picks.has(o.sig); });
+    return out;
+  }
+  async pickBacklog() {
+    const w = this._pickWant; if (this._pickBusy || !w || this.state.view !== "editor") return;
+    const node = document.querySelector("[data-canvas='0'][data-design='" + w.id + "']"); if (!node) return;
+    this._pickBusy = true; let url = "";
+    try {
+      const shot = await ensureShot(), S = SIZES[w.v.size];
+      if (document.fonts && document.fonts.ready) await document.fonts.ready;
+      // The artwork has only just been put on the page: give it two frames to lay out and its pictures time to arrive.
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      for (let i = 0; i < 30 && !node.querySelector("[data-fit],[data-field]"); i++) await new Promise(r => setTimeout(r, 50));
+      await Promise.all(Array.from(node.querySelectorAll("img")).map(im => im.complete ? 0 : new Promise(r => { im.addEventListener("load", r, { once: true }); im.addEventListener("error", r, { once: true }); setTimeout(r, 3000); })));
+      if (!node.isConnected) throw new Error("gone");
+      url = await shot.domToDataUrl(node, shotOpts({ width: S.w, height: S.h, scale: 320 / Math.max(S.w, S.h), type: "image/jpeg", quality: 0.8, backgroundColor: BRAND.themes[w.v.theme].ground, style: { transform: "none", boxShadow: "none", margin: "0", position: "static" }, filter: (el) => !(el.getAttribute && el.getAttribute("data-guide")) }));
+    } catch (e) {}
+    const picks = this._picks || (this._picks = new Map());
+    const tries = this._pickTries || (this._pickTries = {}); tries[w.sig] = (tries[w.sig] || 0) + 1;
+    if (url && url.length > 4000) picks.set(w.sig, url); else if (tries[w.sig] >= 2) picks.set(w.sig, ""); // drawn twice with nothing to show: the option keeps its name
+    if (picks.size > 80) Array.from(picks.keys()).slice(0, picks.size - 60).forEach(k => picks.delete(k));
+    this._pickBusy = false; this._pickWant = null;
+    this.setState({ pickTick: (this.state.pickTick || 0) + 1 });
   }
   backToProject = async () => { clearTimeout(this._saveT); await this.captureThumb(); const d = this.state.design; if (d) this.saveNow(); const pid = d && d.projectId; this.setState({ view: pid ? "project" : "projects", projectId: pid || null, reviewOpen: false, projMenuOpen: false }); };
   pickTemplate(key) { this.setState({ view: "size", pendingTpl: key, pendingSize: "square" }); }
@@ -2392,13 +2474,13 @@ class Component extends DCLogic {
     let shot; try { shot = await ensureShot(); } catch (e) { throw new Error("The image renderer didn't load. Check your connection and try again."); }
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
     const jpg = format === "jpg";
-    const blob = await shot.domToBlob(node, {
+    const blob = await shot.domToBlob(node, shotOpts({
       width: S.w, height: S.h, scale: 1,
       type: jpg ? "image/jpeg" : "image/png", quality: 0.92,
       backgroundColor: jpg ? th.ground : null,
       style: { transform: "none", boxShadow: "none", margin: "0", position: "static" },
       filter: (el) => !(el.getAttribute && el.getAttribute("data-guide"))
-    });
+    }));
     if (!blob || !blob.size) throw new Error("Empty image.");
     const bmp = await createImageBitmap(blob);
     const ok = bmp.width === S.w && bmp.height === S.h; bmp.close && bmp.close();
@@ -2526,7 +2608,7 @@ class Component extends DCLogic {
     const lName = Math.round(Math.min(40 * k * dens, rowH * 0.3)), lMeta = Math.round(Math.min(26 * k * dens, rowH * 0.19));
     const logo = (src) => this.state.logoData[src] || src;
     const mask = (src, w, h) => ({ width: w, height: h, background: "currentColor", WebkitMaskImage: "url(\"" + logo(src) + "\")", maskImage: "url(\"" + logo(src) + "\")", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center", WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat" });
-    const img = (id) => imgVals(d.images[id]);
+    const img = (id) => imgVals(d.images[id], mode !== "edit" && mode !== "offstage"); // tiles and thumbnails draw from the small files
     const isEdit = mode === "edit"; const isOff = mode === "offstage"; const live = isEdit || isOff;
     // Card previews: a 5:4 box with the whole artwork sitting inside it, centred and as large as it will go. Nothing is cropped.
     const boxW = this.state.cardW || 380, boxH = Math.round(boxW * ((extra && extra.boxRatio) || CARD_RATIO)), boxPad = extra && extra.boxPad != null ? extra.boxPad : 14;
@@ -2539,7 +2621,7 @@ class Component extends DCLogic {
 
     const bodyLen = (c.body || "").length, bodyK = bodyLen <= 120 ? 1 : bodyLen <= 170 ? 0.86 : bodyLen <= 230 ? 0.74 : 0.64; // long intros step down a size instead of pushing the date off
     const textAvail = (wide ? (S.w - 2 * S.pad - gap) / 2 : S.w - 2 * S.pad) - 2 * panelPad; // inner width of the text panel
-    const thumb = live ? "" : (this.state.thumbs[d.id] || "");
+    const thumb = live || (extra && extra.noThumb) ? "" : (this.state.thumbs[d.id] || ""); // the off-stage copy is always the real artwork, so it can be photographed
     const out = Object.assign({
       hasArt: live || !thumb, thumbUrl: thumb, noArt: false, designId: d.id,
       thumbStyle: { position: "absolute", left: offX, top: offY, width: Math.round(S.w * cover), height: Math.round(S.h * cover), display: "block" },
@@ -2728,8 +2810,14 @@ class Component extends DCLogic {
       if (sd) boards.push(this.boardVals(sd, "offstage", { open: null, keys: null, aria: "" }));
     } else if (isEditor) {
       boards.push(this.boardVals(d, "edit", { open: null, keys: null, aria: "Artwork preview" }));
+      // One picker picture at a time is drawn off stage, once the editing has paused.
+      this._pickList = this.pickOptions(d);
+      if (!this._pickBusy) { const need = Date.now() >= (this._pickQuietAt || 0) && !s.reviewOpen && !s.crop ? this._pickList.find(o => !o.fresh) : null; this._pickWant = need ? { sig: need.sig, id: "pick-" + need.sig, v: need.v } : null; }
+      if (this._pickWant) boards.push(this.boardVals(Object.assign({}, this._pickWant.v, { id: this._pickWant.id }), "card", { wrapClass: "card offcard", open: null, keys: null, aria: "", title: "", desc: "", tab: -1, wrapRole: "presentation" }));
     }
     if (view === "brand") boards.push(this.brandPreviewBoard());
+    // Only the first tiles are fetched straight away; the rest wait until they are scrolled near.
+    boards.forEach((b0, i) => { b0.lazy = i > 5 ? "lazy" : "eager"; (b0.shelf || []).forEach(sh => { sh.lazy = b0.lazy; }); });
     const realBoards = boards.length;
     if (!isEditor && !s.sched && view !== "templates" && view !== "size") {
       // Sizes that never appear as a card have no stored thumbnail; draw one off stage at a time so the backlog can capture it.
@@ -2738,8 +2826,8 @@ class Component extends DCLogic {
       const shelfIds = new Set(); if (view === "projects") s.projects.forEach(p => { const mine = s.drafts.filter(x => x.projectId === p.id); mine.slice().sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 4).concat(mine.slice(0, 4)).forEach(x => shelfIds.add(x.id)); });
       const chatFams = new Set(s.chat.map(m => m.fam).filter(Boolean));
       const wanted = (x) => view === "designs" || view === "calendar" || (view === "project" && x.projectId === s.projectId) || (view === "projects" && (!x.projectId || shelfIds.has(x.id) || !!x.scheduledAt)) || chatFams.has(x.familyId) || chatFams.has(x.setId);
-      const miss = (this._thumbBusyId && s.drafts.find(x => x.id === this._thumbBusyId)) || s.drafts.find(x => !s.thumbs[x.id] && wanted(x) && !(this._thumbTried && this._thumbTried.has(x.id)));
-      if (miss) boards.push(this.boardVals(miss, "card", { wrapClass: "card offcard", open: null, keys: null, aria: "", title: "", desc: "", tab: -1, wrapRole: "presentation" }));
+      const miss = (this._thumbBusyId && s.drafts.find(x => x.id === this._thumbBusyId)) || s.drafts.find(x => (!s.thumbs[x.id] || (!realThumb(s.thumbs[x.id]) && Date.now() > (this._quietAt || 0))) && wanted(x) && !(this._thumbTried && this._thumbTried.has(x.id)));
+      if (miss) boards.push(this.boardVals(miss, "card", { wrapClass: "card offcard", noThumb: true, open: null, keys: null, aria: "", title: "", desc: "", tab: -1, wrapRole: "presentation" }));
     }
 
     const pd = s.projDialog;
@@ -2867,7 +2955,7 @@ class Component extends DCLogic {
       unschedule: () => s.sched && this.setSchedule(s.sched.id, ""),
       openScheduled: () => { const d = s.sched && s.drafts.find(x => x.id === s.sched.id); if (d) { this.setState({ sched: null }); this.openDesign(d, false); } },
       /* library page */
-      brandLibAll: BRAND.library.map(im => ({ name: im.name, thStyle: { backgroundImage: "url(" + im.src + ")" } })),
+      brandLibAll: BRAND.library.map(im => ({ name: im.name, thStyle: { backgroundImage: "url(" + smallSrc(im.src) + ")" } })),
       uploadsAll: s.uploads.map(im => ({ name: im.name, thStyle: { backgroundImage: "url(" + im.src + ")" }, remove: () => this.removeUpload(im.id) })),
       libPageFile: this.libPageFile, uploadCount: s.uploads.length, uploadError: s.uploadError, clearUploadError: () => this.setState({ uploadError: "" }),
       stop, scrimClose: () => this.escape(), dialogKeys: this.trapTab,
@@ -2885,6 +2973,7 @@ class Component extends DCLogic {
     /* ---------------- editor vals ---------------- */
     const S = SIZES[d.size]; const th = BRAND.themes[d.theme]; const c = d.copy;
     const tplDef = TPL[d.tpl];
+    const pickBy = {}; (this._pickList || []).forEach(o => { pickBy[o.key] = o; });
     const missing = this.requiredMissing();
     const over = s.overflow;
     const LABELS = { name: "Speaker name", role: "Job title", company: "Company", venue: "Venue", headline: "Headline", body: "Intro", sessionTitle: "Session title", speakers: "Speaker list" };
@@ -2921,8 +3010,9 @@ class Component extends DCLogic {
       projMenuItems: s.projects.filter(pj => !pj.archived).slice().sort((a, b) => b.updatedAt - a.updatedAt).map(pj => ({ name: pj.name, on: pj.id === d.projectId, pick: () => this.assignProject(pj.id) })),
       newProjectFromEditor: this.newProjectFromEditor, unassignProject: () => this.assignProject(null),
       tplName: tplDef.name, sizeLabel: S.label, sizeDims: S.dims, themeName: th.name,
-      templateTiles: TEMPLATES.filter(t => BRAND.templatesOn.indexOf(t.key) >= 0 || d.tpl === t.key).map(t => ({ name: t.name, on: d.tpl === t.key, pick: () => this.switchTemplate(t.key) })),
-      hasLayouts: (tplDef.layouts || []).length > 1, layoutTiles: (tplDef.layouts || []).map((name, i) => ({ name, on: (d.layout || 0) === i, pick: () => this.setLayout(i) })),
+      templateTiles: TEMPLATES.filter(t => BRAND.templatesOn.indexOf(t.key) >= 0 || d.tpl === t.key).map(t => { const o = pickBy["t:" + t.key] || {}; return { name: t.name, on: d.tpl === t.key, pick: () => this.switchTemplate(t.key), pic: o.pic || "", hasPic: !!o.pic }; }),
+      tplNow: { name: tplDef.name, pic: (pickBy["t:" + d.tpl] || {}).pic || "", hasPic: !!(pickBy["t:" + d.tpl] || {}).pic }, tplPickOpen: !!s.tplPickOpen, tplPickLabel: s.tplPickOpen ? "Hide" : "Change", toggleTplPick: this.toggleTplPick,
+      hasLayouts: (tplDef.layouts || []).length > 1, layoutTiles: (tplDef.layouts || []).map((name, i) => { const o = pickBy["l:" + d.tpl + ":" + i] || {}; return { name, on: (d.layout || 0) === i, pick: () => this.setLayout(i), pic: o.pic || "", hasPic: !!o.pic }; }),
       apprHint: ((BRAND.compliance || {}).approver || "").trim() ? "A Potting Shed design check is optional." : "Approval is optional.",
       apprNone: this.appr(d).status === "none", apprSubmitted: this.appr(d).status === "submitted", apprResubmit: ["changes", "changed"].indexOf(this.appr(d).status) >= 0,
       apprLabel: this.apprLabel(d), apprClass: this.apprClass(d), apprNote: this.appr(d).note || "", apprGuardianNote: this.appr(d).guardianNote || "",
@@ -2976,7 +3066,7 @@ class Component extends DCLogic {
       hasFooter: !!FOOTER[d.tpl], flashBar: s.flashField === "barLabel" ? "flash" : "", flashUrl: s.flashField === "url" ? "flash" : "", barOptions: BRAND.barLabels, setBar: (e) => this.setCopy("barLabel", e.target.value), setUrl: (e) => this.setCopy("url", e.target.value),
       slotCards: slots.map(sl => { const im = d.images[sl.id]; const b = this.slotBox(sl.id); return {
         label: sl.label, has: !!im, status: im ? (im.name || "Image added").split(" — ")[0] : "No image yet", chooseLabel: im ? "Replace" : "Choose an image",
-        thStyle: im ? { backgroundImage: "url(" + im.src + ")" } : {}, thAlt: im ? sl.label + " thumbnail" : "Empty",
+        thStyle: im ? { backgroundImage: "url(" + smallSrc(im.src) + ")" } : {}, thAlt: im ? sl.label + " thumbnail" : "Empty",
         soft: !!im && this.softAt(im, b.w, b.h, im.zoom),
         choose: () => this.openLib(sl.id), adjust: () => this.openCrop(sl.id), clear: () => this.clearImage(sl.id),
         overClass: s.slotOver === sl.id ? "over" : "",
@@ -3006,7 +3096,7 @@ class Component extends DCLogic {
       libOpen: s.libOpen, closeLib: this.closeLib, libSlotLabel: s.libSlot ? this.slotLabel(s.libSlot) : "", libBrand: s.libBrand,
       libPickBrand: () => this.setState({ libBrand: true }), libPickUploads: () => this.setState({ libBrand: false }),
       libGroupChips: ["All"].concat(LIB_GROUPS).map(g => ({ name: g, on: (s.libGroup || "All") === g, pick: () => this.setState({ libGroup: g }) })),
-      brandLib: BRAND.library.filter(im => !s.libGroup || s.libGroup === "All" || im.group === s.libGroup).map(im => ({ name: im.group === "Speakers" || im.group === "Team" ? im.name.split(" — ")[0] : im.name, on: !!(s.libSlot && d.images[s.libSlot] && d.images[s.libSlot].src === im.src), thStyle: { backgroundImage: "url(" + im.src + ")", backgroundColor: im.group === "Graphics" ? "#7824FF" : "" }, pick: () => this.applyImage(s.libSlot, im) })),
+      brandLib: BRAND.library.filter(im => !s.libGroup || s.libGroup === "All" || im.group === s.libGroup).map(im => ({ name: im.group === "Speakers" || im.group === "Team" ? im.name.split(" — ")[0] : im.name, on: !!(s.libSlot && d.images[s.libSlot] && d.images[s.libSlot].src === im.src), thStyle: { backgroundImage: "url(" + smallSrc(im.src) + ")", backgroundColor: im.group === "Graphics" ? "#7824FF" : "" }, pick: () => this.applyImage(s.libSlot, im) })),
       uploads: s.uploads.map(im => ({ name: im.group === "Speakers" || im.group === "Team" ? im.name.split(" — ")[0] : im.name, on: !!(s.libSlot && d.images[s.libSlot] && d.images[s.libSlot].src === im.src), thStyle: { backgroundImage: "url(" + im.src + ")" }, pick: () => this.applyImage(s.libSlot, im) })),
       uploadCount: s.uploads.length, uploadError: s.uploadError, clearUploadError: () => this.setState({ uploadError: "" }),
       libFile: this.onFileInput, dropOverClass: s.libOver ? "over" : "",

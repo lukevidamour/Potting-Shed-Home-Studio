@@ -204,3 +204,21 @@ test("a set of images is zipped as one valid, uncompressed archive", () => {
   const cdOffset = all.readUInt32LE(end + 16); assert.equal(all.readUInt32LE(cdOffset), 0x02014b50);
   assert.ok(all.includes(Buffer.from("02-intro.png")) && all.includes(Buffer.from("second file")));
 });
+
+test("every library image exists as a full file and a small file", async () => {
+  const { existsSync } = await import("node:fs"); const { fileURLToPath } = await import("node:url");
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  const missing = [];
+  Object.values(lib.LIB).forEach(im => { if (!existsSync(root + im.src)) missing.push(im.src); if (!/\.svg$/.test(im.src) && !existsSync(root + lib.smallSrc(im.src))) missing.push(lib.smallSrc(im.src)); });
+  assert.deepEqual(missing, []);
+});
+
+test("designs saved with the old photo files are shown from the new ones; tiles use the small file", () => {
+  assert.equal(lib.liveSrc("assets/photos/event-07.jpg"), "assets/photos/event-07.webp");
+  assert.equal(lib.liveSrc("assets/graphics/swirl-1.png"), "assets/graphics/swirl-1.webp");
+  assert.equal(lib.liveSrc("data:image/png;base64,AAAA"), "data:image/png;base64,AAAA");
+  assert.equal(lib.imgVals({ src: "assets/photos/event-07.jpg" }).src, "assets/photos/event-07.webp");
+  assert.equal(lib.imgVals({ src: "assets/photos/event-07.webp" }, true).src, "assets/photos/sm/event-07.webp");
+  assert.equal(lib.imgVals({ src: "data:image/png;base64,AAAA" }, true).src, "data:image/png;base64,AAAA");
+  assert.equal(lib.smallSrc("assets/graphics/motif-star.svg"), "assets/graphics/motif-star.svg");
+});

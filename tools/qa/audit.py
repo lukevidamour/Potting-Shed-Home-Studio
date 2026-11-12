@@ -256,6 +256,8 @@ def audit_pages(base, urls, sizes, a, ignore, port, interactions):
                     ws.call('Network.emulateNetworkConditions', offline=False, latency=150, downloadThroughput=1.6e6 / 8, uploadThroughput=7.5e5 / 8)
                     ws.call('Emulation.setCPUThrottlingRate', rate=4)
                     for u in urls:
+                        if any(x and x in u for x in a.no_perf_for.split(',')):
+                            continue                      # a state opened by a tap, not a page anyone lands on: layout only
                         go(ws, u + a.hash, 1.5, limit=30)
                         m = ws.ev(PERF) or {}
                         lcp, cls, el = (m.get('lcp') or 0) / 1000, m.get('cls') or 0, m.get('el') or ''
@@ -323,6 +325,7 @@ def main():
     ap.add_argument('--hash', default='', help='fragment appended to every URL, e.g. "#still"')
     ap.add_argument('--interactions', help='JSON list of {"page", "click", "scope"} overlays to audit when open')
     ap.add_argument('--no-perf', dest='perf', action='store_false', help='skip the throttled phone speed pass')
+    ap.add_argument('--no-perf-for', default='', help='comma-separated URL fragments whose pages skip the speed pass (states reached by a tap rather than by landing on an address)')
     ap.add_argument('--workers', type=int, default=3, help='pages audited in parallel (each worker runs two headless Chromes)')
     ap.add_argument('--compare', help='an earlier --json file: the report lists what was fixed, what is new and what is still open')
     ap.add_argument('--report', help='write a Markdown report here')
