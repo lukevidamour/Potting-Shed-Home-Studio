@@ -1745,3 +1745,8 @@ main[data-stage],.toolbar{min-width:0}
 .bb #bb-strap{font-size:22px;line-height:28px;letter-spacing:-.02em}
 .bb .palrow .input.hex{letter-spacing:0;font-variant-numeric:normal}
 .card.bbcard,.card.bbcard .art,.card.bbcard .art>*{border-radius:0!important}
+/* Swatch text is still a pair of fields: tall enough to click, and full touch height on a phone or tablet. */
+.bb .palrow .input{height:30px}
+.bb .palrow .input.hex{height:28px}
+@media (max-width:1023px),(pointer:coarse){.bb .palrow .input,.bb .palrow .input.hex{height:44px;margin-top:4px}.bb .palrow .input.hex{margin-top:0}}
+@media (max-width:560px){.bb .type{flex-direction:column;align-items:flex-start;gap:14px;padding:22px}.bb .type .spec{font-size:80px}.bb .type>div{min-width:0}}
