@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Local server that behaves like the live host: text files are sent gzip-compressed and files are cacheable for ten minutes.
+"""Local server that behaves like the live host for speed (text files are sent gzip-compressed, pictures and fonts are
+cacheable for ten minutes) but never caches pages, scripts or styles, so a preview always shows the current build.
 Python's own http.server sends everything uncompressed, which makes the phone speed figures look far worse than they are live.
     python3 tools/qa/serve.py [port] [folder]
 """
@@ -14,7 +15,11 @@ class Handler(SimpleHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
     def end_headers(self):
-        self.send_header('Cache-Control', 'max-age=600')
+        # Pages, scripts and styles are always fetched fresh, so the preview can never show an old build.
+        # Pictures and fonts are kept for ten minutes, as the live host keeps them.
+        path = self.path.split('?')[0].lower()
+        fresh = path.endswith(('.html', '.js', '.mjs', '.css', '.json', '/')) or '.' not in path.rsplit('/', 1)[-1]
+        self.send_header('Cache-Control', 'no-store' if fresh else 'max-age=600')
         super().end_headers()
 
     def do_GET(self):
