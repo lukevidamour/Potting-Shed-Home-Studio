@@ -1750,3 +1750,50 @@ main[data-stage],.toolbar{min-width:0}
 .bb .palrow .input.hex{height:28px}
 @media (max-width:1023px),(pointer:coarse){.bb .palrow .input,.bb .palrow .input.hex{height:44px;margin-top:4px}.bb .palrow .input.hex{margin-top:0}}
 @media (max-width:560px){.bb .type{flex-direction:column;align-items:flex-start;gap:14px;padding:22px}.bb .type .spec{font-size:80px}.bb .type>div{min-width:0}}
+
+/* ============ v14: refinement pass. Every control was hovered and focused on every screen, in light and dark, and its
+   words and icons measured against what is behind them. These are the fixes. ============ */
+/* Search is a rule, not a capsule: a straight hairline under the words. */
+.search input.input{border-radius:0}
+/* A hover that fills with ink always turns its words to the paper colour, whatever set their colour at rest. */
+.makeover .mkchips button:hover,.makeover .mkchips.start button:hover,.makeover .mkchips button:focus-visible,.makeover .mkchips.start button:focus-visible{background:var(--hs-ink);border-color:var(--hs-ink);color:var(--hs-on-ink)}
+/* Buttons never take the session's accent colour on hover: on a blue or violet accent the dark words disappeared.
+   Ink buttons lift a shade instead, which reads on every accent and in both themes. */
+:root{--hs-ink-hover:#3A3A38}
+:root[data-theme="dark"]{--hs-ink-hover:#CFCFCB}
+.btn.primary:hover,.fab:hover,.mkfield .go:hover,.mkfield .go:focus-visible{background:var(--hs-ink-hover);border-color:var(--hs-ink-hover);color:var(--hs-on-ink)}
+.fab:hover{scale:1.05}
+/* The client chip in the rail has no box in dark mode either. */
+@media (min-width:861px){:root[data-theme="dark"] .gnav .wschip,:root[data-theme="dark"] .gnav .wschip:hover{background:none;box-shadow:none}}
+/* Grid and list icons are solid shapes on whole pixels: four separate squares, three separate bars. */
+.viewtog svg.solid{width:16px;height:16px;fill:currentColor;stroke:none}
+/* Quiet words still have to be read: the rail's resting items and a search result's kind use the readable grey
+   (4.9:1 on the page in light, 7:1 in dark), not the fainter one. */
+.gtab,:root[data-theme="dark"] .gtab{color:var(--quiet)}
+.gtab:hover,.gtab[aria-current="page"],:root[data-theme="dark"] .gtab:hover,:root[data-theme="dark"] .gtab[aria-current="page"]{color:var(--hs-ink)}
+@media (max-width:860px){.gtab[aria-current="page"],:root[data-theme="dark"] .gtab[aria-current="page"]{color:var(--hs-on-ink)}}
+.cmdk__item .cmdk__kind,.cmdk__item kbd{color:var(--hs-muted)}
+/* Keyboard focus is always visible: the search rule thickens in ink, the sort pill and swatch fields take a ring. */
+.search input.input:focus{border-bottom-color:var(--hs-ink);box-shadow:0 1.5px 0 var(--hs-ink)}
+.filters select.input:focus-visible{outline:2px solid var(--hs-ink);outline-offset:2px}
+.bb .palrow .input:focus-visible{outline:2px solid var(--hs-ink);outline-offset:1px}
+/* Captions hold one line each: a second line that began with a stray "· December" read as a mistake. */
+.card .ttl,.card .desc{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Figures sit as close as the rest of the words. Evenly spaced figures are kept only where numbers line up in columns (the calendar). */
+.cnt,.n,.zoomv,.verdict b,.bbscore,.dims{font-variant-numeric:normal}
+/* One height per row. Controls that sit side by side share a height, so their centres and edges line up:
+   40px in the editor's top bar and the calendar's month switcher, 36px in the stage toolbar. */
+.hdr.compact>.btn,.hdr.compact>.btn.sm,.hdr.compact>.btn.primary,.hdr.compact .title-in,.hdr.compact .kebab>.btn{height:40px;min-height:40px}
+.calnav .btn,.calnav .btn.sm{height:40px}
+.toolbar>.btn,.toolbar>.btn.icon,.toolbar>.btn.sm{height:36px;min-height:36px}
+.toolbar>.btn.icon{width:36px}
+.toolbar .sizepill{height:36px}
+@media (max-width:1023px),(pointer:coarse){.hdr.compact>.btn,.hdr.compact>.btn.sm,.hdr.compact>.btn.primary,.hdr.compact .kebab>.btn,.calnav .btn,.calnav .btn.sm{height:44px;min-height:44px}.toolbar .sizepill{height:44px}}
+/* Four corner sizes, no more: 10 for fields and small pictures, 16 for the fields that hold work and for menus,
+   22 for dialogs, and full pills for buttons. (A swatch's frame is 13 because it wraps a 10 corner with 3 of padding.) */
+.menu,.tplnow,.slot-card{border-radius:16px}
+.tplnow .tplpic,.panel .sect .sw .mini{border-radius:10px}
+.panel .sect .sw{border-radius:13px}
+.input,.title-in,.projtitle,.cal .chip,.calcell .chip,.bb .bbbody .field .input,.bb .palrow .input,.drawer .input{border-radius:10px}
+.search input.input{border-radius:0}
+.filters select.input,.bb .wayrow .input,.bb .wayrow select.input{border-radius:999px}

@@ -11,13 +11,13 @@
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261112x"></script>
+<script src="home-studio.lib.js?v=20261112zc"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261112x">
+<link rel="stylesheet" href="home-studio.css?v=20261112zc">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -25,7 +25,7 @@
   <!-- ================= EDITOR HEADER ================= -->
   <sc-if value="{{ isEditor }}">
     <header class="hdr compact" data-chrome="1">
-      <button class="btn sm quiet" onClick="{{ backToProject }}">
+      <button class="btn sm quiet" onClick="{{ backToProject }}" aria-label="{{ backAria }}" title="{{ backAria }}">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>{{ backLabel }}
       </button>
       <input class="title-in" value="{{ title }}" onChange="{{ setTitle }}" aria-label="Design title" />
@@ -293,8 +293,8 @@
               <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" value="{{ q }}" onChange="{{ setQ }}" placeholder="Search projects and artwork" aria-label="Search projects and artwork" /><sc-if value="{{ q }}"><button class="btn icon" onClick="{{ clearQ }}" aria-label="Clear search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></sc-if></label>
               <select class="input" aria-label="Sort" value="{{ sortKey }}" onChange="{{ setSort }}"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="az">A to Z</option><option value="za">Z to A</option></select>
               <div class="viewtog" role="group" aria-label="Layout">
-                <button aria-pressed="{{ isGrid }}" aria-label="Grid view" onClick="{{ pickGrid }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
-                <button aria-pressed="{{ !isGrid }}" aria-label="List view" onClick="{{ pickList }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                <button aria-pressed="{{ isGrid }}" aria-label="Grid view" onClick="{{ pickGrid }}"><svg class="solid" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></button>
+                <button aria-pressed="{{ !isGrid }}" aria-label="List view" onClick="{{ pickList }}"><svg class="solid" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="2" rx="1"/><rect x="2" y="7" width="12" height="2" rx="1"/><rect x="2" y="11" width="12" height="2" rx="1"/></svg></button>
               </div>
             </div>
           </div>
@@ -329,8 +329,8 @@
           <sc-if value="{{ !projectEmpty }}"><div class="toolrow" style="margin-top:8px"><span></span><div class="filters">
               <select class="input" aria-label="Sort" value="{{ sortKey }}" onChange="{{ setSort }}"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="az">A to Z</option><option value="za">Z to A</option></select>
               <div class="viewtog" role="group" aria-label="Layout">
-                <button aria-pressed="{{ isGrid }}" aria-label="Grid view" onClick="{{ pickGrid }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
-                <button aria-pressed="{{ !isGrid }}" aria-label="List view" onClick="{{ pickList }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                <button aria-pressed="{{ isGrid }}" aria-label="Grid view" onClick="{{ pickGrid }}"><svg class="solid" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></button>
+                <button aria-pressed="{{ !isGrid }}" aria-label="List view" onClick="{{ pickList }}"><svg class="solid" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="2" rx="1"/><rect x="2" y="7" width="12" height="2" rx="1"/><rect x="2" y="11" width="12" height="2" rx="1"/></svg></button>
               </div>
             </div></div></sc-if>
           <sc-if value="{{ projectEmpty }}"><div class="empty" style="margin-top:32px"><svg class="illo" viewBox="0 0 120 80" aria-hidden="true"><rect x="8" y="14" width="56" height="52" rx="6"/><rect x="40" y="6" width="56" height="40" rx="6"/><path d="M52 66V46h32"/><circle cx="24" cy="30" r="5"/></svg><p>Nothing in this project yet.</p><button class="btn primary" onClick="{{ goTemplates }}">Make the first artwork</button></div></sc-if>
@@ -354,8 +354,8 @@
           <sc-if value="{{ !noDrafts }}"><div class="toolrow" style="margin-top:8px"><span></span><div class="filters">
               <select class="input" aria-label="Sort" value="{{ sortKey }}" onChange="{{ setSort }}"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="az">A to Z</option><option value="za">Z to A</option></select>
               <div class="viewtog" role="group" aria-label="Layout">
-                <button aria-pressed="{{ isGrid }}" aria-label="Grid view" onClick="{{ pickGrid }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
-                <button aria-pressed="{{ !isGrid }}" aria-label="List view" onClick="{{ pickList }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                <button aria-pressed="{{ isGrid }}" aria-label="Grid view" onClick="{{ pickGrid }}"><svg class="solid" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></button>
+                <button aria-pressed="{{ !isGrid }}" aria-label="List view" onClick="{{ pickList }}"><svg class="solid" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="2" rx="1"/><rect x="2" y="7" width="12" height="2" rx="1"/><rect x="2" y="11" width="12" height="2" rx="1"/></svg></button>
               </div>
             </div></div></sc-if>
           <sc-if value="{{ noDrafts }}">
@@ -3037,7 +3037,7 @@ class Component extends DCLogic {
       saveLabel: s.saveState === "saving" ? "Saving…" : s.saveState === "saved" ? "Saved in this browser" : s.saveState === "error" ? "Couldn't save" : "Not saved yet",
       retrySave: this.retrySave,
       undo: this.undo, redo: this.redo, canUndo: s.past.length > 0, canRedo: s.future.length > 0,
-      backToProject: this.backToProject, backLabel: d.projectId && project ? "Back to " + project.name : "Back to drafts",
+      backToProject: this.backToProject, backLabel: "Back", backAria: d.projectId && project ? "Back to " + project.name : "Back to drafts", // the project is named once, in the chip beside the title
       inProject: !!d.projectId, projChipLabel: d.projectId && project ? project.name : "Draft · add to a project", projChipClass: d.projectId ? "" : "draft",
       projMenuOpen: s.projMenuOpen, toggleProjMenu: (e) => { e.stopPropagation(); this.setState(st => ({ projMenuOpen: !st.projMenuOpen })); },
       projMenuItems: s.projects.filter(pj => !pj.archived).slice().sort((a, b) => b.updatedAt - a.updatedAt).map(pj => ({ name: pj.name, on: pj.id === d.projectId, pick: () => this.assignProject(pj.id) })),
