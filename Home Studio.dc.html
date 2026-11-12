@@ -11,13 +11,13 @@
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261112zf"></script>
+<script src="home-studio.lib.js?v=20261112zg"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261112zf">
+<link rel="stylesheet" href="home-studio.css?v=20261112zg">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -2000,10 +2000,10 @@ class Component extends DCLogic {
        sliver of one letter moved with the next and showed as a vertical line. Whole letters cannot do that. */
     const D = ["M1413.66,631.47c-16.59,0-23.33,9.64-24.89,15.13s-6.22,23.43-6.22,23.43h28.51c16.59,0,23.32-9.64,24.89-15.14s6.23-23.41,6.23-23.41Z", "M1029.35,616.18c-16.6,0-23.33,9.63-24.9,15.13s-6.22,23.43-6.22,23.43h28.51c16.59,0,23.32-9.64,24.89-15.15s6.23-23.4,6.23-23.4Z", "M783.19,616.18H754.68s4.67,17.88,6.22,23.4,8.3,15.15,24.89,15.15H814.3s-4.66-17.93-6.22-23.43-8.29-15.13-24.89-15.13Z"], T = "translate(-417.74 -615.03)";
     const W = ["M604.68,760.7c0,42.52-30.32,92.23-93.48,92.23-16.13,0-30.11-3.26-42-8.81v59.81H417.74l.11-143.43a96.6,96.6,0,0,1,10.29-42.92h0c13.71-27.18,41.15-49.1,83.09-49.1C574.38,668.48,604.7,718.19,604.7,760.7Z M552.78,760.7c0-25.33-19.08-43.77-41.58-43.77s-41.58,18.44-41.58,43.77,19.07,43.77,41.58,43.77S552.8,786,552.8,760.7Z", "M802.84,760.7c0,42.52-30.33,92.23-93.47,92.23s-93.49-49.71-93.49-92.23,30.33-92.22,93.49-92.22S802.84,718.19,802.84,760.7Z M750.95,760.7c0-25.33-19.07-43.77-41.58-43.77s-41.58,18.44-41.58,43.77,19.07,43.77,41.58,43.77S751,786,751,760.7Z", "M843.49,615.15a9.3,9.3,0,0,0-9.3,9.31v53.88l-38.14-14-6.69,8.38,44.83,40.63V846.51H886l0-108.34,0-35.08.06-87.94Z", "M956.38,624.32l.26,48.58h25v39.4h-25V846.41h-51.9L904.57,615l42.51,0A9.3,9.3,0,0,1,956.38,624.32Z", "M996.9,846.41h51.89V682.21a9.31,9.31,0,0,0-9.31-9.31H996.9V846.41Z", "M1070.68,672.9V846.41h51.89V752c0-10.62,0-36.26,29.71-36.26,27.19,0,27.19,23.77,27.19,36v94.73h51.9V737.94c0-34.09-10.63-47.85-20-56s-27.81-15-44.38-15c-31,0-41.89,15.94-47.2,24.38h-.64v-9.13a9.31,9.31,0,0,0-9.31-9.31Z", "M1443.88,925.7a60.42,60.42,0,0,1-14.36,39c-7.71,9.06-22.87,14.43-32.83,14.43l-61.51,1.07c-19.16,0-34.73-3.79-44.55-15.26a60.34,60.34,0,0,1-14.59-39.27,61,61,0,0,1,4.88-23.56c-9.26-3.81-34.08-16.73-34.08-42.64,0-8.58,1.38-27.84,20.43-40.11a96.14,96.14,0,0,1-20.13-58.51c0-42.52,30.33-92.23,93.47-92.23s93.49,49.71,93.49,92.23c0,42-29.59,90.91-91.1,92.16h-43.37c-3,.36-5.57,2.79-5.66,7,.09,4.33,2.83,6.75,6,7h86.12c18.58.33,33.64,8.23,43.26,19.42A60.36,60.36,0,0,1,1443.9,925.71Z M1299.06,760.89c0,25.32,19.07,43.76,41.57,43.76s41.61-18.44,41.61-43.76-19.09-43.78-41.61-43.78S1299.06,735.56,1299.06,760.89Z M1394.62,925.71c-.12-6.79-4.38-10.62-9.26-11.12h-51c-4.78.57-8.89,4.44-9,11.12.15,6.91,4.53,10.79,9.52,11.16H1385C1390.08,936.52,1394.5,932.66,1394.62,925.71Z", "M1529.51,721.67c-.32-3.75-.93-13.14-16.26-13.14-11,0-14.69,6.89-14.69,11.58,0,9.38,12.82,14.7,26.57,18.76,29.39,8.12,60.67,16.88,60.67,54.41,0,36.56-32.23,59.06-70.69,59.06-26.23,0-66-11.87-70.64-57.52h51.59c2.17,15.95,17.49,15.95,19.69,15.95,8.75,0,18.13-5,18.13-13.45,0-13.44-12.82-15-46-27.82-22.52-7.17-41.26-21.88-41.26-45.33,0-34.39,31.25-57.21,67.2-57.21,22.82,0,62.23,9.06,66.59,54.71Z", "M1597.76,615.07h42.61a9.3,9.3,0,0,1,9.31,9.3v64.47h.62c8.75-15.62,26.25-21.88,44.7-21.88,16.57,0,36.26,5.94,47.21,19.06,14.69,17.21,16.24,32.52,16.24,63.47v96.92h-51.88V752c0-8.43,0-36.26-27.82-36.26-29.07,0-29.07,26-29.07,34.4v96.29h-51.92V615.07Z", "M1947.76,772.21c-.35,4.35-.55,9.25-1.13,12.9a1,1,0,0,1-1,.81H1852.5V742.3H1895c0-12.41-12.68-30.25-35.22-30.25-33.71,0-41.2,29.13-41.2,48.07,0,35.39,23.74,49.24,44,49.24l27.4.25V853h-27.4c-49.6,0-91.71-40.24-91.71-91.71,0-48.33,30.47-93,88.51-93C1924.73,668.38,1952.06,719.45,1947.81,772.21Z", "M2057.05,851.24c41.93,0,69.37-21.93,83.08-49.12h0a96.36,96.36,0,0,0,10.3-42.92c0-13.15.07-104.42.09-134.1a9.29,9.29,0,0,0-9.31-9.31H2099v59.8c-11.88-5.55-25.86-8.82-42-8.82-63.17,0-93.5,49.72-93.5,92.24s30.33,92.23,93.5,92.23Z M2057.05,715.24c22.5,0,41.58,18.45,41.58,43.77s-19.08,43.76-41.58,43.76-41.58-18.43-41.58-43.76,19.06-43.77,41.58-43.77Z"];
-    const L = [[0,192,288],[192,366,236],[366,477,236],[477,571,232],[571,641,232],[641,821,232],[821,994,365],[994,1173,238],[1173,1346,232],[1346,1537,238],[1537,1733,237]]; // [left, right, foot] of p o t t i n g s h e d
-    const letters = L.map((l, i) => '<g class="wm__l" data-o="' + ((l[0] + l[1]) / 2) + ' ' + l[2] + '"><g class="wm__s"><path transform="' + T + '" d="' + W[i] + '"/></g></g>').join("");
-    const leaves = [2, 1, 0].map(k => '<path class="wm__leaf" transform="' + T + '" d="' + D[k] + '"/>').join(""); // left to right: over the t, the i, the g
-    return '<svg class="wm" viewBox="0 0 1732.76 365.21" fill="currentColor" aria-hidden="true"><g class="wm__word">' + letters + leaves + '</g></svg>';
+    // Built as Pinboard's wordmark is: one path per letter, each leaf on its own, all in one group that carries the offset.
+    const letters = W.map((d) => '<path class="wm__l" fill-rule="evenodd" d="' + d + '"/>').join("");
+    const leaves = [2, 1, 0].map(k => '<path class="wm__leaf" d="' + D[k] + '"/>').join(""); // left to right: over the t, the i, the g
+    return '<svg class="wm" viewBox="0 0 1732.76 365.21" fill="currentColor" aria-hidden="true"><g class="wm__word"><g transform="' + T + '">' + letters + leaves + '</g></g></svg>';
   }
 
   /* The sign-in intro, as on Pinboard: real springs, letters rising and stretching, each leaf dropping in like a pin. */
@@ -2018,40 +2018,38 @@ class Component extends DCLogic {
       if (!document.body.contains(gate)) return;
       const spring = (z, w) => { const d = w * Math.sqrt(1 - z * z); const f = (t) => 1 - Math.exp(-z * w * t) * (Math.cos(d * t) + ((z * w) / d) * Math.sin(d * t)); const end = f(1); return (p) => f(p) + (1 - end) * p; };
       const rise = spring(0.68, 11), jelly = spring(0.36, 15), drop = spring(0.58, 13), give = spring(0.3, 18), soft = spring(0.78, 10);
-      const letters = gsap.utils.toArray(gate.querySelectorAll(".wm__l")), skins = gsap.utils.toArray(gate.querySelectorAll(".wm__s")), leaves = gsap.utils.toArray(gate.querySelectorAll(".wm__leaf")), word = gate.querySelector(".wm__word");
-      // Each letter is two layers: the outer one rises and turns, the inner one stretches. Both pivot on the letter's foot,
-      // and each layer has a single entrance tween, so its pivot is fixed once, at rest.
-      const stems = [skins[2], skins[4], skins[6]]; // the letter under each leaf takes its weight
-      const tl = gsap.timeline().timeScale(1.12);
+      /* Pinboard's entrance, used as it is: the corner leaf spins in, each letter sweeps up from below the bottom edge with a
+         little tilt and a stretch, left to right, then the leaves drop on with a spring and the word gives a touch as they
+         land, while the button comes up. Distances are Pinboard's, scaled by K because this wordmark is drawn larger. */
+      const K = 365.21 / 114.5;
+      const letters = gsap.utils.toArray(gate.querySelectorAll(".wm__l")), leaves = gsap.utils.toArray(gate.querySelectorAll(".wm__leaf")), word = gate.querySelector(".wm__word");
+      const stems = [letters[2], letters[4], letters[6]]; // the letter under each leaf takes its weight
+      const acts = gsap.utils.toArray(gate.querySelectorAll(".gate__act > *")), corner = gate.querySelector(".gate__corner");
+      const tl = gsap.timeline().timeScale(1.12); // a touch quicker than the springs alone
       this._gateTl = tl;
-      // However the entrance ends (finished, skipped, or interrupted by a tab switch), the three leaves end up on the word.
-      const rest = leaves.map(el => ({ y: gsap.getProperty(el, "y"), rotation: gsap.getProperty(el, "rotation") })); // where each leaf belongs, read before anything moves
-      const settle = () => { leaves.forEach((el, i) => { if (!gsap.isTweening(el)) gsap.set(el, { opacity: 1, y: rest[i].y, rotation: rest[i].rotation }); }); };
-      tl.eventCallback("onComplete", settle); setTimeout(settle, 4200);
       tl.call(show, null, 0)
         .from(gate.querySelector(".gate__leaf"), { scale: 0, rotation: -35, transformOrigin: "50% 50%", duration: 1.3, ease: jelly }, 0.05)
-        .add(() => {}, 0);
-      letters.forEach((el, i) => {
-        const o = el.getAttribute("data-o");
-        tl.from(el, { y: 430, rotation: 7, svgOrigin: o, duration: 1.5, ease: rise }, 0.1 + i * 0.065)
-          .from(skins[i], { scaleY: 1.32, scaleX: 0.82, svgOrigin: o, duration: 1.5, ease: jelly }, 0.1 + i * 0.065);
-      });
-      tl
-        .from(leaves, { y: -250, rotation: -40, transformOrigin: "25% 100%", duration: 1.6, ease: drop, stagger: 0.09 }, 0.92)
+        .from(letters, { y: 165 * K, rotation: 7, transformOrigin: "50% 100%", duration: 1.5, ease: rise, stagger: 0.065 }, 0.1)
+        .from(letters, { scaleY: 1.32, scaleX: 0.82, duration: 1.5, ease: jelly, stagger: 0.065 }, 0.1)
+        .from(leaves, { y: -95 * K, rotation: -40, transformOrigin: "25% 100%", duration: 1.6, ease: drop, stagger: 0.09 }, 0.92)
         .from(leaves, { opacity: 0, duration: 0.25, ease: "power1.out", stagger: 0.09 }, 0.92)
-        .to(stems, { scaleY: 0.9, scaleX: 1.05, duration: 0.1, ease: "power2.out", stagger: 0.09 }, 1.24)
+        .to(stems, { scaleY: 0.9, scaleX: 1.05, transformOrigin: "50% 100%", duration: 0.1, ease: "power2.out", stagger: 0.09 }, 1.24)
         .to(stems, { scaleY: 1, scaleX: 1, duration: 1.1, ease: give, stagger: 0.09 }, 1.34)
-        .to(word, { y: 9, duration: 0.1, ease: "power2.out" }, 1.24)
+        .to(word, { y: 3.5 * K, duration: 0.1, ease: "power2.out" }, 1.24)
         .to(word, { y: 0, duration: 1.2, ease: give }, 1.34)
-        .from(gate.querySelectorAll(".gate__act > *"), { y: 34, duration: 1.4, ease: soft, stagger: 0.08 }, 0.85)
-        .from(gate.querySelectorAll(".gate__act > *"), { opacity: 0, duration: 0.5, ease: "power1.out", stagger: 0.08 }, 0.85)
-        .from(gate.querySelector(".gate__corner"), { opacity: 0, y: -12, duration: 1.2, ease: soft }, 0.2);
+        .from(acts, { y: 34, duration: 1.4, ease: soft, stagger: 0.08 }, 0.85)
+        .from(acts, { opacity: 0, duration: 0.5, ease: "power1.out", stagger: 0.08 }, 0.85);
+      if (corner) tl.from(corner, { opacity: 0, y: -12, duration: 1.2, ease: soft }, 0.2);
+      /* However the entrance ends (finished, skipped, a tab left in the background), everything is left in its place and
+         fully visible: nothing a person needs, least of all the way in, can be stranded part-way through a fade. */
+      const settle = () => { if (tl.isActive()) return; gsap.set(letters.concat(leaves, acts, corner ? [corner] : [], [word]), { clearProps: "transform,opacity" }); };
+      tl.eventCallback("onComplete", settle); setTimeout(() => { if (tl.progress() < 1 && document.visibilityState === "visible" && !tl.isActive()) tl.progress(1); settle(); }, 5200);
       // Afterwards, point at the wordmark and a ripple runs through it from there.
       const ripple = (e) => {
         if (tl.isActive() || this._lifting) return;
         const box = word.getBoundingClientRect();
         const at = Math.max(0, Math.min(letters.length - 1, Math.round(((e.clientX - box.left) / box.width) * (letters.length - 1))));
-        const wave = { keyframes: [{ y: -26, duration: 0.18, ease: "power2.out" }, { y: 0, duration: 1, ease: jelly }], overwrite: "auto" };
+        const wave = { keyframes: [{ y: -10 * K, duration: 0.18, ease: "power2.out" }, { y: 0, duration: 1, ease: jelly }], overwrite: "auto" };
         gsap.to(letters, Object.assign({}, wave, { stagger: { each: 0.04, from: at } }));
         [2, 4, 6].forEach((li, k) => gsap.to(leaves[k], Object.assign({}, wave, { delay: Math.abs(li - at) * 0.04 }))); // each leaf goes with its letter
       };

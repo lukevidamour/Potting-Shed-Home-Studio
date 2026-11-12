@@ -1815,3 +1815,12 @@ main[data-stage],.toolbar{min-width:0}
 .menu .mlabel{color:var(--quiet)}
 .menu .msep{background:var(--hs-menu-line)}
 .menu button[role="menuitemradio"][aria-checked="true"]::after,:root[data-theme="dark"] .menu button[role="menuitemradio"][aria-checked="true"]::after{border-color:currentColor}
+
+/* ===== the way in =====
+   The sign-in button's own transition covers colour only. Its fade and rise belong to the entrance animation; when the
+   button also had a CSS transition on opacity the two fought and the button was left invisible, with no way in.
+   And if the entrance never runs at all, the button and the wordmark appear on their own after three seconds. */
+.google{transition:background-color .25s,color .25s}
+.google:active{scale:1}
+@keyframes gate-reveal{to{visibility:visible}}
+.gate.is-intro:not([data-shown]) .wm,.gate.is-intro:not([data-shown]) .gate__leaf,.gate.is-intro:not([data-shown]) .gate__corner,.gate.is-intro:not([data-shown]) .gate__act{animation:gate-reveal 0s linear 3s forwards}
