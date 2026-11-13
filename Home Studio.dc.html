@@ -1662,8 +1662,15 @@ class Component extends DCLogic {
   }
 
   /* ---------- scheduling ---------- */
-  setSchedule(id, iso) {
-    const drafts = this.state.drafts.map(x => x.id === id ? Object.assign({}, x, { scheduledAt: iso || "", updatedAt: Date.now() }) : x);
+  /* Unscheduled work as designs: each family's unscheduled sizes together, newest first. */
+  unscheduledFamilies() {
+    const by = new Map();
+    this.state.drafts.filter(x => !x.scheduledAt).sort((a, b) => b.updatedAt - a.updatedAt).forEach(x => { const k = x.familyId || x.id; if (!by.has(k)) by.set(k, []); by.get(k).push(x); });
+    return [...by.values()];
+  }
+  setSchedule(id, iso, also) {
+    const ids = [id].concat(also || []);
+    const drafts = this.state.drafts.map(x => ids.indexOf(x.id) >= 0 ? Object.assign({}, x, { scheduledAt: iso || "", updatedAt: Date.now() }) : x);
     try { this.persistDrafts(drafts); } catch (e) {}
     const patch = { drafts, dragOverDay: null, trayOver: false, draggingId: null };
     if (this.state.design && this.state.design.id === id) patch.design = Object.assign({}, this.state.design, { scheduledAt: iso || "" });
@@ -1674,9 +1681,11 @@ class Component extends DCLogic {
     e.preventDefault();
     const id = (e.dataTransfer && e.dataTransfer.getData("text/plain")) || this.state.draggingId; if (!id) return;
     const d = this.state.drafts.find(x => x.id === id); if (!d) return;
-    this.setSchedule(id, iso);
+    // a design taken from Unscheduled brings its other unscheduled sizes with it
+    const also = !d.scheduledAt && d.familyId && iso ? this.state.drafts.filter(x => x.familyId === d.familyId && x.id !== d.id && !x.scheduledAt).map(x => x.id) : [];
+    this.setSchedule(id, iso, also);
     clearTimeout(this._movedT); this.setState({ movedId: id, landedDay: iso || null }); this._movedT = setTimeout(() => this.setState({ movedId: null, landedDay: null }), 900);
-    this.showToast(iso ? "“" + d.title + "” scheduled for " + fmtShort(iso) + "." : "“" + d.title + "” taken off the calendar.");
+    this.showToast(iso ? "“" + (also.length ? this.baseTitle(d.title) + "” in " + (also.length + 1) + " sizes" : d.title + "”") + " scheduled for " + fmtShort(iso) + "." : "“" + d.title + "” taken off the calendar.");
   }
   schedPlatform(d) { return d.platforms.indexOf(this.state.schedPlatformKey) >= 0 ? this.state.schedPlatformKey : d.platforms[0]; }
   openSched(id) { const d = this.state.drafts.find(x => x.id === id); if (!d) return; this._schedReturn = document.activeElement; this.setState({ sched: { id, title: d.title, sub: TPL[d.tpl].name + " · " + SIZES[d.size].label, date: d.scheduledAt || "" }, schedError: "", schedBusy: false }); this.focusLater("sc-date"); }
@@ -3273,8 +3282,10 @@ class Component extends DCLogic {
         if (cells.slice(35).every(c => c.cls.indexOf("out") === 0)) cells.length = 35;
         return cells;
       })(),
-      unscheduled: s.drafts.filter(x => !x.scheduledAt).sort((a, b) => b.updatedAt - a.updatedAt).map(x => this.chipVals(x)),
-      unscheduledCount: s.drafts.filter(x => !x.scheduledAt).length,
+      // one row per design: its sizes travel together, so the list never repeats a name
+      unscheduled: this.unscheduledFamilies().map(g => { const v = this.chipVals(g[0]), pj = s.projects.find(x => x.id === g[0].projectId);
+        return Object.assign(v, { title: this.baseTitle(g[0].title), sub: (pj ? pj.name + " · " : "") + (g.length > 1 ? g.length + " sizes" : SIZES[g[0].size].label) }); }),
+      unscheduledCount: this.unscheduledFamilies().length,
       trayOverClass: s.trayOver ? "over" : "",
       trayDragOver: (e) => { e.preventDefault(); if (!s.trayOver) this.setState({ trayOver: true }); }, trayDragLeave: () => { if (s.trayOver) this.setState({ trayOver: false }); }, trayDrop: (e) => this.dropOn("", e),
       schedOpen: !!s.sched, sched: s.sched || {}, closeSched: this.closeSched,

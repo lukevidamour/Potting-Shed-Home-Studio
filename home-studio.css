@@ -1900,4 +1900,8 @@ main[data-stage],.toolbar{min-width:0}
 /* The wordmark is clipped at its foot only while letters rise in from below; after the entrance nothing is clipped, so a
    hover ripple's spring can dip below the baseline without cutting the bottoms of the o's */
 .gate .wm.is-settled{clip-path:none}
+/* Unscheduled rows: a design's name wraps to two lines rather than cutting off mid-word */
+.caltray .chip .cttl{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* Introductions read at a comfortable measure */
+.pagehead .lede,.bb .lede{max-width:65ch}
 
