@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
       <button class="btn sm quiet" onClick="{{ backToProject }}" aria-label="{{ backAria }}" title="{{ backAria }}">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>{{ backLabel }}
       </button>
+      <h1 class="sr">{{ title }}</h1>
       <input class="title-in" value="{{ title }}" onChange="{{ setTitle }}" aria-label="Design title" />
       <span class="kebab" onClick="{{ stop }}">
         <button class="projchip {{ projChipClass }}" onClick="{{ toggleProjMenu }}" aria-haspopup="menu" aria-expanded="{{ projMenuOpen }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>{{ projChipLabel }}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -124,7 +125,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
             <div class="alert err" role="alert" style="margin-top:12px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>{{ overflowMsg }}</span></div>
           </sc-if>
 
-          <section class="sect" aria-labelledby="sl-tpl"><h3 class="stitle" id="sl-tpl">Template</h3>
+          <section class="sect" aria-labelledby="sl-tpl"><h2 class="stitle" id="sl-tpl">Template</h2>
             <button class="tplnow" onClick="{{ toggleTplPick }}" aria-expanded="{{ tplPickOpen }}" aria-controls="tpl-picks">
               <span class="tplpic"><sc-if value="{{ tplNow.hasPic }}"><img sc-camel-src="{{ tplNow.pic }}" alt="" /></sc-if></span>
               <span class="tplname">{{ tplNow.name }}</span><span class="tplchg">{{ tplPickLabel }}</span>
@@ -139,14 +140,14 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
 
 
           <sc-if value="{{ hasLayouts }}">
-            <section class="sect" aria-labelledby="sl-lay"><h3 class="stitle" id="sl-lay">Layout</h3>
+            <section class="sect" aria-labelledby="sl-lay"><h2 class="stitle" id="sl-lay">Layout</h2>
               <div class="picgrid">
                 <sc-for list="{{ layoutTiles }}" as="lt"><button class="picopt" aria-pressed="{{ lt.on }}" onClick="{{ lt.pick }}"><span class="tplpic"><sc-if value="{{ lt.hasPic }}"><img sc-camel-src="{{ lt.pic }}" alt="" /></sc-if></span><span class="tplname">{{ lt.name }}</span></button></sc-for>
               </div>
             </section>
           </sc-if>
 
-          <section class="sect" aria-labelledby="sl-col"><h3 class="stitle" id="sl-col">Colourway<span class="meta">{{ themeName }}</span></h3>
+          <section class="sect" aria-labelledby="sl-col"><h2 class="stitle" id="sl-col">Colourway<span class="meta">{{ themeName }}</span></h2>
             <div class="swatches" role="radiogroup" aria-label="Colour combination" onKeyDown="{{ themeKeys }}">
               <sc-for list="{{ themeTiles }}" as="th">
                 <button class="sw" role="radio" aria-checked="{{ th.on }}" tabIndex="{{ th.tab }}" onClick="{{ th.pick }}" title="{{ th.name }}">
@@ -158,7 +159,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
             <sc-if value="{{ lowContrast }}"><div class="alert warn"><span>This combination reads as {{ contrastRatio }}:1 contrast. It's approved, but check it at small sizes.</span></div></sc-if>
           </section>
 
-          <section class="sect" aria-labelledby="sl-copy"><h3 class="stitle" id="sl-copy">Copy<span>or click any text on the artwork</span></h3>
+          <section class="sect" aria-labelledby="sl-copy"><h2 class="stitle" id="sl-copy">Copy<span>or click any text on the artwork</span></h2>
             <sc-for list="{{ fields }}" as="f">
               <div class="field">
                 <label for="{{ f.id }}">{{ f.label }}<sc-if value="{{ f.optional }}"><span class="opt">Optional</span></sc-if></label>
@@ -220,7 +221,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
 
 
           <sc-if value="{{ hasSlots }}">
-          <section class="sect" aria-labelledby="sl-img"><h3 class="stitle" id="sl-img">Images<span>drop a file onto one to replace it</span></h3>
+          <section class="sect" aria-labelledby="sl-img"><h2 class="stitle" id="sl-img">Images<span>drop a file onto one to replace it</span></h2>
             <sc-for list="{{ slotCards }}" as="sl">
               <div class="slot-card {{ sl.overClass }}" onDragOver="{{ sl.dragOver }}" onDragLeave="{{ sl.dragLeave }}" onDrop="{{ sl.drop }}">
                 <div class="th" style="{{ sl.thStyle }}" role="img" aria-label="{{ sl.thAlt }}"></div>
@@ -238,7 +239,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
           </section>
           </sc-if>
 
-          <details class="sect more"><summary><h3 class="stitle">More options</h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+          <details class="sect more"><summary><h2 class="stitle">More options</h2><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
             <div class="moreb">
             <label class="check"><span>Show the footer bar</span><input type="checkbox" checked="{{ showBar }}" onChange="{{ toggleBar }}" /></label>
             <sc-if value="{{ showBar }}"><label class="check"><span>Show “Powered by Potting Shed”</span><input type="checkbox" checked="{{ showPowered }}" onChange="{{ togglePowered }}" /></label></sc-if>
@@ -284,7 +285,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
           </div>
           <sc-if value="{{ hasWeek }}">
             <section class="week" aria-labelledby="wk-title">
-              <div class="weekhead"><h3 class="section" id="wk-title">Going out <em>this week</em></h3><span class="meta"><span class="countup" data-to="{{ weekCount }}">{{ weekCount }}</span> scheduled · <button class="link" style="font-size:13px" onClick="{{ goCalendar }}">open the calendar</button></span></div>
+              <div class="weekhead"><h2 class="section" id="wk-title">Going out <em>this week</em></h2><span class="meta"><span class="countup" data-to="{{ weekCount }}">{{ weekCount }}</span> scheduled · <button class="link" style="font-size:13px" onClick="{{ goCalendar }}">open the calendar</button></span></div>
               <div class="weekstrip">
                 <sc-for list="{{ weekItems }}" as="wi">
                   <button class="weekcard" onClick="{{ wi.open }}" aria-label="{{ wi.aria }}">
@@ -427,7 +428,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
               </div>
             </div>
             <aside class="caltray {{ trayOverClass }}" aria-label="Unscheduled artwork" onDragOver="{{ trayDragOver }}" onDragLeave="{{ trayDragLeave }}" onDrop="{{ trayDrop }}">
-              <h3 class="section" style="font-size:17px;line-height:23px">Unscheduled <span class="meta" style="font-weight:400">· {{ unscheduledCount }}</span></h3>
+              <h2 class="section" style="font-size:17px;line-height:23px">Unscheduled <span class="meta" style="font-weight:400">· {{ unscheduledCount }}</span></h2>
               <sc-if value="{{ !unscheduledCount }}"><p class="meta" style="margin:0">Everything has a date. Drop artwork here to take it off the calendar.</p></sc-if>
               <sc-for list="{{ unscheduled }}" as="it">
                 <div class="chip {{ it.cls }}" draggable="true" tabIndex="0" role="button" aria-label="{{ it.aria }}" title="{{ it.aria }}" onDragStart="{{ it.dragStart }}" onDragEnd="{{ it.dragEnd }}" onClick="{{ it.pick }}" onKeyDown="{{ it.keys }}">
@@ -714,7 +715,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
           <sc-for list="{{ boards }}" as="a">
 
             <sc-if value="{{ a.isHeading }}">
-              <div class="heading gridhead"><h3 class="section">{{ a.text }}</h3><sc-if value="{{ a.sub }}"><span class="meta">{{ a.sub }}</span></sc-if></div>
+              <div class="heading gridhead"><h2 class="section">{{ a.text }}</h2><sc-if value="{{ a.sub }}"><span class="meta">{{ a.sub }}</span></sc-if></div>
             </sc-if>
 
             <sc-if value="{{ !a.isHeading }}">
