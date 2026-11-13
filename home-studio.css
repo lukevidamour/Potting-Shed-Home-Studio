@@ -1736,4 +1736,16 @@ main[data-stage],.toolbar{min-width:0}
 @media (prefers-reduced-motion:reduce){
   .fab svg.spark path{transition:none}
 }
+/* The brand book cover is the client's own: their logo large at the top, their signature graphic bleeding off the right,
+   their colours as plain dots ringed in a neutral line (never the accent). */
+.bbcover__mark{width:min(360px,42%);height:auto}
+.bbcover__mark svg{display:block;width:100%;height:auto;fill:currentColor}
+.bbcover__art{position:absolute;right:2%;top:50%;height:108%;width:auto;translate:0 -50%;rotate:-8deg;pointer-events:none;filter:drop-shadow(0 20px 32px rgba(40,0,80,.16))}
+.bbcover>*:not(.bbcover__art){position:relative;z-index:1}
+.bbcover>.bbcover__logo{position:absolute}
+.bbcover__dots i{box-shadow:0 0 0 1.5px rgba(120,120,120,.45)}
+@media (max-width:640px){
+  .bbcover__art{right:-26%;top:62%;height:84%}
+  .bbcover__mark{width:58%}
+}
 

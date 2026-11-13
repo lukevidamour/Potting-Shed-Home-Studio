@@ -332,4 +332,6 @@
 
   // The workspace's icon in the sidebar: TEKEX's favicon from tekex.co, a red open square on lilac, on its own ground.
   T.icon = { src: "assets/tekex/favicon.svg", ground: "#F6C5FF", size: "auto 68%" };
+  // The brand book cover's signature graphic: the inflated cross from the toolkit, pink and violet on the mint ground.
+  T.cover = "assets/tekex/library/graphics/3d-inflated-cross-pink-violet.webp";
 })();
