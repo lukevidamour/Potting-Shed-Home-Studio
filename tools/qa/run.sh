@@ -11,8 +11,10 @@ CLIENT="${QA_CLIENT:-tekex}"
 P="Home%20Studio.dc.html"
 sed "s/CLIENT/$CLIENT/g" interactions.json > out/interactions.json
 PAGES=""
-for v in gate home project editor publish chat chat-thread search; do PAGES="$PAGES $P?qa=$v&client=$CLIENT"; done
-for v in designs calendar brand; do PAGES="$PAGES $P?qa=$v&client=$CLIENT#/$v"; done
+# TEKEX is measured as the live site loads it (&public: no private client pack, which only exists on this machine)
+PUB=""; [ "$CLIENT" = "tekex" ] && PUB="&public"
+for v in gate home project editor publish chat chat-thread search; do PAGES="$PAGES $P?qa=$v&client=$CLIENT$PUB"; done
+for v in designs calendar brand; do PAGES="$PAGES $P?qa=$v&client=$CLIENT$PUB#/$v"; done
 python3 audit.py --base "$BASE" --pages $PAGES --init-js "$(cat init.js)" --interactions out/interactions.json \
   --ignore ".offcard, .offcard *, .boards.offstage, .boards.offstage *, [data-canvas] *" \
   --no-perf-for "qa=publish,qa=chat,qa=search" \

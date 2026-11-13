@@ -215,6 +215,12 @@ GATE = """(() => { const pw = [...document.querySelectorAll('input[type=password
     if (/fixed|absolute/.test(s.position) && r.width * r.height > innerWidth * innerHeight * 0.6) return true; } return false; })()"""
 
 
+def page_label(u, base):
+    """A page's name in the report: its path, plus its query when it has one (one file can be many screens)."""
+    p = urllib.parse.urlsplit(u)
+    return (p.path[len(urllib.parse.urlsplit(base).path):] or '/') + ('?' + p.query if p.query else '')
+
+
 def crawl(ws, base, limit):
     """Same-site pages linked from the homepage (and from those pages), up to limit."""
     origin = urllib.parse.urlsplit(base)
@@ -239,7 +245,7 @@ def crawl(ws, base, limit):
 def audit_pages(base, urls, sizes, a, ignore, port, interactions):
     """Audit urls at sizes in this worker's own browsers (one for mouse sizes, one for touch). Returns (found, loads)."""
     found = defaultdict(lambda: defaultdict(set)); loads = 0
-    label = lambda u: urllib.parse.urlsplit(u).path[len(urllib.parse.urlsplit(base).path):] or '/'
+    label = lambda u: page_label(u, base)
     groups = [(False, [s for s in sizes if not is_touch(*s)]), (True, [s for s in sizes if is_touch(*s)])]
     for gi, (touch, group) in enumerate(groups):
         if not group and not (touch and interactions):
@@ -367,7 +373,7 @@ def main():
                     found[t][k] |= szs
 
     npages = len(urls)
-    label = lambda u: urllib.parse.urlsplit(u).path[len(urllib.parse.urlsplit(base).path):] or '/'
+    label = lambda u: page_label(u, base)
     rows = {t: group_rows(items, npages) for t, items in found.items()}
     counts = {lvl: sum(len(rows[t]) for t in ts if t in rows) for lvl, ts in SEVERITY.items()}
     keyset = {(t, pg, el, msg) for t, items in found.items() for (pg, el, msg) in items}

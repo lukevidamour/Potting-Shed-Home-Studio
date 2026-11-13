@@ -10,6 +10,9 @@
      side by side while the TEKEX bundle loads. The first frame already has the page's margin and colour, so nothing jumps. -->
 <style>html,body{margin:0;background:#F2F2F2}:root[data-theme="dark"],:root[data-theme="dark"] body{background:#121212}</style>
 <script>try{if(localStorage.getItem("hs-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+<link rel="preload" href="components/fig-tokens.css" as="style">
+<link rel="preload" href="components/fig-typography.css" as="style">
+<link rel="preload" href="components/fig-assets.css" as="style">
 <link rel="preload" href="styles.css?v=20261113u" as="style">
 <link rel="preload" href="home-studio.css?v=20261113u" as="style">
 <link rel="preload" href="./support.js" as="script">
@@ -17,6 +20,15 @@
 <link rel="preload" href="assets/brand/home-studio-wordmark.js?v=20261113u" as="script">
 <link rel="preload" href="assets/fonts/neue-montreal-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/quarto-medium-italic.woff2" as="font" type="font/woff2" crossorigin>
+<!-- React comes from unpkg, and the runtime only asks for it once this page has finished parsing. Asking here instead
+     (same address, same integrity, so the runtime's own request is answered from this one) saves a phone the whole round trip. -->
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preload" href="https://unpkg.com/react@18.3.1/umd/react.production.min.js" as="script" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous">
+<link rel="preload" href="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" as="script" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous">
+<!-- The runtime downloads this page a second time after it first draws, to re-read its template from the raw text. This
+     page's template reads the same either way (proved screen by screen with tools/qa/snap.mjs), and that second copy
+     (90KB) arrived just as the first tiles were loading. An empty resource list tells the runtime to use what it has. -->
+<script>window.__resources=window.__resources||{};</script>
 <script>/* Landing on the plain address (typed, from a link or a new tab) always starts at the sign-in screen, so a demo gets the
    whole arrival. A reload, going back, or a deep link such as #/designs keeps you where you were. Automated checks skip it. */
 (function(){try{var n=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};if(!location.hash&&!location.search&&n.type==="navigate"&&!window.__hsQa){sessionStorage.removeItem("hs-in");sessionStorage.removeItem("hs-curtain");}}catch(e){}})();</script>
@@ -30,6 +42,9 @@ if(local){var js=get("assets/hh/pack.js");if(js){run(js,"client");if(window.HS_P
 window.HS_MARKUP=markup;if(markup){var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_MARKUP;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}
 document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_MARKUP)slot.outerHTML=window.HS_MARKUP;else slot.remove();});})();
 </script>
+<link rel="stylesheet" href="components/fig-tokens.css">
+<link rel="stylesheet" href="components/fig-typography.css">
+<link rel="stylesheet" href="components/fig-assets.css">
 <link rel="stylesheet" href="styles.css?v=20261113u">
 <link rel="stylesheet" href="home-studio.css?v=20261113u">
 <script src="./support.js"></script>
@@ -300,7 +315,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
               <div class="weekstrip">
                 <sc-for list="{{ weekItems }}" as="wi">
                   <button class="weekcard" onClick="{{ wi.open }}" aria-label="{{ wi.aria }}">
-                    <span class="wart" style="{{ wi.artStyle }}"><sc-if value="{{ wi.thumb }}"><img sc-camel-src="{{ wi.thumb }}" alt="" onError="{{ wi.thumbFailed }}" /></sc-if><sc-if value="{{ !wi.thumb }}"><b>Aa</b></sc-if></span>
+                    <span class="wart" style="{{ wi.artStyle }}"><sc-if value="{{ wi.thumb }}"><img sc-camel-src="{{ wi.thumb }}" alt="" loading="{{ wi.lazy }}" fetchpriority="{{ wi.prio }}" decoding="async" onError="{{ wi.thumbFailed }}" /></sc-if><sc-if value="{{ !wi.thumb }}"><b>Aa</b></sc-if></span>
                     <span class="wday">{{ wi.day }}</span>
                     <span class="wttl">{{ wi.title }}</span>
                     <span class="wsub">{{ wi.sub }}</span>
@@ -732,7 +747,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
             <sc-if value="{{ !a.isHeading }}">
             <div class="{{ a.wrapClass }}" style="{{ a.cardStyle }}" role="{{ a.wrapRole }}" tabIndex="{{ a.tab }}" aria-label="{{ a.aria }}" onClick="{{ a.open }}" onKeyDown="{{ a.keys }}">
               <div class="{{ a.artWrapClass }}" style="{{ a.artBoxStyle }}">
-              <sc-if value="{{ a.isCard }}"><sc-if value="{{ a.hasShelf }}"><div class="shelf"><sc-for list="{{ a.shelf }}" as="sh"><img class="thumbimg" sc-camel-src="{{ sh.url }}" alt="" loading="{{ sh.lazy }}" decoding="async" style="{{ sh.style }}" /></sc-for></div></sc-if><sc-if value="{{ a.noArt }}"><div class="noart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M12 9v6M9 12h6"/></svg><span>No designs yet</span></div></sc-if><sc-if value="{{ a.thumbUrl }}"><img class="thumbimg" sc-camel-src="{{ a.thumbUrl }}" alt="" loading="{{ a.lazy }}" fetchpriority="{{ a.prio }}" decoding="async" style="{{ a.thumbStyle }}" onError="{{ a.thumbFailed }}" /></sc-if></sc-if>
+              <sc-if value="{{ a.isCard }}"><sc-if value="{{ a.hasShelf }}"><div class="shelf"><sc-for list="{{ a.shelf }}" as="sh"><img class="thumbimg" sc-camel-src="{{ sh.url }}" alt="" loading="{{ sh.lazy }}" fetchpriority="{{ sh.prio }}" decoding="async" style="{{ sh.style }}" /></sc-for></div></sc-if><sc-if value="{{ a.noArt }}"><div class="noart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M12 9v6M9 12h6"/></svg><span>No designs yet</span></div></sc-if><sc-if value="{{ a.thumbUrl }}"><img class="thumbimg" sc-camel-src="{{ a.thumbUrl }}" alt="" loading="{{ a.lazy }}" fetchpriority="{{ a.prio }}" decoding="async" style="{{ a.thumbStyle }}" onError="{{ a.thumbFailed }}" /></sc-if></sc-if>
               <sc-if value="{{ a.hasArt }}">
               <div data-canvas="{{ a.canvasFlag }}" data-design="{{ a.designId }}" style="{{ a.canvasStyle }}" onClick="{{ a.canvasClick }}">
                 <sc-if value="{{ !a.isPack }}">
@@ -1465,10 +1480,16 @@ class Component extends DCLogic {
     if (typeof ResizeObserver !== "undefined") { this._ro = new ResizeObserver(() => this.measure()); }
     // Inline partner logos as data URLs so the export never depends on a fetch mid-render.
     // TEKEX's templates measure their words in the TEKEX font: once it has loaded, draw again so every line break is right.
-    // (only once the first screen has painted: the first tiles are pictures, and this font is for drawing artwork)
+    // (only once the first screen's pictures are in: the first tiles are pictures, and this font is for drawing artwork)
     const tkFont = () => { if (TKP && document.fonts && document.fonts.load) Promise.all([300, 500, 600].map(w => document.fonts.load(w + " 40px 'TK Neue'"))).then(() => this.setState(s => ({ fontTick: (s.fontTick || 0) + 1 }))).catch(() => {}); };
-    if (this.state.view === "editor") tkFont(); else setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(tkFont, { timeout: 2500 }) : tkFont()), 700);
-    // The artwork templates draw with (logos, marks, backgrounds) waits until the first screen has painted: fetched on the
+    // Anything fetched for later waits until the pictures on the first screen have arrived (at most 6s): on a phone's
+    // first visit every byte fetched sooner is taken from the tiles someone is looking at.
+    const idle = (f) => (window.requestIdleCallback ? requestIdleCallback(f, { timeout: 3000 }) : setTimeout(f, 300));
+    const afterFirstScreen = (f) => { const t0 = Date.now(), seen = (im) => { const r = im.getBoundingClientRect(); return r.width && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth; };
+      const check = () => { const waiting = [...document.images].some(im => !im.complete && im.loading !== "lazy" && seen(im)); if (waiting && Date.now() - t0 < 6000) setTimeout(check, 200); else idle(f); };
+      setTimeout(check, 300); };
+    if (this.state.view === "editor") tkFont(); else afterFirstScreen(tkFont);
+    // The artwork templates draw with (logos, marks, backgrounds) waits for the first screen's pictures too: fetched on the
     // phone's first visit it competed with the first tiles and pushed them back by seconds. SVGs become data URLs (so an
     // export never waits on a fetch) in one state update; photos are simply fetched into the cache.
     const art = BRAND.partners.concat(PACK && WS_ID === PACK.id ? (PACK.preload || []).map(src => ({ src })) : []).concat(TKP && WS_ID === DEFAULT_WS ? (TKP.preload || []).map(src => ({ src })) : []);
@@ -1478,8 +1499,7 @@ class Component extends DCLogic {
         .then(pairs => { const add = {}; pairs.forEach(x => { if (x) add[x[0]] = x[1]; }); if (Object.keys(add).length) this.setState(s => ({ logoData: Object.assign({}, s.logoData, add) })); });
       rest.forEach(p => { const im = new Image(); im.decoding = "async"; im.src = p.src; });
     };
-    const idle = (f) => (window.requestIdleCallback ? requestIdleCallback(f, { timeout: 3000 }) : setTimeout(f, 300));
-    setTimeout(() => idle(loadArt), 900);
+    afterFirstScreen(loadArt);
     requestAnimationFrame(() => this.measure());
   }
   componentWillUnmount() {
@@ -3076,7 +3096,12 @@ class Component extends DCLogic {
     if (!this._mctx) { try { this._mctx = document.createElement("canvas").getContext("2d"); } catch (e) { this._mctx = null; } }
     const n = String(str || "").length;
     if (!this._mctx) return n * px * 0.62;
-    this._mctx.font = (weight || 400) + " " + px + "px " + (family ? "'" + family + "'," : "") + "'PP Neue Montreal','Helvetica Neue',Helvetica,Arial,sans-serif";
+    // A face that hasn't loaded is measured in the fallback, as the canvas would do anyway; naming it would start its
+    // download in the middle of the first screen (TEKEX's semibold, 56KB, is only needed once artwork is drawn live).
+    // tkFont loads it on purpose, and its fontTick measures everything again in the real face.
+    const ok = this._famOk || (this._famOk = {}), fk = (weight || 400) + "|" + family;
+    if (family && !ok[fk]) { try { ok[fk] = !document.fonts || document.fonts.check((weight || 400) + " 16px '" + family + "'"); } catch (e) { ok[fk] = true; } }
+    this._mctx.font = (weight || 400) + " " + px + "px " + (family && ok[fk] ? "'" + family + "'," : "") + "'PP Neue Montreal','Helvetica Neue',Helvetica,Arial,sans-serif";
     return this._mctx.measureText(String(str || "")).width + n * px * (tracking || 0);
   }
   /* Largest size at which a line fits its space, never below a floor (after which it is allowed to wrap). */
@@ -3177,11 +3202,11 @@ class Component extends DCLogic {
     const todayIso = isoDay(new Date()); const weekEnd = isoDay(new Date(Date.now() + 7 * 86400000));
     const weekDue = s.drafts.filter(x => x.scheduledAt && x.scheduledAt >= todayIso && x.scheduledAt <= weekEnd).sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt) || SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size));
     const weekGroups = []; weekDue.forEach(x => { const k = (x.familyId || x.id) + "@" + x.scheduledAt; let g = weekGroups.find(w => w.k === k); if (!g) { g = { k, rep: x, members: [] }; weekGroups.push(g); } g.members.push(x); });
-    const weekItems = weekGroups.slice(0, 12).map(g => {
+    const weekItems = weekGroups.slice(0, 12).map((g, wi) => {
       const x = g.rep; const th = BRAND.themes[x.theme]; const pj = s.projects.find(y => y.id === x.projectId);
       const sizes = g.members.map(m => SIZES[m.size].label);
       const withThumb = g.members.find(m => s.thumbs[m.id]) || x;
-      return { title: this.baseTitle(x.title), sub: pj ? pj.name : "Draft", sizes: sizes.join(" · "), day: x.scheduledAt === todayIso ? "Today" : fmtShort(x.scheduledAt), thumb: s.thumbs[withThumb.id] || "", thumbFailed: () => this.dropThumb(withThumb.id), artStyle: { background: th.ground, color: th.accent }, aria: "Open " + this.baseTitle(x.title) + ", going out " + fmtShort(x.scheduledAt) + " as " + sizes.join(", "), open: () => this.openDesign(withThumb, false) };
+      return { title: this.baseTitle(x.title), sub: pj ? pj.name : "Draft", sizes: sizes.join(" · "), day: x.scheduledAt === todayIso ? "Today" : fmtShort(x.scheduledAt), thumb: s.thumbs[withThumb.id] || "", thumbFailed: () => this.dropThumb(withThumb.id), artStyle: { background: th.ground, color: th.accent }, lazy: wi < 3 ? "eager" : "lazy", prio: wi < 2 ? "high" : "auto", aria: "Open " + this.baseTitle(x.title) + ", going out " + fmtShort(x.scheduledAt) + " as " + sizes.join(", "), open: () => this.openDesign(withThumb, false) };
     });
     const hit = (str) => (str || "").toLowerCase().indexOf(q) >= 0;
     if (view === "projects" && q) {
@@ -3220,7 +3245,7 @@ class Component extends DCLogic {
     }
     if (view === "brand") boards.push(this.brandPreviewBoard());
     // Only the first tiles are fetched straight away; the rest wait until they are scrolled near.
-    boards.forEach((b0, i) => { b0.lazy = i > 5 ? "lazy" : "eager"; b0.prio = i < 2 ? "high" : "auto"; (b0.shelf || []).forEach(sh => { sh.lazy = b0.lazy; }); });
+    boards.forEach((b0, i) => { b0.lazy = i > 5 ? "lazy" : "eager"; b0.prio = i < 2 ? "high" : "auto"; (b0.shelf || []).forEach((sh, j) => { sh.lazy = b0.lazy; sh.prio = j ? "low" : b0.prio; }); });
     const realBoards = boards.length;
     if (!isEditor && !s.sched && view !== "templates" && view !== "size") {
       // Sizes that never appear as a card have no stored thumbnail; draw one off stage at a time so the backlog can capture it.
