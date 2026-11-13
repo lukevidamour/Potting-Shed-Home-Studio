@@ -7,9 +7,9 @@
 //   - flat ends sit on the x-height (22.8) and the baseline (91.14); round shapes overshoot both by about 2.35;
 //   - every stem top is square, except its top right-hand corner, which is rounded (radius 3.665).
 // So:
-//   m is the n with its arch repeated one stem along: the n's right leg becomes the middle stem, rising to the
-//     x-height with a square top and its right corner rounded; the first arch meets it in a small V (the logo's
-//     notch), and the second arch springs from it through a notch, exactly as the n's does from its stem;
+//   m is the n with its arch repeated one stem along: the n's right leg becomes the middle stem, and the second arch,
+//     drawn exactly as the n's, runs on along its own line until it meets the first arch, so the two arches meet in
+//     a clean V over the middle stem, which has no top of its own (Luke: a square cap there read as a stray tab);
 //   u is the n turned round: both tops square with their right corners rounded, the right stem standing on a square
 //     foot with the bowl springing from it through the notch, and the bowl overshooting the baseline as the n's
 //     arch overshoots the x-height.
@@ -51,23 +51,35 @@ function makeM() {
   const [n] = LOGO.n, from = starts(n), segs = n.segs;
   // the n, in order: 0-2 stem down and up its inside, 3-4 the counter, 5 down the leg's inside, 6 the leg's foot,
   // 7 up the leg's outside, 8-9 the shoulder to the apex, 10 down to the notch, 11 the notch, 12 up the stem, 13-14 its corner
-  const stemX0 = n.x, legX0 = segs[4].x; // 257.19, 300.03
-  const dx = legX0 - stemX0;
-  const shifted = move([n], dx)[0], ss = shifted.segs;
-  // where the middle stem's square top meets the first arch: on the shoulder (segment 9), at the x-height
-  const top = ss[14].y; // the stem top's height (22.79)
-  const t = solve(...from[9], segs[9], top, 1);
-  const [, toApex] = split(...from[9], segs[9], t);
-  const P = bez(...from[9], segs[9], t);
+  const dx = segs[4].x - n.x; // the leg stands one arch along from the stem: the second arch is the first, moved by that
+  const sh = move([n], dx)[0], ss = sh.segs, sfrom = starts(sh);
+  // The second arch's shoulder runs on, along the line it is travelling at the notch, until it meets the first arch's
+  // outer curve: the two arches meet there in a V, and the middle stem has no top of its own (no cap above the arches).
+  const [ex, ey] = [ss[10].x, ss[10].y], tx = ss[10].x - ss[10].x2, ty = ss[10].y - ss[10].y2, tl = Math.hypot(tx, ty);
+  const ux = tx / tl, uy = ty / tl;
+  const side = (x, y) => (x - ex) * uy - (y - ey) * ux; // which side of the run-on line a point is
+  let hit = null;
+  for (const k of [8, 9]) {
+    const f = (t) => { const [x, y] = bez(...from[k], segs[k], t); return side(x, y); };
+    let prev = f(0);
+    for (let q = 1; q <= 400 && !hit; q++) {
+      const cur = f(q / 400);
+      if ((prev <= 0) !== (cur <= 0)) { let lo = (q - 1) / 400, hi = q / 400; for (let z = 0; z < 60; z++) { const m = (lo + hi) / 2; if ((f(lo) <= 0) === (f(m) <= 0)) lo = m; else hi = m; } hit = { k, t: (lo + hi) / 2 }; }
+      prev = cur;
+    }
+    if (hit) break;
+  }
+  if (!hit) throw new Error("the second arch never meets the first");
+  const Q = bez(...from[hit.k], segs[hit.k], hit.t);
+  const [, onward] = split(...from[hit.k], segs[hit.k], hit.t);
   const out = {
     x: n.x, y: n.y,
     segs: [
-      ...segs.slice(0, 6),                  // stem, first counter, down to where the middle stem stands
-      ...ss.slice(1, 14),                   // the middle stem's foot, up its inside, the second counter, the right leg, the second shoulder, the notch, up to the corner
-      ss[14],                               // the middle stem's rounded top-right corner
-      { type: "L", x: P[0], y: top },       // along its square top to where the first arch meets it
-      toApex,                               // the first arch, up to its apex
-      ...segs.slice(10),                    // down to the n's notch, up the stem, its corner, home
+      ...segs.slice(0, 6),               // the stem, the first counter, down to where the middle stem stands
+      ...ss.slice(1, 11),                // the middle stem's foot, up its inside, the second counter, the right leg, the second arch down to the n's notch point
+      { type: "L", x: Q[0], y: Q[1] },   // on along the same line into the first arch: the V where the arches meet
+      onward,                            // the first arch from there up to its apex
+      ...segs.slice(hit.k + 1),          // ...and on round: down to the n's notch, up the stem, its corner, home
     ],
   };
   return [out];
@@ -127,7 +139,7 @@ const PAIRS = [
   ["h", "o", ["h", "e"]],   // stem into a round letter
   ["o", "m", ["p", "i"]],   // a bowl into a stem: Pinboard's approved p·i (4.7 in Pinboard), measured the same way
   ["m", "e", ["h", "e"]],   // stem into the e, as the logo's h·e
-  ["e", "s", ["e", "d"]],   // the e's open side into a round letter, as the logo's e·d
+  ["e", "s", "break"],      // the break between home and studio: wider than any pair, so it reads as two words (Luke)
   ["s", "t", ["s", "h"]],   // the s into a stem, as the logo's s·h
   ["t", "u", ["t2", "i"]],  // the t's bar into a stem, as the logo's t·i
   ["u", "d", ["n", "g"]],   // stem into a bowl, as the logo's n·g
@@ -135,11 +147,14 @@ const PAIRS = [
   ["i", "o", ["n", "g"]],   // stem into a bowl, as the logo's n·g
 ];
 const PINBOARD_PI = 4.7, PINBOARD_STRAIGHT = 6.06;
+// The gap between the two words, in logo units (the pairs inside a word are 4.7 to 6.1). Override: WORD_BREAK=n node ...
+const WORD_BREAK = +(process.env.WORD_BREAK || 12);
 
 export function build() {
   const word = "homestudio";
   const gaps = PAIRS.map(([a, b, like]) => {
     if (!like) return PINBOARD_STRAIGHT;
+    if (like === "break") return WORD_BREAK;
     const [x, y] = like, target = x === "p" && y === "i" ? white(LOGO.p, LOGO.i, PINBOARD_PI) : logoWhite(x, y);
     return +gapFor(L[a], L[b], target).toFixed(2);
   });
