@@ -16,7 +16,8 @@
 // Spacing is the logo's: each pair is set so the white between the two letters (between the x-height and the
 // baseline, at most 14 units into either letter) equals the white of the logo's own pair of the same kind.
 //
-//   node tools/brand/wordmark.mjs      writes assets/brand/home-studio.svg (ink), home-studio-white.svg, and prints the gaps
+//   node tools/brand/wordmark.mjs      writes assets/brand/home-studio.svg (ink), home-studio-white.svg, home-studio-wordmark.js
+//                                      (letter by letter, for the sign-in screen), and prints the gaps
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -164,8 +165,12 @@ export function build() {
   const top = Math.min(0, ink.y0), height = +(Math.max(BASE, ink.y1) - top).toFixed(3);
   const fmt = (v) => String(+v.toFixed(3));
   const svgPath = (subs) => subs.map((sp) => `M${fmt(sp.x)} ${fmt(sp.y)}${sp.segs.map((s) => (s.type === "L" ? `L${fmt(s.x)} ${fmt(s.y)}` : `C${fmt(s.x1)} ${fmt(s.y1)} ${fmt(s.x2)} ${fmt(s.y2)} ${fmt(s.x)} ${fmt(s.y)}`)).join("")}Z`).join("");
-  const paths = placed.map((subs) => `<path fill-rule="evenodd" d="${svgPath(move(subs, -x0).map((sp) => map(sp, (x, y) => [x, y - top])))}"/>`).join("\n");
-  return { gaps, width, height, svg: (fill) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" fill="${fill}">\n<title>Home Studio</title>\n${paths}\n</svg>\n` };
+  const at0 = (subs) => move(subs, -x0).map((sp) => map(sp, (x, y) => [x, y - top]));
+  const paths = placed.map((subs) => `<path fill-rule="evenodd" d="${svgPath(at0(subs))}"/>`).join("\n");
+  // Letter by letter, with the i's leaf on its own, for the sign-in screen to animate (as Pinboard's way-in page does).
+  const letters = [], leaves = [], under = [];
+  [...word].forEach((ch, k) => { const subs = at0(placed[k]); if (ch === "i") { letters.push(svgPath(subs.slice(0, 1))); leaves.push(svgPath(subs.slice(1))); under.push(k); } else letters.push(svgPath(subs)); });
+  return { gaps, width, height, letters, leaves, under, svg: (fill) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" fill="${fill}">\n<title>Home Studio</title>\n${paths}\n</svg>\n` };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
@@ -173,6 +178,11 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
   fs.mkdirSync(path.join(ROOT, "assets", "brand"), { recursive: true });
   fs.writeFileSync(path.join(ROOT, "assets", "brand", "home-studio.svg"), w.svg("#171717"));
   fs.writeFileSync(path.join(ROOT, "assets", "brand", "home-studio-white.svg"), w.svg("#F2F2F2"));
+  // For the sign-in screen (Home Studio.dc.html, wordmarkSvg), which animates it in letter by letter
+  fs.writeFileSync(path.join(ROOT, "assets", "brand", "home-studio-wordmark.js"),
+    "/* Made by tools/brand/wordmark.mjs (don't edit by hand): the homestudio wordmark letter by letter, its leaves on their own,\n" +
+    "   and the letter under each leaf, for the sign-in screen to animate. Units are the Potting Shed logo's. */\n" +
+    "window.HS_WORDMARK = " + JSON.stringify({ viewBox: [0, 0, w.width, w.height], letters: w.letters, leaves: w.leaves, under: w.under }) + ";\n");
   console.log("gaps", PAIRS.map((p, k) => p[0] + "·" + p[1] + " " + w.gaps[k]).join("  "));
   console.log(`assets/brand/home-studio.svg and home-studio-white.svg, ${w.width} x ${w.height}`);
 }

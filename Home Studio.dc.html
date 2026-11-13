@@ -22,6 +22,7 @@ window.HS_MARKUP=markup;if(markup){var of=window.fetch;window.fetch=function(u){
 document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_MARKUP)slot.outerHTML=window.HS_MARKUP;else slot.remove();});})();
 </script>
 <script src="./support.js"></script>
+<script src="assets/brand/home-studio-wordmark.js?v=20261113o"></script>
 <script src="home-studio.lib.js?v=20261113n"></script>
 </head>
 <body>
@@ -1115,9 +1116,9 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
 
   <sc-if value="{{ gateOpen }}">
     <div class="gate {{ gateClass }}" style="{{ gateStyle }}" data-chrome="1" role="dialog" aria-modal="true" aria-label="Welcome to Home Studio">
-      <div class="gate__top"><span class="gate__leaf" role="img" aria-label="Potting Shed"></span><span class="gate__corner">Home Studio</span></div>
+      <div class="gate__top"><span class="gate__leaf" role="img" aria-label="Potting Shed"></span></div>
       <div class="gate__act"><button class="google" id="gate-go" onClick="{{ enterApp }}"><span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>Sign in with Google</button></div>
-      <h1 class="gate__wm"><span class="sr">Potting Shed Home Studio</span><span class="wmhost" aria-hidden="true"></span></h1>
+      <h1 class="gate__wm"><span class="sr">Home Studio by Potting Shed</span><span class="wmhost" aria-hidden="true"></span></h1>
     </div>
   </sc-if>
 
@@ -2106,6 +2107,9 @@ class Component extends DCLogic {
   /* ---------- welcome gate and the curtain ---------- */
   /* The wordmark, cut into its letters so each can move on its own: every letter is the whole word seen through its own window. */
   wordmarkSvg() {
+    // The Home Studio wordmark (tools/brand/wordmark.mjs), as Pinboard's way-in page shows the pinboard wordmark (Luke, 13 Nov 2026)
+    const HW = window.HS_WORDMARK;
+    if (HW) return '<svg class="wm" viewBox="' + HW.viewBox.join(" ") + '" fill="currentColor" aria-hidden="true"><g class="wm__word">' + HW.letters.map(d => '<path class="wm__l" fill-rule="evenodd" d="' + d + '"/>').join("") + HW.leaves.map(d => '<path class="wm__leaf" d="' + d + '"/>').join("") + '</g></svg>';
     /* The three leaves, then each letter of the word as its own shape. The letters were once cut out of the whole word with
        upright windows, but neighbours overlap each other's column (the o reaches under the t, the g under the s), so a
        sliver of one letter moved with the next and showed as a vertical line. Whole letters cannot do that. */
@@ -2132,9 +2136,9 @@ class Component extends DCLogic {
       /* Pinboard's entrance, used as it is: the corner leaf spins in, each letter sweeps up from below the bottom edge with a
          little tilt and a stretch, left to right, then the leaves drop on with a spring and the word gives a touch as they
          land, while the button comes up. Distances are Pinboard's, scaled by K because this wordmark is drawn larger. */
-      const K = 365.21 / 114.5;
+      const HW = window.HS_WORDMARK, K = HW ? 1 : 365.21 / 114.5, UNDER = HW ? HW.under : [2, 4, 6]; // the Home Studio wordmark is drawn in the logo's own units, as Pinboard's is
       const letters = gsap.utils.toArray(gate.querySelectorAll(".wm__l")), leaves = gsap.utils.toArray(gate.querySelectorAll(".wm__leaf")), word = gate.querySelector(".wm__word");
-      const stems = [letters[2], letters[4], letters[6]]; // the letter under each leaf takes its weight
+      const stems = UNDER.map(k => letters[k]); // the letter under each leaf takes its weight
       const acts = gsap.utils.toArray(gate.querySelectorAll(".gate__act > *")), corner = gate.querySelector(".gate__corner");
       const tl = gsap.timeline().timeScale(1.12); // a touch quicker than the springs alone
       this._gateTl = tl;
@@ -2162,7 +2166,7 @@ class Component extends DCLogic {
         const at = Math.max(0, Math.min(letters.length - 1, Math.round(((e.clientX - box.left) / box.width) * (letters.length - 1))));
         const wave = { keyframes: [{ y: -10 * K, duration: 0.18, ease: "power2.out" }, { y: 0, duration: 1, ease: jelly }], overwrite: "auto" };
         gsap.to(letters, Object.assign({}, wave, { stagger: { each: 0.04, from: at } }));
-        [2, 4, 6].forEach((li, k) => gsap.to(leaves[k], Object.assign({}, wave, { delay: Math.abs(li - at) * 0.04 }))); // each leaf goes with its letter
+        UNDER.forEach((li, k) => gsap.to(leaves[k], Object.assign({}, wave, { delay: Math.abs(li - at) * 0.04 }))); // each leaf goes with its letter
       };
       if (window.matchMedia("(hover: hover)").matches) gate.querySelector(".wm").addEventListener("pointerenter", ripple);
       const go = document.getElementById("gate-go"); if (go) go.focus({ preventScroll: true });
