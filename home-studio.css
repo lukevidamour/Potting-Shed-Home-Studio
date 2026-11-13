@@ -1677,7 +1677,7 @@ main[data-stage],.toolbar{min-width:0}
 .google{transition:background-color .25s,color .25s}
 .google:active{scale:1}
 @keyframes gate-reveal{to{visibility:visible}}
-.gate.is-intro:not([data-shown]) .wm,.gate.is-intro:not([data-shown]) .gate__leaf,.gate.is-intro:not([data-shown]) .gate__corner,.gate.is-intro:not([data-shown]) .gate__act{visibility:hidden;animation:gate-reveal 0s linear 3s forwards}
+.gate.is-intro:not([data-shown]) .wm,.gate.is-intro:not([data-shown]) .gate__leaf,.gate.is-intro:not([data-shown]) .gate__corner,.gate.is-intro:not([data-shown]) .gate__act{visibility:hidden;animation:gate-reveal 0s ease 3s forwards}
 
 /* ===== the editor on a phone and a small tablet =====
    The artwork stays at the top while you work. The stage is exactly as tall as the artwork needs (never more than 46% of
@@ -1692,7 +1692,7 @@ main[data-stage],.toolbar{min-width:0}
   .hdr.compact>.btn.primary{order:3;padding:0 18px}
   .hdr.compact>.btn.sm.quiet{order:0;width:44px;padding:0;justify-content:center;font-size:0;gap:0}
   .app.is-editor .stage-wrap{position:sticky;top:0;z-index:12;background:color-mix(in srgb,var(--stage-tint,#EAEAE7) 18%,var(--hs-page));border-bottom:.5px solid var(--key)}
-  .app.is-editor main.stage{--stage-max:46svh;height:calc(min(var(--stage-max),(100vw - 40px)/var(--art-ar,1)) + 28px);min-height:0;padding:14px 20px;transition:height var(--t) var(--out)}
+  .app.is-editor main.stage{--stage-max:46svh;height:calc(min(var(--stage-max),(100vw - 40px)/var(--art-ar,1)) + 28px);min-height:0;padding:14px 20px;transition:none} /* height snaps: animating layout stutters; the artwork's morph carries the change */
   .app.is-editor:has(.panel input:focus,.panel textarea:focus) main.stage{--stage-max:30svh}
   .app.is-editor:has(.panel input:focus,.panel textarea:focus) .toolbar{display:none}
   .app.is-editor .toolbar{padding:8px 12px 0}
@@ -1891,5 +1891,10 @@ main[data-stage],.toolbar{min-width:0}
   button.link::after{content:"";position:absolute;left:-6px;right:-6px;top:50%;height:44px;translate:0 -50%}
   .calcell .chip{position:relative}
   .calcell .chip::after{content:"";position:absolute;inset:-4px}
+}
+/* One rule for everyone who asks for less motion, so anything added later is calm by default: movement finishes at once
+   (end states are kept), nothing waits on a delay, nothing loops, and scrolling jumps rather than glides. */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important;scroll-behavior:auto!important}
 }
 

@@ -37,11 +37,11 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
 
   <!-- ================= EDITOR HEADER ================= -->
   <sc-if value="{{ isEditor }}">
+    <h1 class="sr">{{ title }}</h1>
     <header class="hdr compact" data-chrome="1">
       <button class="btn sm quiet" onClick="{{ backToProject }}" aria-label="{{ backAria }}" title="{{ backAria }}">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>{{ backLabel }}
       </button>
-      <h1 class="sr">{{ title }}</h1>
       <input class="title-in" value="{{ title }}" onChange="{{ setTitle }}" aria-label="Design title" />
       <span class="kebab" onClick="{{ stop }}">
         <button class="projchip {{ projChipClass }}" onClick="{{ toggleProjMenu }}" aria-haspopup="menu" aria-expanded="{{ projMenuOpen }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>{{ projChipLabel }}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
