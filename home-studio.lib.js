@@ -49,11 +49,12 @@ const BRAND = {
   strategy: { strapline: "", positioning: "", messages: ["The innovation community for the Crown Dependencies", "Founders, investors, operators and policymakers in one room", "Talks, socials and an annual summit"], audiences: ["Founders and operators", "Investors", "Policymakers", "Partners and sponsors"] },
   compliance: { approver: "", wording: "", social: "" },
   templatesOn: ["speaker", "event", "listing", "trio", "partners", "lockup"],
+  // TEKEX's team exactly as tekex.co lists it, with the site's own portraits
   team: [
-    { name: "Luke Vidamour", role: "Partner, Potting Shed", src: "assets/team/luke-vidamour.jpg" },
-    { name: "Ed Prow",       role: "Partner, Potting Shed", src: "assets/team/ed-prow.jpg" },
-    { name: "Tom Langford",  role: "Partner, Potting Shed", src: "assets/team/tom-langford.jpg" },
-    { name: "Al Mitchell",   role: "Partner, Potting Shed", src: "assets/team/al-mitchell.jpg" }
+    { name: "Ed Prow",      role: "Founder",          src: "assets/tekex/library/team/ed-prow.webp" },
+    { name: "Tom Langford", role: "Partner",          src: "assets/tekex/library/team/tom-langford.webp" },
+    { name: "Louis Pike",   role: "Guernsey Lead",    src: "assets/tekex/library/team/louis-pike.webp" },
+    { name: "Jenson Artus", role: "Isle of Man Lead", src: "assets/tekex/library/team/jenson-artus.webp" }
   ],
   log: [],
   studioEmail: "luke@pottingshed.com",   // where "Ask Potting Shed" messages go
@@ -175,8 +176,8 @@ const BRAND = {
     { id: "tk-motif-tri", name: "Motif — tri", src: "assets/graphics/motif-tri.svg", group: "Graphics" },
     { id: "tk-motif-rings", name: "Motif — rings", src: "assets/graphics/motif-rings.svg", group: "Graphics" },
     { id: "tk-motif-square", name: "Motif — square", src: "assets/graphics/motif-square.svg", group: "Graphics" },
-    { id: "lib-al-mitchell", name: "Al Mitchell — speaker portrait", src: "assets/speaker-al-mitchell.jpg", w: 675, h: 900, group: "Team" },
-    // The TEKEX team as tekex.co shows them: the official portraits, names and roles from the site's team section.
+    // The TEKEX team exactly as tekex.co shows it (Luke, 13 November 2026): the four people in the site's team section,
+    // with their official portraits, names and roles. Nobody else is listed as TEKEX team.
     { id: "tk-ed", name: "Ed Prow — Founder", person: "Ed Prow", src: "assets/tekex/library/team/ed-prow.webp", w: 640, h: 800, group: "Team" },
     { id: "tk-ed-bw", name: "Ed Prow — Founder, mono", person: "Ed Prow", src: "assets/tekex/library/team/ed-prow-mono.webp", w: 640, h: 800, group: "Team" },
     { id: "tk-tom", name: "Tom Langford — Partner", person: "Tom Langford", src: "assets/tekex/library/team/tom-langford.webp", w: 640, h: 800, group: "Team" },
@@ -185,7 +186,6 @@ const BRAND = {
     { id: "tk-louis-bw", name: "Louis Pike — Guernsey Lead, mono", person: "Louis Pike", src: "assets/tekex/library/team/louis-pike-mono.webp", w: 640, h: 800, group: "Team" },
     { id: "tk-jenson", name: "Jenson Artus — Isle of Man Lead", person: "Jenson Artus", src: "assets/tekex/library/team/jenson-artus.webp", w: 640, h: 800, group: "Team" },
     { id: "tk-jenson-bw", name: "Jenson Artus — Isle of Man Lead, mono", person: "Jenson Artus", src: "assets/tekex/library/team/jenson-artus-mono.webp", w: 640, h: 800, group: "Team" },
-    { id: "tk-al-mitchell-portrait", name: "Al Mitchell — portrait", src: "assets/photos/al-mitchell-portrait.webp", group: "Team" }
   ]
 };
 const LIB = Object.fromEntries(BRAND.library.map(im => [im.id, im]));
@@ -208,8 +208,8 @@ const FOCUS = {
   "tk-andrew-mcneill": [42, 2], "tk-jeff-macleod": [50, 5], "tk-nic-rose": [50, 3], "tk-niraj-singh": [50, 4], "tk-guy-thompson": [50, 3],
   "tk-ian-rhodes": [50, 3], "tk-gabe-drogon": [50, 2], "tk-peter-o-brady": [50, 3], "tk-claire-trant": [49, 4], "tk-lisa-mccabe": [50, 4],
   "tk-hannah-mellor": [48, 3], "tk-jake-schofield": [50, 4], "tk-oliver-le-brun": [47, 5], "tk-austin-gibbs": [50, 4], "tk-dr-omar": [48, 4],
-  "tk-serena-guthrie-cutout": [50, 3], "tk-serena-guthrie": [50, 3], "tk-tim-huelin-cutout": [45, 2], "lib-al-mitchell": [55, 6],
-  "tk-ed": [50, 20], "tk-ed-bw": [50, 20], "tk-tom": [50, 18], "tk-tom-bw": [50, 18], "tk-louis": [50, 20], "tk-louis-bw": [50, 20], "tk-jenson": [50, 16], "tk-jenson-bw": [50, 16], "tk-al-mitchell-portrait": [42, 21]
+  "tk-serena-guthrie-cutout": [50, 3], "tk-serena-guthrie": [50, 3], "tk-tim-huelin-cutout": [45, 2],
+  "tk-ed": [50, 20], "tk-ed-bw": [50, 20], "tk-tom": [50, 18], "tk-tom-bw": [50, 18], "tk-louis": [50, 20], "tk-louis-bw": [50, 20], "tk-jenson": [50, 16], "tk-jenson-bw": [50, 16]
 };
 Object.keys(FOCUS).forEach(id => { if (LIB[id]) { LIB[id].fx = FOCUS[id][0]; LIB[id].fy = FOCUS[id][1]; } });
 /* Cut-outs (a person on a transparent background) are never stretched to fill a frame: that blows the head up and
@@ -660,6 +660,13 @@ const Store = {
    source every template reads from (BRAND), so editing it re-skins the artwork. Switching client reloads the page. */
 const WS_KEY = "hs-workspaces-v1", WS_CUR = "hs-ws-current", BRAND_KEY = "hs-brand-v1", DEFAULT_WS = "tekex";
 const BRAND_EDITABLE = ["powered", "speakerKicker", "type", "style", "logoSize", "imagery", "strategy", "compliance", "templateSet", "name", "url", "logo", "about", "voice", "dos", "donts", "hashtags", "palette", "themes", "barLabels", "partners", "templatesOn", "team", "log", "updatedAt", "updatedBy"];
+/* A new client's brand book starts with the Potting Shed team who look after it. */
+const PS_TEAM = [
+  { name: "Luke Vidamour", role: "Partner, Potting Shed", src: "assets/team/luke-vidamour.jpg" },
+  { name: "Ed Prow",       role: "Partner, Potting Shed", src: "assets/team/ed-prow.jpg" },
+  { name: "Tom Langford",  role: "Partner, Potting Shed", src: "assets/team/tom-langford.jpg" },
+  { name: "Al Mitchell",   role: "Partner, Potting Shed", src: "assets/team/al-mitchell.jpg" }
+];
 const BRAND_DEFAULT = JSON.parse(JSON.stringify(BRAND));
 function hexToRgb(hex) { const m = String(hex || "").trim().replace(/^#/, ""); const f = m.length === 3 ? m.split("").map(ch => ch + ch).join("") : m; const n = parseInt(f, 16); return /^[0-9a-fA-F]{6}$/.test(f) ? "rgb(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + ")" : "rgb(0,0,0)"; }
 function rgbToHex(rgb) { return "#" + parseRgb(rgb).map(v => v.toString(16).padStart(2, "0")).join("").toUpperCase(); }
@@ -679,7 +686,7 @@ function blankBrand(name, primary, secondary, url) {
     barLabels: ["EVENT", "SPEAKERS", "PARTNERS", "NEWS"], partners: [{ key: "ps", name: "Potting Shed", src: "assets/ps-logo.svg" }], library: [],
     fonts: { display: "PP Neue Montreal", accent: "Quarto Italic" }, templatesOn: ["speaker", "event", "listing", "trio", "partners", "lockup"],
     type: { headWeight: 500 }, style: { line: 2, radius: 0, photo: "colour" }, logoSize: "m", imagery: "", strategy: { strapline: "", positioning: "", messages: [], audiences: [] }, compliance: { approver: "", wording: "", social: "" },
-    team: JSON.parse(JSON.stringify(BRAND_DEFAULT.team)), log: [], studioEmail: BRAND_DEFAULT.studioEmail
+    team: JSON.parse(JSON.stringify(PS_TEAM)), log: [], studioEmail: BRAND_DEFAULT.studioEmail
   };
 }
 
@@ -766,6 +773,10 @@ if (WS_ID !== DEFAULT_WS) {
   if (PACK && meta.preset === PACK.preset && PACK.exampleCopy) Object.assign(EXAMPLE_COPY, PACK.exampleCopy);
 }
 applyBrand(Store.get(BRAND_KEY, null));
+if (WS_ID === DEFAULT_WS && (BRAND.team || []).every(t => / Potting Shed$/.test(t.role || "")) && (BRAND.team || []).length) {
+  BRAND.team = JSON.parse(JSON.stringify(BRAND_DEFAULT.team));
+  try { const saved = Store.get(BRAND_KEY, null); if (saved) { saved.team = BRAND.team; Store.set(BRAND_KEY, saved); } } catch (e) {}
+}
 if (WS_ID === DEFAULT_WS && TKP) {
   TK_THEMES.forEach(t => { if (!BRAND.themes.some(x => x.name === t.name)) BRAND.themes.push(Object.assign({}, t)); });
   // The TEKEX templates from the toolkit are what new work is made from. Designs made with the first six keep working.
