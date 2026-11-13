@@ -1179,8 +1179,15 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
         <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:22px">
           <li>Open a project and start a new design. Everything for the post sits in one panel: template, size, colours, copy and images.</li>
           <li>Add other sizes from the same design; the copy stays in sync while each size keeps its own image crops.</li>
-          <li>Review, then download a PNG or JPG at full size.</li>
+          <li>Review, then download a PNG or JPG at full size, or every size at once.</li>
+          <li>Or describe what you need to the assistant (the sparkle, bottom right) and it makes it in the brand.</li>
         </ol>
+        <div class="keys" aria-label="Keyboard shortcuts">
+          <div><span>Search and commands</span><span><kbd>{{ modKey }}</kbd><kbd>K</kbd></span></div>
+          <div><span>Undo</span><span><kbd>{{ modKey }}</kbd><kbd>Z</kbd></span></div>
+          <div><span>Redo</span><span><kbd>⇧</kbd><kbd>{{ modKey }}</kbd><kbd>Z</kbd></span></div>
+          <div><span>Close a panel or menu</span><span><kbd>Esc</kbd></span></div>
+        </div>
         <p class="meta" style="margin:0">Designs are saved in this browser only. Need a new template or layout? Use <b>Ask Potting Shed</b> in the sidebar.</p>
         <div class="dactions"><button class="btn primary" onClick="{{ closeHelp }}">Got it</button></div>
       </div>
@@ -3233,6 +3240,7 @@ class Component extends DCLogic {
       isDark: s.theme === "dark", isLight: s.theme !== "dark", setDark: () => this.setTheme("dark"), setLight: () => this.setTheme("light"), toggleTheme: () => this.setTheme(s.theme === "dark" ? "light" : "dark"), themeToggleLabel: s.theme === "dark" ? "Switch to light mode" : "Switch to dark mode",
       avatarMissing: s.avatarMissing, avatarFailed: () => this.setState({ avatarMissing: true }), announce: s.announce,
       goProjects: this.goProjects, goDesigns: this.goDesigns, goLibrary: this.goLibrary, goProject: this.goProject, goTemplates: this.goTemplates,
+      modKey: /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? "⌘" : "Ctrl",
       openHelp: () => { this._helpReturn = document.activeElement; this.setState({ helpOpen: true }); this.focusDialog(); }, closeHelp: () => { this.setState({ helpOpen: false }); if (this._helpReturn && this._helpReturn.focus) this._helpReturn.focus(); }, helpOpen: s.helpOpen,
       bodyClass: isEditor ? "body" : "shell",
       mainClass: isEditor ? "stage-wrap" : "content",
