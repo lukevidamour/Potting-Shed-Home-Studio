@@ -1917,4 +1917,30 @@ main[data-stage],.toolbar{min-width:0}
 .dialog .keys{display:flex;flex-direction:column;gap:6px;padding:12px 0 2px;border-top:1px solid var(--key)}
 .dialog .keys>div{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;line-height:20px;color:var(--hs-muted)}
 .dialog .keys kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;margin-left:4px;padding:0 6px;border-radius:6px;background:var(--well);color:var(--hs-ink);font:500 12px/1 inherit;box-shadow:inset 0 -1px 0 var(--key)}
+/* Phones: "Ask Potting Shed" and "How it works" live in the account menu, so the header fits beside 44px buttons */
+.phone-only{display:none}
+@media (max-width:640px){
+  .gfoot .not-phone{display:none}
+  .menu .phone-only{display:block}
+}
+@media (max-width:360px){
+  .bead.logo .mark{width:88px;min-width:88px;flex-basis:88px}
+  .gtab{font-size:12px;letter-spacing:-.02em}
+  .gtabs{padding-right:50px}
+}
+@media (min-width:861px){
+  /* the current page's tab slides 30px for its icon, so the tab itself is 30px narrower and stays inside the rail */
+  .gtab{width:calc(100% - 30px)}
+}
+@media (max-width:300px){
+  /* folding phones: the wordmark a size smaller so the header still fits on one line */
+  .bead.logo .mark{width:72px;min-width:72px;flex-basis:72px}
+  .gnav{column-gap:2px}
+  .gfoot{gap:0}
+  .gnav .bead.logo{padding:0 2px 0 4px}
+}
+@media (min-width:861px) and (pointer:coarse){
+  /* touch tablets with the desktop rail: four 44px buttons fit its footer; light/dark is in the account menu */
+  .gfoot .themebtn{display:none}
+}
 
