@@ -279,7 +279,7 @@
      Copy comes from the brief where it says something, and from the toolkit's published posts where it doesn't. A real
      person only appears when the brief names them; slides whose words still need writing are marked to rewrite. */
   var ROLEWORD = /^(ceo|cmo|cto|coo|cfo|md|founder|co-?founder|chair|chairman|chairwoman|director|head|partner|vice|president|former|managing|lead|principal|senior|chief|manager|investor|advisor|adviser|the|our|at|of|in)\b/i;
-  var nameAt = function (s) { var m = String(s || "").trim().match(/^((?:Dr|Prof|Sir|Dame)\.?\s+)?([A-Z][a-z'’-]+(?:\s+(?:[A-Z][a-z'’-]+|de|van|von|le|la)){1,2})\b/); return m && !ROLEWORD.test(m[2]) ? (m[1] || "") + m[2] : ""; };
+  var nameAt = function (s) { var m = String(s || "").trim().match(/^((?:Dr|Prof|Sir|Dame)\.?\s+)?((?:[A-Z][a-z'’-]+|[A-Z]{2})(?:\s+(?:[A-Z][a-z'’-]+|de|van|von|le|la)){1,2})\b/); return m && !ROLEWORD.test(m[2]) ? (m[1] || "") + m[2] : ""; };
   // People named in a brief: "with A and B", or "A, role; B, role" lists. Never a role read as a name.
   T.peopleIn = function (text) {
     var t = String(text || ""), m = t.match(/\b(?:with|featuring|ft\.)\s+(.+)$/i) || t.match(/\b(?:speakers?|line-?up|panel(?:lists)?)\s*:\s+(.+)$/i) || (/;/.test(t) && t.match(/:\s+(.+)$/)), part = m ? m[1] : (/;/.test(t) ? t : "");
@@ -364,8 +364,11 @@
   var tidy = function (x) { return String(x || "").replace(/\s+/g, " ").replace(/^[\s:–—-]+|[\s.]+$/g, "").trim(); };
   /* The toolkit's own kinds of post, read from a brief in the words the TEKEX team uses. Each sets the template, the
      layout and the copy it can; a real person only appears when the brief names them. Returns true when it read one. */
+  // "Can you make a post saying…", "We need a speaker graphic for…", "Make something about…": the request, not the content
+  var REQ = /^\s*(?:please\s+)?(?:(?:can|could|would)\s+you\s+|(?:we|i)\s+(?:need|want|would like)\s+|let'?s\s+|i'?d like\s+)?(?:(?:make|create|design|do|put together|draft|need|want)\s+)?(?:me\s+)?(?:(?:a|an|some)\s+)?(?:quick\s+)?(?:(?:post|graphic|card|tile|image|visual|design|something|announcement|social)\s+)?(?:(?:saying|about|for|announcing|that says|on|to say|showing)\s+)?(?:that\s+)?/i; // whole words only: "AI Sprint" keeps its A
+  var content = function (t) { var c = String(t || "").replace(/^\s*(?:announcement|update|news|save the date)\s*[:–—-]\s*/i, "").replace(REQ, ""); c = c.replace(/^remind\s+(?:people|everyone|folks)\s+(?:that\s+)?/i, ""); return c.length >= 4 ? c : String(t || ""); };
   function route(r, text) {
-    var t = String(text || ""), c = r.copy = r.copy || {}, w = whenOf(c);
+    var t = String(text || ""), say = content(t), c = r.copy = r.copy || {}, w = whenOf(c);
     var cm = t.match(/\b(TEKEX|IOM|JSY|GSY)\s?#\s?(\d+)/i), code = cm ? (/tekex/i.test(cm[1]) ? "TEKEX#" + cm[2] : cm[1].toUpperCase() + "#" + cm[2]) : (c.eventNumber ? "TEKEX#" + c.eventNumber : "");
     var put = function (tpl, L, copy, title, said) {
       if (typeof TPL !== "undefined" && !TPL[tpl]) return false;
@@ -373,12 +376,17 @@
       ["name", "person", "quote"].forEach(function (k) { if (!(copy && copy[k])) delete o[k]; }); // never someone else's words or face
       r.tpl = tpl; r.layout = L; r.copy = Object.assign(o, copy || {}); r.title = title; r.said = said; r.set = null; r.speakers = []; return true;
     };
-    var quoted = t.match(/[“"]([^”"]{6,})[”"]/), who = (t.match(/\b(?:from|by|says|said)\s+((?:Dr\.?\s+)?[A-Z][a-z'’-]+(?:\s+[A-Z][a-z'’-]+){1,2})/) || [])[1];
+    var NAME = "((?:Dr\\.?\\s+)?(?:[A-Z][a-z'’-]+|[A-Z]{2})(?:\\s+[A-Z][a-zA-Z'’-]+){1,2})";
+    var quoted = t.match(/[“"]([^”"]{6,})[”"]/), who = (t.match(new RegExp("\\b(?:from|by|says|said)\\s+" + NAME)) || t.match(new RegExp("[”\"]\\s*[-–—,]\\s*" + NAME)) || [])[1];
+    if (quoted && who) return put("tk-statement", 1, { quote: quoted[1], name: who }, "Quote · " + who, ["a quote from " + who]);
     if (/\bpodcast\b/i.test(t)) {
       var ep = (t.match(/\b(?:episode|ep\.?|#)\s*(\d+)/i) || [])[1], hosts = T.peopleIn(t).map(function (p) { return p.name; });
       return put("tk-campaign", 4, { eyebrow: "Podcast" + (ep ? " #" + ep : ""), headline: quoted ? quoted[1] : "Episode title", name: hosts.join(" & ") }, "Podcast" + (ep ? " #" + ep : "") + " cover", ["a podcast cover" + (hosts.length ? " with " + hosts.join(" & ") : "")]);
     }
     if (quoted && (who || /\bquote\b/i.test(t))) return put("tk-statement", 1, { quote: quoted[1], name: who || "" }, "Quote" + (who ? " · " + who : ""), ["a quote" + (who ? " from " + who : "")]);
+    // fundraising: a funding round, or a raise with money in it ("Io-Co raises £2M"); "TEKEX lands in Guernsey" is news
+    if (/\b(funding round|series [a-d]\b|seed round|pre-seed|angel round|investment round)\b/i.test(t) || (/\b(rais(es|ed|ing)|clos(es|ed|ing)|secur(es|ed|ing)|land(s|ed)|bag(s|ged))\b/i.test(t) && /[£$€]\s?\d|\d\s?(?:k|m|bn|million|billion)\b/i.test(t)))
+      return put("tk-fundraising", 1, { headline: cap(tidy(say.replace(/^(fundraising|news)\s*[:–—-]\s*/i, ""))) }, tidy(say).slice(0, 48), ["a fundraising announcement"]);
     // a stat is a number followed by what it counts ("1,000+ ecosystem members"), or any number when the brief says "stat";
     // never a date ("3 Dec")
     var MON = /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i;
@@ -387,25 +395,31 @@
     if (st && MON.test(st[2])) st = null;
     if (st && !/\b(raises|raised \w+ in|series [a-d]|round)\b/i.test(t))
       return put("tk-statement", 2, { stat: st[1].replace(/\s+/g, ""), headline: cap(tidy(st[2])) }, "Stat · " + st[1].trim(), ["a stat: " + st[1].trim()]);
-    if (/\b(rais(es|ed|ing)|clos(es|ed|ing)|secur(es|ed)|funding round|series [a-d]\b|seed round|pre-seed|angel round)\b/i.test(t))
-      return put("tk-fundraising", 1, { headline: tidy(t.replace(/^(fundraising|news)\s*[:–—-]\s*/i, "")) }, tidy(t).slice(0, 48), ["a fundraising announcement"]);
+    if (/\b(last chance|final call|last few tickets|selling fast|few tickets left|last call)\b/i.test(t)) return put("tk-countdown", 2, { eyebrow: code ? code.toUpperCase() : /health innovation/i.test(t) ? "HEALTH INNOVATION JSY" : "TEKEX", headline: "Last chance\nto get your tickets", body: "" }, (code || (/health innovation/i.test(t) ? "Health Innovation" : "TEKEX")) + " · Last chance", ["last chance for tickets"]);
     if (/\bhealth innovation\b/i.test(t)) return put("tk-series", 3, { date: w.num || w.day || "", time: w.time || "", venue: c.venue || "" }, "Health Innovation" + (w.day ? " · " + w.day : ""), ["Health Innovation", w.line].filter(Boolean));
     if (/\blast friday( club)?\b/i.test(t)) return /\btomorrow\b/i.test(t)
       ? put("tk-series", 2, { date: w.day || "", time: c.startTime || "17:00" }, "Last Friday Club · Tomorrow", ["Last Friday Club, tomorrow"])
       : put("tk-series", 0, { date: w.long || "" }, "Last Friday Club" + (w.long ? " · " + w.long : ""), ["Last Friday Club", w.long].filter(Boolean));
-    if (/\b(last chance|final call|last few tickets|selling fast|few tickets left)\b/i.test(t)) return put("tk-countdown", 2, { eyebrow: (code || "TEKEX").toUpperCase(), headline: "Last chance\nto get your tickets", body: "" }, (code || "TEKEX") + " · Last chance", ["last chance for tickets"]);
     if (/\btickets?\b/i.test(t) && /\b(on sale|available|out now|live|book now|released|booking)\b/i.test(t)) return put("tk-countdown", 1, { code: code || "TEKEX", eyebrow: "TICKETS ON SALE NOW", date: w.num || "", body: /^IOM/.test(code) ? "Global Innovation. Isle of Man Opportunity." : "" }, (code || "TEKEX") + " tickets on sale", ["tickets on sale", w.day].filter(Boolean));
     if (/\b(tonight|tomorrow)\b/i.test(t) && (code || /\b(event|tekex)\b/i.test(t))) { var when = /\btonight\b/i.test(t) ? "TONIGHT" : "TOMORROW"; return put("tk-countdown", 0, { code: code || "TEKEX", headline: when, venue: c.venue || "" }, (code || "TEKEX") + " " + when.toLowerCase(), [(code || "TEKEX") + " is " + when.toLowerCase()]); }
     var pn = (PARTNERS.filter(function (p) { return p[1].test(t); })[0] || [""])[0];
-    if (/\b(welcome|welcomes|welcoming|joins?|joined|newest)\b/i.test(t) && /\b(partner|sponsor|supporter)s?\b/i.test(t)) {
+    if ((/\b(welcome|welcomes|welcoming|joins?|joined|newest)\b/i.test(t) && /\b(partner|sponsor|supporter)s?\b/i.test(t)) || (pn && /\b(sponsor(s|ing|ed)?|supporting|backing|backs|partner(s|ing|ed)? with)\b/i.test(t))) {
       if (!pn) { var nm = t.match(/\b(?:welcome|welcomes|welcoming)\s+([A-Z][\w&/.-]*(?:\s+[A-Z][\w&/.-]*){0,3})/); pn = nm ? nm[1] : ""; }
       return pn === "Rathbones" ? put("tk-sponsor", 0, { partner: "Rathbones", headline: "Rathbones proudly supporting TEKEX" }, "Rathbones proudly supporting TEKEX", ["welcoming Rathbones"])
         : put("tk-sponsor", 4, { headline: pn ? "Welcome, " + pn : "Innovation starts here", body: pn ? "Our newest partner" : "Welcome to TEKEX" }, "Welcome" + (pn ? ", " + pn : ""), ["welcoming " + (pn || "a new partner")]);
     }
+    if (/\b(thank|thanks|thank you|grateful)\b/i.test(t) && /\b(partner|sponsor|support(ed|ers?|ing)?|collaborator|everyone)s?\b/i.test(t)) return put("tk-sponsor", 3, { headline: "Thanks to our collaborators" }, "Thanks to our collaborators", ["a thank you to everyone who supports TEKEX"]);
     if (/\bwhat is tekex\b/i.test(t)) return put("tk-campaign", 2, {}, "What is TEKEX?", ["What is TEKEX?"]);
     if (/\b(what can tekex do|this is tekex)\b/i.test(t)) return put("tk-campaign", 0, {}, "What can TEKEX do for you?", ["This is TEKEX"]);
+    if (/\b(speak(er|ers|ing)|keynote|panellist|panelist)\b/i.test(t) && !/\bpodcast\b/i.test(t)) {
+      var sp = t.match(new RegExp("\\b(?:for|introduce|introducing|meet|welcome|announce|announcing|with)\\s+" + NAME));
+      if (sp) { var after = t.slice(t.indexOf(sp[1]) + sp[1].length), role = (after.match(/^\s*,\s*([^,]+?)(?:,|\s+(?:speaking|is speaking|at|on)\b|$)/) || [])[1] || "";
+        r.tpl = "speaker"; c.name = sp[1]; c.person = sp[1]; c.role = role.replace(/^(our|the)\s+/i, "").replace(/\s+of\s+/i, ", "); c.company = ""; return false; }
+    }
+    if (/^\s*save the date\b/i.test(t)) { r.tpl = "event"; c.headline = tidy(content(t).split(/,|\s+on\s+(?=(?:mon|tue|wed|thu|fri|sat|sun))/i)[0]); delete c.name; delete c.person; return false; }
     if (/^\s*news\b\s*[:–—-]?/i.test(t)) { var h = tidy(t.replace(/^\s*news\b\s*[:–—-]?\s*/i, "")); var hear = h.match(/^hear from\s+([A-Z][a-z'’-]+(?:\s+[A-Z][a-z'’-]+){1,2})/i);
       return hear ? put("tk-news", 4, { headline: "Hear from " + hear[1], body: "" }, "Hear from " + hear[1], ["news: hear from " + hear[1]]) : put("tk-news", 1, { headline: h }, h.slice(0, 48), ["news"]); }
+    if (r.tpl === "event" && !c.date && !c.venue && !code && !c.startTime) return put("tk-news", 1, { headline: cap(tidy(say)) }, tidy(say).slice(0, 48), ["a news post"]);
     return false;
   }
   T.route = route;
@@ -427,8 +441,8 @@
     }
     if (r && !r.tpl && text) {
       var c9 = r.copy || {};
-      if (c9.date || c9.venue) { r.tpl = "event"; if (!c9.headline) { var lead = String(text).split(/,|\s+on\s+(?=(mon|tue|wed|thu|fri|sat|sun))/i)[0]; c9.headline = tidy(lead.replace(/^(announce|announcing|save the date( for)?)\s+/i, "")); } r.copy = c9; }
-      else { r.tpl = "tk-news"; r.layout = 1; r.copy = { headline: tidy(text).slice(0, 110) }; r.title = tidy(text).slice(0, 48); r.said = ["a headline post"]; return r; }
+      if (c9.date || c9.venue) { r.tpl = "event"; if (!c9.headline) { var lead = content(text).split(/,|\s+on\s+(?=(mon|tue|wed|thu|fri|sat|sun))/i)[0]; c9.headline = tidy(lead.replace(/^(announce|announcing|save the date( for)?)\s+/i, "")); } r.copy = c9; }
+      else { var hl = cap(tidy(content(text))); r.tpl = "tk-news"; r.layout = 1; r.copy = { headline: hl.slice(0, 110) }; r.title = hl.slice(0, 48); r.said = ["a headline post"]; return r; }
     }
     if (!r || !r.tpl) return r;
     // a line-up's people as the brief names them, so a role ("CEO, Digital Isle of Man") is never read as a speaker

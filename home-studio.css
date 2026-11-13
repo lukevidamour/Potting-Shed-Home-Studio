@@ -1908,4 +1908,9 @@ main[data-stage],.toolbar{min-width:0}
 .drawer .btn.sizeset{width:100%;justify-content:space-between;margin-top:8px;background:none;box-shadow:inset 0 0 0 1px var(--key)}
 .drawer .btn.sizeset:hover{background:var(--well)}
 .drawer .btn.sizeset .dims{color:var(--quiet)}
+@media (min-width:861px){
+  /* The rail footer's rule is drawn by a pseudo-element so it can draw in from the left on arrival (liftCurtain) */
+  .gnav .gfoot{position:relative;border-top:0}
+  .gnav .gfoot::before{content:"";position:absolute;left:0;right:0;top:0;height:.5px;background:var(--key);transform-origin:left center}
+}
 

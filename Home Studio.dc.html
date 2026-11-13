@@ -2258,7 +2258,9 @@ class Component extends DCLogic {
     if (this._lifting) return;
     // The curtain uncovers a page that is already finished: everything is laid out and its pictures decoded underneath
     // before the lift starts, and the page settles into place with the same easing as the curtain, ending together.
-    const under = () => [...document.querySelectorAll(".app > :not(.gate):not(.fab):not(script)")];
+    // the rail and the page itself, not their wrappers: shifting a wrapper would make the fixed rail size itself to the
+    // whole page for the length of the lift (its footer off the bottom of the screen), then snap back
+    const under = () => [...document.querySelectorAll(".app .navwrap, .app main")].filter(el => !el.closest(".gate"));
     const done = () => { this._lifting = false; under().forEach(el => { el.style.transform = ""; el.style.willChange = ""; }); document.documentElement.classList.remove("gating"); this.setState({ gate: null, gateLifting: false }); setTimeout(() => this.setState({ arriving: false }), 400); };
     this.setState({ arriving: true, gateLifting: true });
     if (!gate) return done();
@@ -2277,6 +2279,13 @@ class Component extends DCLogic {
     document.documentElement.classList.remove("gating");
     const top = gate.querySelector(".gate__top"), act = gate.querySelector(".gate__act"), wm = gate.querySelector(".gate__wm");
     const kids = under(); kids.forEach(el => { el.style.willChange = "transform"; el.style.transform = "translateY(32px)"; });
+    // The rail's footer is the first thing the rising curtain uncovers: its rule draws in left to right as the curtain
+    // clears it, then the avatar and each button rise in, one after another, on a soft spring.
+    const foot = innerWidth > 860 ? document.querySelector(".gnav .gfoot") : null;
+    if (foot && foot.animate) {
+      try { foot.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 900, delay: 220, easing: "cubic-bezier(.16,1,.3,1)", fill: "backwards", pseudoElement: "::before" }); } catch (e) {}
+      [...foot.children].filter(el => el.offsetWidth).forEach((el, i) => el.animate([{ opacity: 0, transform: "translateY(12px) scale(.82)" }, { opacity: 1, transform: "none" }], { duration: 760, delay: 360 + i * 70, easing: "cubic-bezier(.34,1.45,.64,1)", fill: "backwards" }));
+    }
     const D = 1.1, lift = (t) => (t < 0.5 ? 8 * Math.pow(t, 4) : 1 - Math.pow(2 - 2 * t, 4) / 2), speed = (t) => (t < 0.5 ? 32 * Math.pow(t, 3) : 4 * Math.pow(2 - 2 * t, 3)) / D;
     let t0 = null, last = null, give = 0, sag = 0;
     const frame = (now) => {
