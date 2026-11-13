@@ -15,7 +15,7 @@ export async function open({ profile, port = 9333, width = 1440, height = 900, d
     else if (msg.method === "Runtime.consoleAPICalled" && (msg.params.type === "error" || msg.params.type === "warning")) logs.push(msg.params.type + " " + msg.params.args.map(a => a.value ?? a.description).join(" "));
     else if (msg.method === "Network.responseReceived" && msg.params.response.status >= 400) logs.push("HTTP " + msg.params.response.status + " " + msg.params.response.url); };
   const send = (method, params = {}) => new Promise((res, rej) => { const i = ++id; pending.set(i, { res, rej }); ws.send(JSON.stringify({ id: i, method, params })); });
-  await send("Page.enable"); await send("Runtime.enable"); await send("Network.enable");
+  await send("Page.enable"); await send("Runtime.enable"); await send("Network.enable"); await send("Page.addScriptToEvaluateOnNewDocument", { source: "window.__hsQa = true;" }); // automated checks skip the demo sign-in screen
   const api = {
     logs, send,
     async viewport(w, h, d = dpr, dark) { await send("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: d, mobile: false }); },

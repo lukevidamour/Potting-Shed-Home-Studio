@@ -8,6 +8,9 @@
 <link rel="icon" type="image/svg+xml" href="assets/ps-favicon.svg">
 <link rel="preload" href="assets/fonts/neue-montreal-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/quarto-medium-italic.woff2" as="font" type="font/woff2" crossorigin>
+<script>/* Landing on the plain address (typed, from a link or a new tab) always starts at the sign-in screen, so a demo gets the
+   whole arrival. A reload, going back, or a deep link such as #/designs keeps you where you were. Automated checks skip it. */
+(function(){try{var n=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};if(!location.hash&&!location.search&&n.type==="navigate"&&!window.__hsQa){sessionStorage.removeItem("hs-in");sessionStorage.removeItem("hs-curtain");}}catch(e){}})();</script>
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>/* Template packs. TEKEX's is public and always loads; a private client pack (assets/hh) loads only on this machine.
    Each pack's markup goes where the pack slot element sits in the artwork. */
