@@ -1714,3 +1714,16 @@ main[data-stage],.toolbar{min-width:0}
 /* A client's own icon (its pack's icon): drawn as the mark's background, in place of initials or the wordmark */
 .wschip .wsmark[data-icon="1"]>*{display:none!important}
 .wschip .wsmark[data-icon="1"]::after{content:none}
+/* The rail marks the current page with its icon, where the dot was: monoline, in the accent, arriving with the same
+   spring the dot had (scale from a quarter, a 4px blur clearing). Narrow screens keep their ink pill and no icons. */
+.gtab .gic{display:none}
+@media (min-width:861px){
+  .gtab::before{content:none}
+  .gtab[aria-current="page"]{translate:32px 0}
+  .gtab .gic{display:block;position:absolute;left:-32px;top:50%;width:22px;height:22px;margin-top:-11px;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:0;scale:.25;filter:blur(4px);pointer-events:none;transition:opacity 220ms var(--out),scale 360ms var(--spring),filter 220ms var(--out)}
+  .gtab[aria-current="page"] .gic{opacity:1;scale:1;filter:blur(0)}
+}
+@media (prefers-reduced-motion:reduce){
+  .gtab .gic{transition:opacity 1ms;scale:1;filter:none}
+}
+
