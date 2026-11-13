@@ -1748,4 +1748,8 @@ main[data-stage],.toolbar{min-width:0}
   .bbcover__art{right:-26%;top:62%;height:84%}
   .bbcover__mark{width:58%}
 }
+/* Logo tiles: the whole mark, fitted with room around it, in a neutral ink on the tile (light and dark). */
+.liblogo{display:grid;place-items:center;padding:18%;background:var(--hs-surface-soft,var(--hs-stage))}
+.liblogo i,.lib-card .th .thlogo{display:block;width:100%;height:100%;background:var(--hs-ink);opacity:.78;-webkit-mask:center/contain no-repeat;mask:center/contain no-repeat}
+.lib-card .th:has(.thlogo){display:grid;place-items:center;padding:16%}
 

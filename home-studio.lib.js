@@ -583,6 +583,10 @@ function liveSrc(src) { return typeof src === "string" ? src.replace(/^(assets\/
 /* Each library image has a small version beside it (sm/name.webp, made by tools/images.py). Tiles, thumbnails and pickers
    use it, so a first visit downloads kilobytes, not the full photographs. Uploads and anything else are used as they are. */
 const SMALL_DIRS = ["assets/photos/", "assets/graphics/", "assets/", "assets/tekex/library/speakers/", "assets/tekex/library/events/", "assets/tekex/library/graphics/", "assets/tekex/shapes/"];
+/* Logos in a library are shown whole and in one neutral ink, whatever colour the file is: a sponsor's mark is judged by
+   its shape, and the brand's accent belongs to the artwork. */
+function isLogoImg(im) { return !!im && (im.group === "Logos" || /\/logos?\//.test(String(im.src || ""))); }
+function logoMask(im) { if (!isLogoImg(im)) return {}; const u = "url(\"" + im.src + "\")"; return { WebkitMaskImage: u, maskImage: u }; }
 function smallSrc(src) {
   src = liveSrc(src);
   const m = typeof src === "string" && /^(.*\/)([^\/]+)\.(?:jpe?g|png|webp)$/i.exec(src);
