@@ -1904,4 +1904,8 @@ main[data-stage],.toolbar{min-width:0}
 .caltray .chip .cttl{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 /* Introductions read at a comfortable measure */
 .pagehead .lede,.bb .lede{max-width:65ch}
+/* "Download all sizes" sits under the main download, quieter: the same shape, outlined */
+.drawer .btn.sizeset{width:100%;justify-content:space-between;margin-top:8px;background:none;box-shadow:inset 0 0 0 1px var(--key)}
+.drawer .btn.sizeset:hover{background:var(--well)}
+.drawer .btn.sizeset .dims{color:var(--quiet)}
 

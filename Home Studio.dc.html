@@ -989,6 +989,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
           <sc-if value="{{ exportError }}"><div class="alert err" role="alert" style="margin-bottom:6px"><span>We couldn't prepare your image. Your design is still here. {{ exportError }}</span></div></sc-if>
           <sc-if value="{{ exportDone }}"><div class="alert ok done" role="status" style="margin-bottom:6px"><svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>Download started · {{ exportDoneDetail }}</span></div></sc-if>
           <button class="btn primary lg" onClick="{{ download }}" disabled="{{ downloadDisabled }}" aria-busy="{{ exporting }}"><span>{{ downloadLabel }}</span><span class="dims">{{ sizeDims }} px</span></button>
+          <sc-if value="{{ hasSizeSet }}"><button class="btn lg sizeset" onClick="{{ downloadSizes }}" disabled="{{ sizeSetBusy }}" aria-busy="{{ sizeSetBusy }}"><span>{{ sizeSetLabel }}</span><span class="dims">.zip</span></button></sc-if>
           <sc-if value="{{ exportDone }}"><div style="display:flex;gap:10px;justify-content:center;margin-top:4px"><button class="link" onClick="{{ openSizeDialog }}">Add another size</button><button class="link" onClick="{{ backToProject }}">Back to the project</button></div></sc-if>
         </div>
       </aside>
@@ -2860,6 +2861,25 @@ class Component extends DCLogic {
     } catch (e) { this.showToast("We couldn't prepare the set. " + (e && e.message ? e.message : "")); }
     this.setState({ batch: null });
   };
+  /* Every size of the design open in the editor, drawn at full size and handed over as one .zip. */
+  downloadSizes = async () => {
+    const s = this.state; if (s.batch || !s.design) return;
+    const fam = this.family(s.design.id).slice().sort((a, b) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size));
+    const ready = fam.filter(d => !TPL[d.tpl].required.some(k => !(d.copy[k] || "").trim()) && !this.placeholders(d).length);
+    if (!ready.length) return this.showToast("None of the sizes is ready yet: finish the copy first.");
+    const files = [], used = {}, name = slug(this.baseTitle(s.design.title)) || "design";
+    try {
+      for (let i = 0; i < ready.length; i++) {
+        const d = ready[i]; this.setState({ batch: { id: d.id, i: i + 1, n: ready.length, sizes: true } });
+        const node = await this.offNode(d.id), r = await this.exportDesign(d, node, s.format === "jpg" ? "jpg" : "png", false);
+        let n = r.name.replace(/\.(png|jpg)$/, ""); used[n] = (used[n] || 0) + 1; if (used[n] > 1) n += "-" + used[n];
+        files.push({ name: n + "." + (s.format === "jpg" ? "jpg" : "png"), bytes: new Uint8Array(await r.blob.arrayBuffer()) });
+      }
+      this.saveBlob(new Blob(zipStore(files), { type: "application/zip" }), name + "-all-sizes.zip");
+      this.setState({ batch: null }, () => setTimeout(() => this.burst(document.querySelector(".sizeset")), 120));
+      this.showToast("Download started · " + files.length + " sizes in " + name + "-all-sizes.zip" + (ready.length < fam.length ? " · " + (fam.length - ready.length) + " held back with unfinished copy" : ""));
+    } catch (e) { this.setState({ batch: null }); this.showToast("We couldn't prepare the sizes. " + (e && e.message ? e.message : "")); }
+  };
   download = async () => {
     const s = this.state; if (s.exporting) return;
     const node = document.querySelector("[data-canvas='1']");
@@ -3156,6 +3176,8 @@ class Component extends DCLogic {
       if (sd) boards.push(this.boardVals(sd, "offstage", { open: null, keys: null, aria: "" }));
     } else if (isEditor) {
       boards.push(this.boardVals(d, "edit", { open: null, keys: null, aria: "Artwork preview" }));
+      // downloading every size: each one is drawn off stage in turn, at full size, for the capture
+      if (s.batch && s.batch.sizes) { const bd = s.drafts.find(x => x.id === s.batch.id); if (bd) boards.push(this.boardVals(bd, "offstage", { wrapClass: "card offcard", open: null, keys: null, aria: "", title: "", desc: "", tab: -1, wrapRole: "presentation" })); }
       // One picker picture at a time is drawn off stage, once the editing has paused.
       this._pickList = this.pickOptions(d);
       if (!this._pickBusy) { const need = Date.now() >= (this._pickQuietAt || 0) && !s.reviewOpen && !s.crop ? this._pickList.find(o => !o.fresh) : null; this._pickWant = need ? { sig: need.sig, id: "pick-" + need.sig, v: need.v } : null; }
@@ -3446,6 +3468,9 @@ class Component extends DCLogic {
       checks: checks.map(ck => ({ label: ck.label, dot: { background: dotColor(ck.level) } })),
       blocked, blockedMsg, downloadDisabled: blocked || s.exporting, exporting: s.exporting,
       downloadLabel: s.exporting ? "Preparing your image…" : "Download " + s.format.toUpperCase(),
+      // a design in several sizes: all of them in one file
+      ...(() => { const fam = d ? this.family(d.id) : []; const busy = !!(s.batch && s.batch.sizes); return { hasSizeSet: fam.length > 1, sizeSetBusy: busy, downloadSizes: this.downloadSizes,
+        sizeSetLabel: busy ? "Preparing " + s.batch.i + " of " + s.batch.n + "…" : "Download all " + fam.length + " sizes" }; })(),
       download: this.download, exportError: s.exportError, exportDone: s.exportDone, exportDoneDetail: s.exportDoneDetail,
       libOpen: s.libOpen, closeLib: this.closeLib, libSlotLabel: s.libSlot ? this.slotLabel(s.libSlot) : "", libBrand: s.libBrand,
       libPickBrand: () => this.setState({ libBrand: true }), libPickUploads: () => this.setState({ libBrand: false }),
