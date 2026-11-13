@@ -22,8 +22,8 @@ window.HS_MARKUP=markup;if(markup){var of=window.fetch;window.fetch=function(u){
 document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_MARKUP)slot.outerHTML=window.HS_MARKUP;else slot.remove();});})();
 </script>
 <script src="./support.js"></script>
-<script src="assets/brand/home-studio-wordmark.js?v=20261113r"></script>
-<script src="home-studio.lib.js?v=20261113r"></script>
+<script src="assets/brand/home-studio-wordmark.js?v=20261113s"></script>
+<script src="home-studio.lib.js?v=20261113s"></script>
 </head>
 <body>
 <x-dc>
@@ -1856,7 +1856,7 @@ class Component extends DCLogic {
       makeBlank: !s.makeText.trim() || s.makePending, makePending: s.makePending, makeStateClass: s.chat.length === 0 && !s.makePending ? "is-empty" : "is-talking",
       makeReset: () => { clearTimeout(this._makeT); this._makeLast = null; this.setState({ chat: [], makePending: false, makeText: "" }); this.focusLater("mk-input"); },
       makeDotStyle: { background: (BRAND.themes[0] || {}).ground || "var(--accent)" },
-      makeHint: s.chat.length ? "Ask for a change, or describe the next one" : "Describe what to make: who, what, when and where",
+      makeHint: s.chat.length ? (innerWidth <= 480 ? "Ask for a change, or the next one" : "Ask for a change, or describe the next one") : (innerWidth <= 480 ? "Describe what to make" : "Describe what to make: who, what, when and where"), // one line on a phone
       // Starting points are short to read and send the full brief; a client pack brings its own.
       makeIdeas: ((PACK && WS_ID === PACK.id && PACK.ideas) || [["A speaker card", "Dr Niraj Singh, Founder at Ketamine Therapies, is speaking Thu 26 Nov, 9am at the BDO Hub"], ["An event, square and story", "Announce the Founders Breakfast on 2 December, 8am at Wild Peak. As a square and a story."], ["A thank you to partners", "Thank our partners"], ["A line-up carousel", "A line-up carousel for IOM#3 on Thu 26 Nov, 17:30, Isle of Man: Carol Glover, Vice President, Chamber of Commerce; Lyle Wraxall, CEO, Digital Isle of Man; Steve Billinghurst, Chair, IoD; Guy Templer, Chair, Junior Achievement"]]).map(x => ({ label: x[0], full: x[1], go: () => this.makeSend(x[1]) })),
       makeMsgs: s.chat.map(m => {
@@ -1960,8 +1960,31 @@ class Component extends DCLogic {
   }
 
   /* ---------- make by describing ---------- */
-  goMake = () => { this._makeReturn = document.activeElement; this.setState({ makeOpen: true, menuId: null, wsMenuOpen: false, userMenuOpen: false }); this.focusLater("mk-input"); };
-  closeMake = () => { this.setState({ makeOpen: false }); const r = this._makeReturn; if (r && r.focus && document.body.contains(r)) r.focus(); };
+  goMake = () => { this._makeReturn = document.activeElement; this._fabAt = this.fabCentre(); this.setState({ makeOpen: true, menuId: null, wsMenuOpen: false, userMenuOpen: false }, () => this.makeIris(true)); this.focusLater("mk-input"); };
+  closeMake = () => {
+    if (this._makeClosing) return;
+    const finish = () => { this._makeClosing = false; this.setState({ makeOpen: false }, () => { const f = document.querySelector(".fab"); if (f && !matchMedia("(prefers-reduced-motion: reduce)").matches) f.animate([{ scale: 0.55, opacity: 0.4 }, { scale: 1, opacity: 1 }], { duration: 300, easing: "cubic-bezier(.34,1.4,.64,1)" }); const r = this._makeReturn; if (r && r.focus && document.body.contains(r)) r.focus(); }); };
+    if (!this.makeIris(false, finish)) finish();
+  };
+  /* Where the assistant's button is (or would be): the point the assistant grows from and folds back into. */
+  fabCentre() {
+    const f = document.querySelector(".fab"); if (f) { const r = f.getBoundingClientRect(); if (r.width) return [r.left + r.width / 2, r.top + r.height / 2]; }
+    const phone = innerWidth <= 640; return phone ? [innerWidth - 30, innerHeight - 28] : [innerWidth - 52, innerHeight - 52];
+  }
+  /* The assistant opens as a circle growing out of its button to fill the screen, its contents rising in as it does, and
+     closes by folding back into the button, which lands as the circle reaches it. Quick, and one continuous move. */
+  makeIris(opening, done) {
+    const el = document.querySelector(".makeover"); if (!el || !el.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+    const [x, y] = opening ? (this._fabAt || this.fabCentre()) : this.fabCentre(), R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 8;
+    const small = "circle(22px at " + x + "px " + y + "px)", big = "circle(" + R + "px at " + x + "px " + y + "px)";
+    if (opening) { el.animate([{ clipPath: small }, { clipPath: big }], { duration: 460, easing: "cubic-bezier(.2,.8,.2,1)" }); return true; }
+    this._makeClosing = true;
+    const inner = [...el.children];
+    inner.forEach(c => c.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(10px) scale(.985)" }], { duration: 200, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" }));
+    const a = el.animate([{ clipPath: big }, { clipPath: small }], { duration: 340, easing: "cubic-bezier(.5,0,.25,1)", fill: "forwards" });
+    a.onfinish = done; setTimeout(() => { if (this._makeClosing) done(); }, 600); // never left half-closed
+    return true;
+  }
   makeSend = (given) => {
     const text = String(given != null ? given : this.state.makeText).trim(); if (!text) return;
     const last = this._makeLast;
