@@ -1726,4 +1726,14 @@ main[data-stage],.toolbar{min-width:0}
 @media (prefers-reduced-motion:reduce){
   .gtab .gic{transition:opacity 1ms;scale:1;filter:none}
 }
+/* The assistant's button is a sparkle: a four-point star with a small one beside it, filled in the button's ink.
+   On hover the small star twinkles (a quarter turn and a little larger) and the large one settles upright. */
+.fab svg.spark{width:25px;height:25px;fill:currentColor;stroke:none;rotate:0deg;scale:1}
+.fab svg.spark path{transform-box:fill-box;transform-origin:center;transition:rotate 420ms var(--spring),scale 420ms var(--spring)}
+.fab:hover svg.spark{rotate:0deg;scale:1}
+.fab:hover svg.spark .s1{scale:1.06}
+.fab:hover svg.spark .s2{rotate:90deg;scale:1.25}
+@media (prefers-reduced-motion:reduce){
+  .fab svg.spark path{transition:none}
+}
 
