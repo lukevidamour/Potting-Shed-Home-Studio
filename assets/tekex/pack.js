@@ -273,8 +273,93 @@
      For TEKEX those become the toolkit's templates, with the copy in the toolkit's form: one kicker line for a speaker,
      one slash-separated line for when and where. A line-up becomes a carousel. A target template that is not built yet
      leaves the brief as it was. */
-  T.fromBrief = function (r) {
+  /* Carousels from a brief, built from the toolkit's own carousels. A brief that asks for a carousel (or slides) gets one:
+     a line-up when it names people, otherwise the event, partnership, year-in-numbers or "This is TEKEX" set it is about.
+     Copy comes from the brief where it says something, and from the toolkit's published posts where it doesn't. A real
+     person only appears when the brief names them; slides whose words still need writing are marked to rewrite. */
+  var ROLEWORD = /^(ceo|cmo|cto|coo|cfo|md|founder|co-?founder|chair|chairman|chairwoman|director|head|partner|vice|president|former|managing|lead|principal|senior|chief|manager|investor|advisor|adviser|the|our|at|of|in)\b/i;
+  var nameAt = function (s) { var m = String(s || "").trim().match(/^((?:Dr|Prof|Sir|Dame)\.?\s+)?([A-Z][a-z'’-]+(?:\s+(?:[A-Z][a-z'’-]+|de|van|von|le|la)){1,2})\b/); return m && !ROLEWORD.test(m[2]) ? (m[1] || "") + m[2] : ""; };
+  // People named in a brief: "with A and B", or "A, role; B, role" lists. Never a role read as a name.
+  T.peopleIn = function (text) {
+    var t = String(text || ""), m = t.match(/\b(?:with|featuring|ft\.)\s+(.+)$/i) || t.match(/\b(?:speakers?|line-?up|panel(?:lists)?)\s*:\s+(.+)$/i) || (/;/.test(t) && t.match(/:\s+(.+)$/)), part = m ? m[1] : (/;/.test(t) ? t : "");
+    if (!part) return [];
+    var items = /;/.test(part) ? part.split(/\s*;\s*/) : part.split(/\s*(?:,|&|\band\b)\s*/);
+    var out = [];
+    items.forEach(function (it) {
+      var nm = nameAt(it.replace(/^(?:and|&)\s+/i, "")); if (!nm || out.some(function (p) { return p.name === nm; })) return;
+      var rest = /;/.test(part) ? it.slice(it.indexOf(nm) + nm.length).replace(/^[\s,–—-]+/, "").replace(/\s+(?:at|on)\s+the\b.*$/i, "").trim() : "";
+      out.push({ name: nm, role: rest });
+    });
+    return out;
+  };
+  var CAROUSEL = /\b(carousel|slides|slideshow|swipe(?:able)?)\b/i;
+  var PARTNERS = [["BDO/C5", /\bbdo\s*\/?\s*c5\b/i], ["Rathbones", /\brathbones\b/i], ["BDO", /\bbdo\b/i], ["C5 Alliance", /\bc5\b/i], ["Red5 Systems", /\bred\s?5\b/i], ["Yoono", /\byoono\b/i], ["Wild Peak", /\bwild\s?peak\b/i], ["Digital Jersey", /\bdigital jersey\b/i], ["PwC", /\bpwc\b/i], ["All—in", /\ball[\s—-]*in\b/i]];
+  function carouselFor(r, text, when) {
+    var c = r.copy || {}, n0 = c.eventNumber, ex = function (k, L) { return T.exampleFor(k, L) || {}; };
+    var slide = function (tpl, L, title, copy, ph) { var o = Object.assign({}, ex(tpl, L), copy || {}); if (!(copy && copy.name)) { if (!(tpl === "tk-sponsor" && L === 1)) o.name = ""; o.person = ""; if (tpl === "tk-lineup") o.role = ""; } return { tpl: tpl, layout: L, title: title, copy: o, ph: ph || [] }; };
+    var number = function (set) { set.forEach(function (sl, i) { sl.title = (i + 1) + " " + sl.title; }); return set; };
+    var done = function (set, title, said, note) { r.set = number(set); r.tpl = set[0].tpl; r.layout = set[0].layout; r.title = title; r.said = said; r.sizes = r.sizes && r.sizes.length ? r.sizes : ["square"]; if (note) r.setNote = note; return r; };
+    var head = String(c.headline || "").trim(); if (CAROUSEL.test(head) || /^(make|create|do|build|give)\b/i.test(head)) head = "";
+    // 1. People named: the line-up carousel (the main brief reader builds it from r.speakers)
+    var people = T.peopleIn(text);
+    if (people.length) {
+      var known = (r.speakers || []).filter(function (sp) { return people.some(function (p) { return p.name === sp.name; }); });
+      r.speakers = people.map(function (p) { var k = known.filter(function (sp) { return sp.name === p.name; })[0]; return k && !p.role ? k : { name: p.name, role: p.role, company: "" }; });
+      r.tpl = "listing"; return null;
+    }
+    var cm = text.match(/\b(TEKEX|IOM|JSY|GSY)\s?#\s?(\d+)/i), code = n0 ? "TEKEX #" + n0 : cm ? (/tekex/i.test(cm[1]) ? "TEKEX #" + cm[2] : cm[1].toUpperCase() + "#" + cm[2]) : "";
+    // 2. A year in numbers: TEKEX Wrapped. The figures are the toolkit's 2025 ones, to be confirmed.
+    if (/\b(year in (?:numbers|review)|wrapped|in numbers|stats|statistics|our year|annual)\b/i.test(text)) {
+      return done([
+        slide("tk-campaign", 0, "Cover", { eyebrow: "TEKEX Wrapped", headline: head || "Our year in numbers", extra: "TEKEX Wrapped" }),
+        slide("tk-statement", 3, "Events", { eyebrow: "EVENTS", stat: "12", headline: "Events", body: "A year of conversations, collaborations and connection.", step: "1/3" }, ["stat"]),
+        slide("tk-statement", 3, "Members", { eyebrow: "COMMUNITY", stat: "1,000+", headline: "Ecosystem Members", body: "Startups, investors, creatives, corporates and policymakers, growing stronger together across three islands.", step: "2/3" }, ["stat"]),
+        slide("tk-statement", 3, "Raised", { eyebrow: "FUNDRAISING", stat: "£22M", headline: "Raised through TEKEX", body: "Capital raised by founders who met their investors at TEKEX.", step: "3/3" }, ["stat"]),
+        slide("tk-campaign", 3, "Supported by", { eyebrow: "Supported by", extra: "TEKEX Wrapped" })
+      ], "Carousel: " + (head || "Our year in numbers"), ["five slides: cover, three figures, supporters"], " The figures are 2025's from the toolkit: change them to this year's before posting (they can't be downloaded until you have).");
+    }
+    // 3. A partnership: the partner's posts as TEKEX published them. A person only where the toolkit names one.
+    if (/\b(partner(?:ship)?s?|sponsor(?:s|ship)?|supporting|supporters?|collaborators?)\b/i.test(text)) {
+      var pn = (PARTNERS.filter(function (p) { return p[1].test(text); })[0] || [""])[0], lab = (pn || "Partner") + " x TEKEX", set = [];
+      if (pn === "Rathbones") set.push(slide("tk-sponsor", 0, "Proudly supporting", { partner: "Rathbones", headline: "Rathbones proudly supporting TEKEX" }));
+      if (pn === "BDO/C5") set.push(slide("tk-sponsor", 1, "Partnership", { label: lab, headline: lab }));
+      set.push(slide("tk-sponsor", 2, "In their words", { label: lab, step: "" }, pn === "BDO/C5" ? [] : ["quote"]));
+      set.push(slide("tk-sponsor", 3, "Collaborators", { label: lab, headline: "Thanks to our collaborators" }));
+      set.push(slide("tk-sponsor", 4, "Welcome", { headline: "Innovation starts here", body: "Welcome to TEKEX" }));
+      return done(set, "Carousel: " + lab, [set.length + " slides for " + (pn || "a partner")], pn === "BDO/C5" ? "" : " The quote is BDO/C5's from the toolkit: replace it with " + (pn || "the partner") + "'s own words before posting.");
+    }
+    // 4. An event: announcement, the event itself, how to register, who supports it
+    if (code || c.date || c.venue || /\b(event|summit|breakfast|social|launch|meet-?up|night)\b/i.test(text)) {
+      // no one is named, so no one appears: the line-up example's speaker never carries over
+      var base = { edition: code.replace(/^TEKEX\s?/, ""), date: when.num || when.day || "", venue: when.line || "", footLabel: "Events", name: "", role: "", person: "", extra: "" };
+      return done([
+        slide("tk-lineup", 0, "Cover", Object.assign({}, base, { eyebrow: "Event announcement", headline: head })),
+        slide("tk-event", 2, "The event", { eyebrow: code || "TEKEX", headline: head || "Event title", date: when.num || when.day || "", venue: when.line || "", label: n0 ? "EVENT#" + n0 : "EVENTS" }, head ? [] : ["headline"]),
+        slide("tk-lineup", 2, "Register", Object.assign({}, base, { cta: "Register now at tekex.co" })),
+        slide("tk-lineup", 3, "Supported by", base)
+      ], "Carousel: " + (head || code || "Event"), ["four slides", when.line].filter(Boolean), head ? "" : " Give the event its title on slide 2.");
+    }
+    // 5. Anything else: This is TEKEX, the brand campaign
+    return done([
+      slide("tk-campaign", 0, "Cover", head ? { headline: head } : {}),
+      slide("tk-campaign", 1, "What we do", {}),
+      slide("tk-campaign", 2, "What is TEKEX", {}),
+      slide("tk-campaign", 3, "Supported by", {})
+    ], "Carousel: " + (head || "This is TEKEX"), ["four slides from the brand campaign"]);
+  }
+
+  T.fromBrief = function (r, text) {
+    if (r && text && CAROUSEL.test(text)) {
+      var c0 = r.copy || {}, t0 = c0.startTime ? c0.startTime + (c0.endTime ? " – " + c0.endTime : "") : "", MS0 = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], m0 = String(c0.date || "").match(/(\d{1,2})\s+([A-Za-z]{3})/), w = { num: "", day: c0.date || "" };
+      if (m0) { var mi0 = MS0.indexOf(m0[2].toLowerCase()); if (mi0 >= 0) { var nw = new Date(), y0 = nw.getFullYear(); if (new Date(y0, mi0, +m0[1]) < new Date(y0, nw.getMonth(), nw.getDate() - 30)) y0++; w.num = ("0" + m0[1]).slice(-2) + "/" + ("0" + (mi0 + 1)).slice(-2) + "/" + String(y0).slice(-2); var n1 = +m0[1]; w.day = n1 + (n1 % 10 === 1 && n1 !== 11 ? "st" : n1 % 10 === 2 && n1 !== 12 ? "nd" : n1 % 10 === 3 && n1 !== 13 ? "rd" : "th") + " " + m0[2]; } }
+      w.line = [w.day, t0, c0.venue].filter(Boolean).join(" / ");
+      r.copy = r.copy || {};
+      var made = carouselFor(r, text, w);
+      if (made) return made;
+    }
     if (!r || !r.tpl) return r;
+    // a line-up's people as the brief names them, so a role ("CEO, Digital Isle of Man") is never read as a speaker
+    if ((r.tpl === "listing" || r.tpl === "trio") && text) { var pp = T.peopleIn(text); if (pp.length) r.speakers = pp.map(function (p) { var k = (r.speakers || []).filter(function (sp) { return sp.name === p.name; })[0]; return k && !p.role ? k : { name: p.name, role: p.role, company: "" }; }); }
     var c = Object.assign({}, r.copy || {}), tpl = r.tpl, on = function (k) { return typeof TPL !== "undefined" && !!TPL[k]; };
     var time = c.startTime ? c.startTime + (c.endTime ? " – " + c.endTime : "") : "";
     // "Thu 26 Nov" becomes the toolkit's 26th Nov line and its 26/11/26 hero date, in the year it next falls
@@ -290,7 +375,7 @@
     if (tpl === "speaker" && on("tk-speaker")) { r.tpl = "tk-speaker"; r.layout = 0; r.copy = Object.assign(c, { eyebrow: (n0 ? "Tekex #" + n0 : "Tekex") + " Speaker:", role: role(c), person: c.name }); }
     else if (tpl === "event" && on("tk-event")) { r.tpl = "tk-event"; r.layout = 0; r.copy = Object.assign(c, { eyebrow: code, date: num || day, venue: when, label: n0 ? "EVENT#" + n0 : "EVENTS" }); }
     else if ((tpl === "listing" || tpl === "trio") && on("tk-lineup") && r.speakers && r.speakers.length) {
-      var ed = n0 ? "#" + n0 : "", base = { edition: ed, date: num || day, venue: when, footLabel: "Speakers" };
+      var em = String(text || "").match(/\b(TEKEX|IOM|JSY|GSY)\s?#\s?(\d+)/i), ed = n0 ? "#" + n0 : em ? (/tekex/i.test(em[1]) ? "#" + em[2] : em[1].toUpperCase() + "#" + em[2]) : "", base = { edition: ed, date: num || day, venue: when, footLabel: "Speakers", name: "", role: "", person: "", extra: "" };
       var set = [{ tpl: "tk-lineup", layout: 0, title: "1 Cover", copy: Object.assign({}, base, { eyebrow: "Speaker introduction", headline: c.headline || "" }) }];
       r.speakers.forEach(function (sp, i) { set.push({ tpl: "tk-lineup", layout: 1, title: (i + 2) + " " + sp.name, copy: Object.assign({}, base, { name: sp.name, role: role(sp), person: sp.name }) }); });
       set.push({ tpl: "tk-lineup", layout: 2, title: (set.length + 1) + " Register", copy: Object.assign({}, base, { cta: "Register now at tekex.co" }) });
