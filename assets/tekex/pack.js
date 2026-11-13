@@ -349,7 +349,69 @@
     ], "Carousel: " + (head || "This is TEKEX"), ["four slides from the brand campaign"]);
   }
 
+  /* When and where from a brief: "Thu 26 Nov" gives the toolkit's 26/11/26 hero date and its 26th Nov line. */
+  function whenOf(c) {
+    var t0 = c.startTime ? c.startTime + (c.endTime ? " – " + c.endTime : "") : "", MS0 = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], DL = { mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday", sun: "Sunday" };
+    var m0 = String(c.date || "").match(/(\d{1,2})\s+([A-Za-z]{3})/), w = { num: "", day: c.date || "", long: c.date || "", time: t0 };
+    if (m0) { var mi0 = MS0.indexOf(m0[2].toLowerCase()); if (mi0 >= 0) { var nw = new Date(), y0 = nw.getFullYear(); if (new Date(y0, mi0, +m0[1]) < new Date(y0, nw.getMonth(), nw.getDate() - 30)) y0++;
+      w.num = ("0" + m0[1]).slice(-2) + "/" + ("0" + (mi0 + 1)).slice(-2) + "/" + String(y0).slice(-2); var n1 = +m0[1];
+      w.day = n1 + (n1 % 10 === 1 && n1 !== 11 ? "st" : n1 % 10 === 2 && n1 !== 12 ? "nd" : n1 % 10 === 3 && n1 !== 13 ? "rd" : "th") + " " + m0[2];
+      w.long = DL[["sun", "mon", "tue", "wed", "thu", "fri", "sat"][new Date(y0, mi0, n1).getDay()]] + " " + n1 + " " + m0[2]; } }
+    w.line = [w.day, t0, c.venue].filter(Boolean).join(" / ");
+    return w;
+  }
+  var cap = function (x) { x = String(x || "").trim(); return x.charAt(0).toUpperCase() + x.slice(1); };
+  var tidy = function (x) { return String(x || "").replace(/\s+/g, " ").replace(/^[\s:–—-]+|[\s.]+$/g, "").trim(); };
+  /* The toolkit's own kinds of post, read from a brief in the words the TEKEX team uses. Each sets the template, the
+     layout and the copy it can; a real person only appears when the brief names them. Returns true when it read one. */
+  function route(r, text) {
+    var t = String(text || ""), c = r.copy = r.copy || {}, w = whenOf(c);
+    var cm = t.match(/\b(TEKEX|IOM|JSY|GSY)\s?#\s?(\d+)/i), code = cm ? (/tekex/i.test(cm[1]) ? "TEKEX#" + cm[2] : cm[1].toUpperCase() + "#" + cm[2]) : (c.eventNumber ? "TEKEX#" + c.eventNumber : "");
+    var put = function (tpl, L, copy, title, said) {
+      if (typeof TPL !== "undefined" && !TPL[tpl]) return false;
+      var o = Object.assign({}, T.exampleFor(tpl, L) || {});
+      ["name", "person", "quote"].forEach(function (k) { if (!(copy && copy[k])) delete o[k]; }); // never someone else's words or face
+      r.tpl = tpl; r.layout = L; r.copy = Object.assign(o, copy || {}); r.title = title; r.said = said; r.set = null; r.speakers = []; return true;
+    };
+    var quoted = t.match(/[“"]([^”"]{6,})[”"]/), who = (t.match(/\b(?:from|by|says|said)\s+((?:Dr\.?\s+)?[A-Z][a-z'’-]+(?:\s+[A-Z][a-z'’-]+){1,2})/) || [])[1];
+    if (/\bpodcast\b/i.test(t)) {
+      var ep = (t.match(/\b(?:episode|ep\.?|#)\s*(\d+)/i) || [])[1], hosts = T.peopleIn(t).map(function (p) { return p.name; });
+      return put("tk-campaign", 4, { eyebrow: "Podcast" + (ep ? " #" + ep : ""), headline: quoted ? quoted[1] : "Episode title", name: hosts.join(" & ") }, "Podcast" + (ep ? " #" + ep : "") + " cover", ["a podcast cover" + (hosts.length ? " with " + hosts.join(" & ") : "")]);
+    }
+    if (quoted && (who || /\bquote\b/i.test(t))) return put("tk-statement", 1, { quote: quoted[1], name: who || "" }, "Quote" + (who ? " · " + who : ""), ["a quote" + (who ? " from " + who : "")]);
+    // a stat is a number followed by what it counts ("1,000+ ecosystem members"), or any number when the brief says "stat";
+    // never a date ("3 Dec")
+    var MON = /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i;
+    var st = t.match(/([£$€]?\d[\d,.]*\s*(?:k|m|bn|million|billion)?\+?)\s+((?:[a-z]+\s+)?(?:members|events|founders|investors|startups|attendees|connections|introductions|deals|raised)\b[^.,;:]*)/i)
+      || (/\bstats?\b/i.test(t) ? t.match(/([£$€]?\d[\d,.]*\s*(?:k|m|bn|million|billion)?\+?)\s+([A-Za-z][^.,;:]*)/i) : null);
+    if (st && MON.test(st[2])) st = null;
+    if (st && !/\b(raises|raised \w+ in|series [a-d]|round)\b/i.test(t))
+      return put("tk-statement", 2, { stat: st[1].replace(/\s+/g, ""), headline: cap(tidy(st[2])) }, "Stat · " + st[1].trim(), ["a stat: " + st[1].trim()]);
+    if (/\b(rais(es|ed|ing)|clos(es|ed|ing)|secur(es|ed)|funding round|series [a-d]\b|seed round|pre-seed|angel round)\b/i.test(t))
+      return put("tk-fundraising", 1, { headline: tidy(t.replace(/^(fundraising|news)\s*[:–—-]\s*/i, "")) }, tidy(t).slice(0, 48), ["a fundraising announcement"]);
+    if (/\bhealth innovation\b/i.test(t)) return put("tk-series", 3, { date: w.num || w.day || "", time: w.time || "", venue: c.venue || "" }, "Health Innovation" + (w.day ? " · " + w.day : ""), ["Health Innovation", w.line].filter(Boolean));
+    if (/\blast friday( club)?\b/i.test(t)) return /\btomorrow\b/i.test(t)
+      ? put("tk-series", 2, { date: w.day || "", time: c.startTime || "17:00" }, "Last Friday Club · Tomorrow", ["Last Friday Club, tomorrow"])
+      : put("tk-series", 0, { date: w.long || "" }, "Last Friday Club" + (w.long ? " · " + w.long : ""), ["Last Friday Club", w.long].filter(Boolean));
+    if (/\b(last chance|final call|last few tickets|selling fast|few tickets left)\b/i.test(t)) return put("tk-countdown", 2, { eyebrow: (code || "TEKEX").toUpperCase(), headline: "Last chance\nto get your tickets", body: "" }, (code || "TEKEX") + " · Last chance", ["last chance for tickets"]);
+    if (/\btickets?\b/i.test(t) && /\b(on sale|available|out now|live|book now|released|booking)\b/i.test(t)) return put("tk-countdown", 1, { code: code || "TEKEX", eyebrow: "TICKETS ON SALE NOW", date: w.num || "", body: /^IOM/.test(code) ? "Global Innovation. Isle of Man Opportunity." : "" }, (code || "TEKEX") + " tickets on sale", ["tickets on sale", w.day].filter(Boolean));
+    if (/\b(tonight|tomorrow)\b/i.test(t) && (code || /\b(event|tekex)\b/i.test(t))) { var when = /\btonight\b/i.test(t) ? "TONIGHT" : "TOMORROW"; return put("tk-countdown", 0, { code: code || "TEKEX", headline: when, venue: c.venue || "" }, (code || "TEKEX") + " " + when.toLowerCase(), [(code || "TEKEX") + " is " + when.toLowerCase()]); }
+    var pn = (PARTNERS.filter(function (p) { return p[1].test(t); })[0] || [""])[0];
+    if (/\b(welcome|welcomes|welcoming|joins?|joined|newest)\b/i.test(t) && /\b(partner|sponsor|supporter)s?\b/i.test(t)) {
+      if (!pn) { var nm = t.match(/\b(?:welcome|welcomes|welcoming)\s+([A-Z][\w&/.-]*(?:\s+[A-Z][\w&/.-]*){0,3})/); pn = nm ? nm[1] : ""; }
+      return pn === "Rathbones" ? put("tk-sponsor", 0, { partner: "Rathbones", headline: "Rathbones proudly supporting TEKEX" }, "Rathbones proudly supporting TEKEX", ["welcoming Rathbones"])
+        : put("tk-sponsor", 4, { headline: pn ? "Welcome, " + pn : "Innovation starts here", body: pn ? "Our newest partner" : "Welcome to TEKEX" }, "Welcome" + (pn ? ", " + pn : ""), ["welcoming " + (pn || "a new partner")]);
+    }
+    if (/\bwhat is tekex\b/i.test(t)) return put("tk-campaign", 2, {}, "What is TEKEX?", ["What is TEKEX?"]);
+    if (/\b(what can tekex do|this is tekex)\b/i.test(t)) return put("tk-campaign", 0, {}, "What can TEKEX do for you?", ["This is TEKEX"]);
+    if (/^\s*news\b\s*[:–—-]?/i.test(t)) { var h = tidy(t.replace(/^\s*news\b\s*[:–—-]?\s*/i, "")); var hear = h.match(/^hear from\s+([A-Z][a-z'’-]+(?:\s+[A-Z][a-z'’-]+){1,2})/i);
+      return hear ? put("tk-news", 4, { headline: "Hear from " + hear[1], body: "" }, "Hear from " + hear[1], ["news: hear from " + hear[1]]) : put("tk-news", 1, { headline: h }, h.slice(0, 48), ["news"]); }
+    return false;
+  }
+  T.route = route;
+
   T.fromBrief = function (r, text) {
+    if (r && text && !CAROUSEL.test(text) && route(r, text)) return r;
     if (r && text && CAROUSEL.test(text)) {
       var c0 = r.copy || {}, t0 = c0.startTime ? c0.startTime + (c0.endTime ? " – " + c0.endTime : "") : "", MS0 = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], m0 = String(c0.date || "").match(/(\d{1,2})\s+([A-Za-z]{3})/), w = { num: "", day: c0.date || "" };
       if (m0) { var mi0 = MS0.indexOf(m0[2].toLowerCase()); if (mi0 >= 0) { var nw = new Date(), y0 = nw.getFullYear(); if (new Date(y0, mi0, +m0[1]) < new Date(y0, nw.getMonth(), nw.getDate() - 30)) y0++; w.num = ("0" + m0[1]).slice(-2) + "/" + ("0" + (mi0 + 1)).slice(-2) + "/" + String(y0).slice(-2); var n1 = +m0[1]; w.day = n1 + (n1 % 10 === 1 && n1 !== 11 ? "st" : n1 % 10 === 2 && n1 !== 12 ? "nd" : n1 % 10 === 3 && n1 !== 13 ? "rd" : "th") + " " + m0[2]; } }
@@ -357,6 +419,16 @@
       r.copy = r.copy || {};
       var made = carouselFor(r, text, w);
       if (made) return made;
+    }
+    if (r && r.copy) {
+      // "Introduce Jenson Artus, our Isle of Man Lead" is Jenson Artus, Isle of Man Lead
+      ["name", "person"].forEach(function (k) { if (r.copy[k]) r.copy[k] = String(r.copy[k]).replace(/^(introduce|introducing|meet|welcome|announce|announcing|say hello to|hello)\s+/i, ""); });
+      if (r.copy.role) r.copy.role = String(r.copy.role).replace(/^(our|the)\s+/i, "");
+    }
+    if (r && !r.tpl && text) {
+      var c9 = r.copy || {};
+      if (c9.date || c9.venue) { r.tpl = "event"; if (!c9.headline) { var lead = String(text).split(/,|\s+on\s+(?=(mon|tue|wed|thu|fri|sat|sun))/i)[0]; c9.headline = tidy(lead.replace(/^(announce|announcing|save the date( for)?)\s+/i, "")); } r.copy = c9; }
+      else { r.tpl = "tk-news"; r.layout = 1; r.copy = { headline: tidy(text).slice(0, 110) }; r.title = tidy(text).slice(0, 48); r.said = ["a headline post"]; return r; }
     }
     if (!r || !r.tpl) return r;
     // a line-up's people as the brief names them, so a role ("CEO, Digital Isle of Man") is never read as a speaker
@@ -372,9 +444,13 @@
     }
     var when = [day, time, c.venue].filter(Boolean).join(" / ");
     var role = function (o) { return [String(o.role || "").replace(/[,\s]+$/, ""), o.company].filter(Boolean).join(", "); };
-    var n0 = c.eventNumber, code = n0 ? "TEKEX #" + n0 : "TEKEX";
+    var n0 = c.eventNumber || (String(text || "").match(/\btekex\s?#\s?(\d+)/i) || [])[1], code = n0 ? "TEKEX #" + n0 : "TEKEX";
     if (tpl === "speaker" && on("tk-speaker")) { r.tpl = "tk-speaker"; r.layout = 0; r.copy = Object.assign(c, { eyebrow: (n0 ? "Tekex #" + n0 : "Tekex") + " Speaker:", role: role(c), person: c.name }); }
-    else if (tpl === "event" && on("tk-event")) { r.tpl = "tk-event"; r.layout = 0; r.copy = Object.assign(c, { eyebrow: code, date: num || day, venue: when, label: n0 ? "EVENT#" + n0 : "EVENTS" }); }
+    else if (tpl === "event" && on("tk-event")) {
+      // the event's own title, where the brief gives one ("TEKEX #37: Founders & Funders, Thu 3 Dec")
+      var ttl = String(text || "").match(/#\s?\d+\s*[:–—-]\s*([^,]+)/);
+      if (ttl) c.headline = tidy(ttl[1]); else if (!c.headline || /^tekex\s?#?\d*$/i.test(String(c.headline).trim())) c.headline = c.headline && !/^tekex/i.test(c.headline) ? c.headline : "Event title";
+      r.tpl = "tk-event"; r.layout = 0; r.copy = Object.assign(c, { eyebrow: code, date: num || day, venue: when, label: n0 ? "EVENT#" + n0 : "EVENTS" }); }
     else if ((tpl === "listing" || tpl === "trio") && on("tk-lineup") && r.speakers && r.speakers.length) {
       var em = String(text || "").match(/\b(TEKEX|IOM|JSY|GSY)\s?#\s?(\d+)/i), ed = n0 ? "#" + n0 : em ? (/tekex/i.test(em[1]) ? "#" + em[2] : em[1].toUpperCase() + "#" + em[2]) : "", base = { edition: ed, date: num || day, venue: when, footLabel: "Speakers", name: "", role: "", person: "", extra: "" };
       var set = [{ tpl: "tk-lineup", layout: 0, title: "1 Cover", copy: Object.assign({}, base, { eyebrow: "Speaker introduction", headline: c.headline || "" }) }];
