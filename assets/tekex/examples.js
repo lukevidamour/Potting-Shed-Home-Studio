@@ -123,13 +123,51 @@
     // The other formats sit with their design, so each family is together in the list
     var out = [];
     drafts.forEach(function (d) { out.push(d); if (FAM[d.id] && api.sizes) api.sizes(d, FAM[d.id]).forEach(function (x) { out.push(x); }); });
-    // Newest first is how the app lists work: stamp them in reverse so the projects read in this order
+    // All designs lists work newest first: stamp the families in a mixed order so the wall reads evenly
     var t0 = Date.now();
-    out.forEach(function (d, i) { d.updatedAt = t0 - i * 60000; });
+    mix(out).forEach(function (d, i) { d.updatedAt = t0 - i * 60000; });
     projects.forEach(function (pj, i) { pj.createdAt = t0 - (i + 1) * 86400000 * 2; pj.updatedAt = t0 - i * 3600000; });
     return { projects: projects, drafts: out };
   }
 
+  /* The order All designs shows the examples in. Each project's work is spread across the whole wall, in its own order,
+     and neighbouring tiles avoid sharing a project, a template or a colour, so no corner is all one colour.
+     Takes designs (a family's sizes stay together) and returns them in that order. */
+  // What each layout's tile looks like at a glance, measured from its thumbnail (the layouts set their own grounds,
+  // so the colourway number doesn't say). Used to keep tiles of the same colour apart.
+  var TONE = {
+    "tk-lineup": ["teal", "teal", "teal", "teal"], "tk-speaker": ["teal", "photo", "teal", "teal"],
+    "tk-countdown": ["peach", "peach", "dark"], "tk-fundraising": ["photo", "peach", "peach", "peach"],
+    "tk-series": ["dark", "lilac", "photo", "lilac"], "tk-statement": ["lilac", "lilac", "lilac", "lilac"],
+    "tk-news": ["photo", "lilac", "photo", "lilac", "lilac"], "tk-sponsor": ["photo", "mint", "mint", "mint", "dark"],
+    "tk-campaign": ["dark", "dark", "dark", "dark", "dark"], "tk-event": ["mint", "dark", "dark", "mint", "photo", "photo"]
+  };
+  function mix(list) {
+    var fams = [], byF = {}, projs = [], count = {}, seen = {};
+    list.forEach(function (d) {
+      var k = d.familyId || d.id;
+      if (!byF[k]) { byF[k] = { p: d.projectId, tpl: d.tpl, th: (TONE[d.tpl] || [])[d.layout || 0] || d.theme, ds: [] }; fams.push(byF[k]); if (projs.indexOf(d.projectId) < 0) projs.push(d.projectId); count[d.projectId] = (count[d.projectId] || 0) + 1; }
+      byF[k].ds.push(d);
+    });
+    fams.forEach(function (f) { var i = seen[f.p] = (seen[f.p] || 0) + 1; f.pos = (i - 1 + (projs.indexOf(f.p) * 0.618 + 0.3) % 1) / count[f.p]; });
+    var left = fams.slice().sort(function (a, b) { return a.pos - b.pos; }), out = [], last = null;
+    var tests = [function (f) { return f.p !== last.p && f.tpl !== last.tpl && f.th !== last.th; }, function (f) { return f.p !== last.p && f.tpl !== last.tpl; }, function (f) { return f.p !== last.p; }];
+    while (left.length) {
+      var pick = 0;
+      if (last) {
+        search: for (var t = 0; t < tests.length; t++) for (var c = 0; c < Math.min(6, left.length); c++) {
+          var f = left[c], first = true;
+          for (var e = 0; e < c; e++) if (left[e].p === f.p) { first = false; break; } // a project's work keeps its own order
+          if (first && tests[t](f)) { pick = c; break search; }
+        }
+      }
+      last = left.splice(pick, 1)[0]; out.push(last);
+    }
+    var flat = []; out.forEach(function (f) { f.ds.forEach(function (d) { flat.push(d); }); });
+    return flat;
+  }
+
+  T.mix = mix;
   T.seed = seed;
   T.seedThumbs = { dir: "assets/seed/tk-", n: 73 };
 })();
