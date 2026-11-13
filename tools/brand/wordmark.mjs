@@ -148,7 +148,7 @@ const PAIRS = [
 ];
 const PINBOARD_PI = 4.7, PINBOARD_STRAIGHT = 6.06;
 // The gap between the two words, in logo units (the pairs inside a word are 4.7 to 6.1). Override: WORD_BREAK=n node ...
-const WORD_BREAK = +(process.env.WORD_BREAK || 12);
+const WORD_BREAK = +(process.env.WORD_BREAK || 18); // Luke picked 18 of 9, 12, 15 and 18 (13 Nov 2026)
 
 export function build() {
   const word = "homestudio";
