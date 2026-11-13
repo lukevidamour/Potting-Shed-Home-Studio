@@ -768,6 +768,13 @@ if (WS_ID === DEFAULT_WS && TKP) {
     BRAND.templatesOn = on.concat(fresh.filter(k => on.indexOf(k) < 0));
     try { Store.set("hs-tk-seen", TKP.order.slice()); const saved = Store.get(BRAND_KEY, null); if (saved) { saved.templatesOn = BRAND.templatesOn; saved.themes = BRAND.themes; Store.set(BRAND_KEY, saved); } } catch (e) {}
   }
+  // Only the toolkit's templates (Luke, 13 November 2026: "no designs from before the figma rebuild"). The first six
+  // stay in the code so nothing breaks, but they can't be picked, switched on or seen in the brand book.
+  const tkOnly = BRAND.templatesOn.filter(k => TKP.order.indexOf(k) >= 0);
+  if (tkOnly.length !== BRAND.templatesOn.length) {
+    BRAND.templatesOn = tkOnly.length ? tkOnly : TKP.order.slice();
+    try { const saved = Store.get(BRAND_KEY, null); if (saved) { saved.templatesOn = BRAND.templatesOn; Store.set(BRAND_KEY, saved); } } catch (e) {}
+  }
 }
 const THUMBS_KEY = "hs-thumbs-v1";
 /* Ready-made pictures of the example designs (tools/seed_thumbs.py writes them). n must equal the number of examples. */

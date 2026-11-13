@@ -1711,3 +1711,6 @@ main[data-stage],.toolbar{min-width:0}
 /* The small image links (Replace, Reposition, Remove) keep a real target on touch screens, however narrow the panel. */
 @media (max-width:1023px),(pointer:coarse){.slot-card .link,.slot-card .link.quiet{min-height:32px;display:inline-flex;align-items:center;flex:none}}
 @media (max-width:1023px),(pointer:coarse){.slot-card{align-items:flex-start}.slot-card .acts{flex-wrap:wrap;height:auto;overflow:visible;row-gap:0}.slot-card .acts .link,.slot-card .acts .link.quiet{min-height:32px;height:32px;line-height:32px;flex:none}}
+/* A client's own icon (its pack's icon): drawn as the mark's background, in place of initials or the wordmark */
+.wschip .wsmark[data-icon="1"]>*{display:none!important}
+.wschip .wsmark[data-icon="1"]::after{content:none}

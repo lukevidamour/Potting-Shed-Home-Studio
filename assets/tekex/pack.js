@@ -329,4 +329,7 @@
       t_frame: frame, t_els: els.map(norm)
     };
   };
+
+  // The workspace's icon in the sidebar: TEKEX's favicon from tekex.co, a red open square on lilac, on its own ground.
+  T.icon = { src: "assets/tekex/favicon.svg", ground: "#F6C5FF", size: "auto 68%" };
 })();

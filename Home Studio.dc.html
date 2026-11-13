@@ -13,20 +13,20 @@
    Each pack's markup goes where the pack slot element sits in the artwork. */
 (function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};var run=function(js,name){if(!js)return;try{(0,eval)(js);}catch(e){console.warn("Template pack could not be read: "+name,e);}};
 var markup="";
-run(get("assets/tekex/pack.js?v=20261113d"),"tekex");if(window.HS_TEKEX){(window.HS_TEKEX.parts||[]).forEach(function(p){run(get("assets/tekex/t-"+p+".js?v=20261113d"),"tekex "+p);});run(get("assets/tekex/examples.js?v=20261113d"),"tekex examples");markup+=get("assets/tekex/templates.html?v=20261113d");try{window.HS_TEKEX.library=JSON.parse(get("assets/tekex/library/manifest.json")||"[]");}catch(e){window.HS_TEKEX.library=[];}}
+run(get("assets/tekex/pack.js?v=20261113f"),"tekex");if(window.HS_TEKEX){(window.HS_TEKEX.parts||[]).forEach(function(p){run(get("assets/tekex/t-"+p+".js?v=20261113f"),"tekex "+p);});run(get("assets/tekex/examples.js?v=20261113f"),"tekex examples");markup+=get("assets/tekex/templates.html?v=20261113f");try{window.HS_TEKEX.library=JSON.parse(get("assets/tekex/library/manifest.json")||"[]");}catch(e){window.HS_TEKEX.library=[];}}
 if(local){var js=get("assets/hh/pack.js");if(js){run(js,"client");if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");markup+=window.HS_PACK.markup;}}}
 window.HS_MARKUP=markup;if(markup){var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_MARKUP;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}
 document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_MARKUP)slot.outerHTML=window.HS_MARKUP;else slot.remove();});})();
 </script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261113d"></script>
+<script src="home-studio.lib.js?v=20261113f"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="styles.css?v=20261113d">
+<link rel="stylesheet" href="styles.css?v=20261113f">
 <link rel="preload" href="assets/fonts/neue-montreal-semibold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="home-studio.css?v=20261113d">
+<link rel="stylesheet" href="home-studio.css?v=20261113f">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
           <button class="bead logo" onClick="{{ logoTap }}" aria-label="Potting Shed Home Studio, home"><span class="mark" aria-hidden="true"></span></button>
 <div class="kebab wsswitch" onClick="{{ stop }}">
           <button class="wschip" onClick="{{ toggleWsMenu }}" aria-haspopup="menu" aria-expanded="{{ wsMenuOpen }}" aria-label="Client: {{ wsName }}. Switch client">
-            <span class="wsmark" style="{{ wsMarkStyle }}" data-i="{{ wsInitials }}"><sc-if value="{{ wsBuiltInLogo }}"><svg viewBox="0 0 879.658 181" role="img" aria-label="TEKEX"><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path><path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path><path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path><path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path></svg></sc-if><sc-if value="{{ wsLogoMask }}"><i style="{{ wsLogoMaskStyle }}"></i></sc-if><sc-if value="{{ wsLogoText }}"><b>{{ wsInitials }}</b></sc-if></span>
+            <span class="wsmark" style="{{ wsMarkStyle }}" data-i="{{ wsInitials }}" data-icon="{{ wsIconOn }}"><sc-if value="{{ wsBuiltInLogo }}"><svg viewBox="0 0 879.658 181" role="img" aria-label="TEKEX"><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(145.989 67.219)"></path><path d="M 0 46.541 L 151.974 46.541 L 159.921 0 L 7.947 0 L 0 46.541 Z" transform="translate(502.644 67.219)"></path><path d="M 317.22 0 L 7.947 0 L 0 46.541 L 54.808 46.541 L 31.868 181 L 88.738 181 L 111.699 46.541 L 309.273 46.541 L 317.22 0 Z"></path><path d="M 572.826 0 L 506.107 0 L 461.968 46.901 L 433.844 0 L 148.551 0 L 74.326 78.87 L 87.798 0 L 30.907 0 L 0 181 L 56.89 181 L 70.362 102.15 L 117.664 181.02 L 184.383 181.02 L 336.257 181.02 L 402.976 181.02 L 447.115 134.119 L 475.24 181.02 L 541.959 181.02 L 488.112 90.52 L 572.826 0 Z M 336.317 180.92 L 344.244 134.459 L 192.29 134.459 L 184.343 180.98 L 130.515 90.5 L 215.25 0.04 L 207.303 46.541 L 359.258 46.541 L 367.185 0.1 L 420.972 90.52 L 336.317 180.92 Z" transform="translate(306.831 0)"></path><path d="M 0 46.541 L 151.954 46.541 L 159.901 0 L 7.947 0 L 0 46.541 Z" transform="translate(134.519 134.459)"></path></svg></sc-if><sc-if value="{{ wsLogoMask }}"><i style="{{ wsLogoMaskStyle }}"></i></sc-if><sc-if value="{{ wsLogoText }}"><b>{{ wsInitials }}</b></sc-if></span>
             <span class="wsname">{{ wsName }}</span>
             <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4-4 4 4M8 14l4 4 4-4"/></svg>
           </button>
@@ -1295,6 +1295,19 @@ class Component extends DCLogic {
         try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.set(THUMBS_KEY, thumbs); Store.set("hs-tk-seed-at", to); } catch (e) {}
       }
     }
+    // One-time pass (Luke, 13 November 2026): "no designs from before the figma rebuild". Designs made with the first six
+    // templates go, with their pictures, and any project they leave empty goes with them.
+    if (WS_ID === DEFAULT_WS && TKP && TKP.order && !Store.raw("hs-tk-old-1")) {
+      const old = drafts.filter(d => TKP.order.indexOf(d.tpl) < 0);
+      if (old.length) {
+        const gone = new Set(old.map(d => d.id)), held = new Set(old.map(d => d.projectId));
+        drafts = drafts.filter(d => !gone.has(d.id));
+        projects = projects.filter(pj => !held.has(pj.id) || drafts.some(d => d.projectId === pj.id));
+        old.forEach(d => dropThumbs.push(d.id));
+        try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); } catch (e) {}
+      }
+      Store.flag("hs-tk-old-1");
+    }
     // One-time pass (Luke, 13 November 2026): All designs mixes TEKEX's examples evenly instead of a project at a time.
     // The examples arrived stamped exactly a minute apart; any that has been edited since lost that rhythm and stays put.
     // Each batch that still has it shares out the same places in the list between its designs, in the mixed order.
@@ -1745,7 +1758,9 @@ class Component extends DCLogic {
       wsName: BRAND.name || "Untitled client", wsIsDefault: WS_ID === DEFAULT_WS, wsMenuOpen: s.wsMenuOpen, toggleWsMenu: this.toggleWsMenu, openNewClient: this.openNewClient,
       wsItems: wsList().map(w => ({ name: w.id === WS_ID ? (BRAND.name || w.name) : w.name, on: w.id === WS_ID, pick: (e) => { e.stopPropagation(); this.switchClient(w.id); } })),
       wsBuiltInLogo: !BRAND.logo && WS_ID === DEFAULT_WS, wsLogoMask: !!BRAND.logo, wsLogoText: !BRAND.logo && WS_ID !== DEFAULT_WS, wsInitials: initials(BRAND.name),
-      wsMarkStyle: WS_ID === DEFAULT_WS && !Store.raw(BRAND_KEY) ? { background: "#7824FF", color: "#81FFE7" } : { background: BRAND.themes[0].ground, color: BRAND.themes[0].accent },
+      // the client's own icon where its pack has one (TEKEX's favicon; a private client's mark), otherwise initials
+      wsIconOn: this.wsIcon() ? "1" : "",
+      wsMarkStyle: this.wsIcon() ? { background: this.wsIcon().ground + " url(" + this.wsIcon().src + ") center / " + (this.wsIcon().size || "contain") + " no-repeat" } : WS_ID === DEFAULT_WS && !Store.raw(BRAND_KEY) ? { background: "#7824FF", color: "#81FFE7" } : { background: BRAND.themes[0].ground, color: BRAND.themes[0].accent },
       wsLogoMaskStyle: BRAND.logo ? maskOf(BRAND.logo.src, "100%", "100%") : {},
       bbMenuOpen: s.bbMenuOpen, toggleBbMenu: this.toggleBbMenu,
       bbAskReset: () => this.setState({ bbMenuOpen: false, confirm: { title: "Reset the brand book?", body: "Colours, colourways, labels, logos and voice go back to how Potting Shed set them up. Your designs stay as they are.", action: "Reset", run: this.resetBrand } }),
@@ -1789,7 +1804,7 @@ class Component extends DCLogic {
         };
       }),
       bbAddWay: () => this.editBrand(b => { const g = palHex[0] || "#141414"; const a = palHex.slice().sort((x, y) => contrast(hexToRgb(y), hexToRgb(g)) - contrast(hexToRgb(x), hexToRgb(g)))[0] || "#FFFFFF"; b.themes.push({ name: "New colourway", ground: hexToRgb(g), accent: hexToRgb(a) }); }, "Colourways"),
-      bbTemplates: TEMPLATES.filter(t => (t.set || "core") === (BRAND.templateSet || "core")).map(t => { const on = BRAND.templatesOn.indexOf(t.key) >= 0; return { name: t.name, desc: t.desc, on, locked: on && BRAND.templatesOn.length <= 1, toggle: () => this.editBrand(b => { b.templatesOn = TEMPLATES.filter(x => (x.set || "core") === (BRAND.templateSet || "core")).map(x => x.key).filter(k => k === t.key ? !on : b.templatesOn.indexOf(k) >= 0); }, "Templates") }; }),
+      bbTemplates: TEMPLATES.filter(t => (t.set || "core") === (BRAND.templateSet || "core") && !(WS_ID === DEFAULT_WS && TKP && TKP.order.indexOf(t.key) < 0)).map(t => { const on = BRAND.templatesOn.indexOf(t.key) >= 0; return { name: t.name, desc: t.desc, on, locked: on && BRAND.templatesOn.length <= 1, toggle: () => this.editBrand(b => { b.templatesOn = TEMPLATES.filter(x => (x.set || "core") === (BRAND.templateSet || "core")).map(x => x.key).filter(k => k === t.key ? !on : b.templatesOn.indexOf(k) >= 0); }, "Templates") }; }),
       bbLabels: BRAND.barLabels.map((l, i) => ({ text: l, locked: BRAND.barLabels.length <= 1, removeLabel: "Remove " + l, remove: () => this.editBrand(b => { b.barLabels.splice(i, 1); }, "Footer labels") })),
       bbNewLabel: s.bbNewLabel, bbSetNewLabel: (e) => this.setState({ bbNewLabel: e.target.value.toUpperCase() }),
       bbNewLabelKeys: (e) => { if (e.key !== "Enter") return; e.preventDefault(); const v = s.bbNewLabel.trim(); if (v && BRAND.barLabels.indexOf(v) < 0) this.editBrand(b => { b.barLabels.push(v); }, "Footer labels"); this.setState({ bbNewLabel: "" }); },
@@ -2311,7 +2326,8 @@ class Component extends DCLogic {
   }
   openProject(id) { this.setState({ view: "project", projectId: id, reviewOpen: false, menuId: null }); }
   goProject = () => this.setState({ view: this.state.projectId ? "project" : "projects", reviewOpen: false });
-  firstTpl() { return BRAND.templatesOn.indexOf("speaker") >= 0 ? "speaker" : BRAND.templatesOn[0]; }
+  wsIcon() { const pk = WS_ID === DEFAULT_WS ? TKP : PACK && WS_ID === PACK.id ? PACK : null; return pk && pk.icon && pk.icon.src ? pk.icon : null; }
+  firstTpl() { return ["tk-speaker", "speaker"].filter(k => BRAND.templatesOn.indexOf(k) >= 0)[0] || BRAND.templatesOn[0]; }
   goTemplates = () => { this.openDesign(newDesign(this.firstTpl(), "square", this.state.projectId || null), true); };
   newArtwork = () => { this.setState({ projectId: null }); this.openDesign(newDesign(this.firstTpl(), "square", null), true); };
   assignProject(pid) {
