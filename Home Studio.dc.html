@@ -2290,7 +2290,8 @@ class Component extends DCLogic {
       if (act) act.style.transform = "translateY(" + (-up * h).toFixed(1) + "px)";
       if (wm) wm.style.transform = "translateY(" + ((-0.86 * up + 0.6 * sag) * h).toFixed(1) + "px)";
       const settle = ((1 - up) * 32).toFixed(1); kids.forEach(el => { el.style.transform = "translateY(" + settle + "px)"; });
-      if (t < 1) requestAnimationFrame(frame); else { svg.remove(); done(); }
+      // the last frame: hide the curtain before its shape goes, or for one frame it would show whole (a flash of colour)
+      if (t < 1) requestAnimationFrame(frame); else { gate.style.visibility = "hidden"; gate.style.clipPath = "inset(100% 0 0 0)"; svg.remove(); done(); }
     };
     requestAnimationFrame(frame);
   }

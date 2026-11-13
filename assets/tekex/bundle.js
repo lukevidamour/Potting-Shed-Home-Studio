@@ -29,6 +29,7 @@ try {
     yoono: { src: "assets/logos/yoono.svg", ar: 120 / 23 }, rathbones: { src: "assets/logos/rathbones.svg", ar: 181 / 20 },
     c5: { src: "assets/logos/c5.svg", ar: 57 / 50 }, bdo: { src: "assets/logos/bdo.svg", ar: 97.7 / 37.5 },
     wildpeak: { src: "assets/logos/wildpeak.svg", ar: 76 / 50 }, red5: { src: "assets/logos/red5.svg", ar: 108.1 / 37.4 },
+    digitaljersey: { src: "assets/logos/digitaljersey.svg", ar: 137 / 52 }, pwc: { src: "assets/logos/pwc.svg", ar: 58.7826 / 45.1223 },
     ps: { src: "assets/ps-logo.svg", ar: 165 / 34.92 }
   };
   T.LOGO = LOGO;
@@ -217,7 +218,7 @@ try {
       var s = o.scale || 1, ink = o.ink || K.ink, out = [K.box(x, y, w, 120 * s, { line: 2 * s, color: ink, fill: o.fill, z: o.z })];
       out.push(K.text(x + 24 * s, y + 41 * s, "SUPPORTED BY", { size: 15.747 * s, weight: 500, lh: 1, color: ink, z: o.z }));
       // each logo at its measured height, centred on one line 48 below the strip's top (Figma 8005:1814, 10002:81)
-      var HT = { yoono: 23, rathbones: 20, c5: 50, bdo: 37.5, wildpeak: 50, red5: 37.4 };
+      var HT = { yoono: 23, rathbones: 20, c5: 50, bdo: 37.5, wildpeak: 50, red5: 37.4, digitaljersey: 40, pwc: 40 };
       var logos = K.sponsors(), six = logos.length >= 6, x0 = x + (six ? 155 : 182) * s, x1 = x + w - (six ? 25 : 30) * s;
       var widths = logos.map(function (l) { return (HT[l.key] || 38) * s * l.ar; }), total = widths.reduce(function (a, b) { return a + b; }, 0);
       var gap = logos.length > 1 ? Math.max(14 * s, (x1 - x0 - total) / (logos.length - 1)) : 0, cx = x0;
@@ -2347,7 +2348,8 @@ try {
       els.push(K.chrome({ foot: "none" }));
       els.push(barLabel(K, G, 72, 600 + X));
       els.push(K.mark("quote-open", 72, 158, 80, 75.04, { z: Z.text }));
-      var qw = fitWords(K, c.quote, { size: 54, min: 34, w: 1020 + X, lines: 5, h: 266, lh: 1, base: 300, strong: 600 });
+      // a long quote steps down to 28 on up to 8 lines before it would ever run out of its 266-high box
+      var qw = fitWords(K, c.quote, { size: 54, min: 28, w: 1020 + X, lines: 8, h: 266, lh: 1, base: 300, strong: 600 });
       els.push(K.text(66, 256, qw.runs, { size: qw.size, weight: 300, lh: 1, wrap: true, field: "quote", fit: "quote", w: 1040 + X, h: 266 }));
       var fw2 = st.n >= st.N ? 1 : st.n / st.N * 0.955;
       els.push(K.box(66, 553.6, 1020 + X, 6.8, { fill: WHITE, z: Z.chrome }));

@@ -272,7 +272,8 @@
       els.push(K.chrome({ foot: "none" }));
       els.push(barLabel(K, G, 72, 600 + X));
       els.push(K.mark("quote-open", 72, 158, 80, 75.04, { z: Z.text }));
-      var qw = fitWords(K, c.quote, { size: 54, min: 34, w: 1020 + X, lines: 5, h: 266, lh: 1, base: 300, strong: 600 });
+      // a long quote steps down to 28 on up to 8 lines before it would ever run out of its 266-high box
+      var qw = fitWords(K, c.quote, { size: 54, min: 28, w: 1020 + X, lines: 8, h: 266, lh: 1, base: 300, strong: 600 });
       els.push(K.text(66, 256, qw.runs, { size: qw.size, weight: 300, lh: 1, wrap: true, field: "quote", fit: "quote", w: 1040 + X, h: 266 }));
       var fw2 = st.n >= st.N ? 1 : st.n / st.N * 0.955;
       els.push(K.box(66, 553.6, 1020 + X, 6.8, { fill: WHITE, z: Z.chrome }));

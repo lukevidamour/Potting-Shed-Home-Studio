@@ -74,7 +74,10 @@ const BRAND = {
     { key: "c5",        name: "C5 Alliance",        src: "assets/logos/c5.svg" },
     { key: "red5",      name: "Red 5 Systems",      src: "assets/logos/red5.svg" },
     { key: "yoono",     name: "Yoono",              src: "assets/logos/yoono.svg" },
-    { key: "wildpeak",  name: "Wild Peak Holdings", src: "assets/logos/wildpeak.svg" }
+    { key: "wildpeak",  name: "Wild Peak Holdings", src: "assets/logos/wildpeak.svg" },
+    // supporters TEKEX credits who are off on a new design until switched on (their logos are in the library too)
+    { key: "digitaljersey", name: "Digital Jersey", src: "assets/logos/digitaljersey.svg", off: true },
+    { key: "pwc",       name: "PwC",                src: "assets/logos/pwc.svg", off: true }
   ],
   barLabels: ["SPEAKERS", "EVENT", "PARTNERS", "TALKS", "COMMUNITY"],
   library: [
@@ -559,7 +562,7 @@ function newDesign(tpl, size, projectId) {
     copy: Object.assign({}, EXAMPLE_COPY, packOf(tpl) ? (packOf(tpl).exampleFor ? packOf(tpl).exampleFor(tpl, 0) : (packOf(tpl).examples || {})[tpl]) : null),
     speakers: EXAMPLE_SPEAKERS.map(s => Object.assign({}, s)),
     trio: EXAMPLE_TRIO.map(t => Object.assign({}, t)),
-    images: {}, partnersOn: BRAND.partners.map(p => p.key),
+    images: {}, partnersOn: BRAND.partners.filter(p => !p.off).map(p => p.key),
     showBar: true, showPowered: BRAND.powered !== false, showHero: true, showPortraits: true,
     updatedAt: Date.now()
   };
@@ -780,6 +783,8 @@ if (WS_ID !== DEFAULT_WS) {
   if (PACK && meta.preset === PACK.preset && PACK.exampleCopy) Object.assign(EXAMPLE_COPY, PACK.exampleCopy);
 }
 applyBrand(Store.get(BRAND_KEY, null));
+// a saved TEKEX brand book gains any partner added since (switched off on designs until chosen)
+if (WS_ID === DEFAULT_WS && BRAND.partners) BRAND_DEFAULT.partners.forEach(p => { if (!BRAND.partners.some(x => x.key === p.key)) BRAND.partners.push(Object.assign({}, p)); });
 if (WS_ID === DEFAULT_WS && (BRAND.team || []).every(t => / Potting Shed$/.test(t.role || "")) && (BRAND.team || []).length) {
   BRAND.team = JSON.parse(JSON.stringify(BRAND_DEFAULT.team));
   try { const saved = Store.get(BRAND_KEY, null); if (saved) { saved.team = BRAND.team; Store.set(BRAND_KEY, saved); } } catch (e) {}
