@@ -2861,12 +2861,18 @@ class Component extends DCLogic {
   /* Up to three thumbnails side by side at one height, sized to sit inside the preview box. */
   shelfFor(list) {
     const items = list.slice(0, 3); if (items.length < 2 || items.some(x => !this.state.thumbs[x.id])) return null;
-    // A project shows its latest piece large, with the next two tucked behind it: a stack of work, not a row of stamps.
-    const boxW = this.state.cardW || 380, boxH = Math.round(boxW * CARD_RATIO), pad = 18, SCALE = [1, 0.86, 0.72], SHOW = 0.36;
-    const ar = (x) => SIZES[x.size].w / SIZES[x.size].h;
-    const span = items.reduce((t, x, i) => t + SCALE[i] * ar(x) * (i ? SHOW : 1), 0);
-    const h = Math.min(boxH - 2 * pad, (boxW - 2 * pad) / span);
-    return items.map((x, i) => { const hh = Math.round(h * SCALE[i]), ww = Math.round(hh * ar(x)); return { url: this.state.thumbs[x.id], style: { height: hh, width: ww, marginLeft: i ? -Math.round(ww * (1 - SHOW)) : 0, position: "relative", zIndex: 3 - i, flex: "0 0 auto", display: "block" } }; });
+    // A project shows its latest piece large, with the next two fanned out behind it. Every size is drawn at its true
+    // size relative to the others (a story is taller than a portrait), slightly smaller the further back it sits, and
+    // each one behind steps out to the right by the same amount, so the stack reads as one piece in several sizes.
+    const boxW = this.state.cardW || 380, boxH = Math.round(boxW * CARD_RATIO), pad = 18, SCALE = [1, 0.92, 0.84];
+    const dims = items.map((x, i) => ({ w: SIZES[x.size].w * SCALE[i], h: SIZES[x.size].h * SCALE[i] }));
+    const step = dims[0].w * 0.2; // how far each card behind shows past the one in front
+    // each card behind starts to the right of the one in front and ends at least a step past it, so nothing pokes out on the left
+    const pos = []; dims.forEach((d, i) => { const q = pos[i - 1]; pos.push({ d, x: q ? Math.max(q.x + q.d.w + step - d.w, q.x + step * 0.5) : 0 }); });
+    const minX = Math.min(...pos.map(p => p.x)), maxX = Math.max(...pos.map(p => p.x + p.d.w)), maxH = Math.max(...dims.map(d => d.h));
+    const u = Math.min((boxW - 2 * pad) / (maxX - minX), (boxH - 2 * pad) / maxH);
+    const left0 = (boxW - (maxX - minX) * u) / 2;
+    return items.map((x, i) => { const p = pos[i], ww = Math.round(p.d.w * u), hh = Math.round(p.d.h * u); return { url: this.state.thumbs[x.id], style: { position: "absolute", left: Math.round(left0 + (p.x - minX) * u), top: Math.round((boxH - hh) / 2), width: ww, height: hh, zIndex: 3 - i, display: "block" } }; });
   }
   withShelf(b, list) { const shelf = this.shelfFor(list); return shelf ? Object.assign(b, { hasShelf: true, shelf, hasArt: false, thumbUrl: "" }) : b; }
 
