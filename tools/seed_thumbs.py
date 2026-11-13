@@ -14,7 +14,8 @@ client = sys.argv[1] if len(sys.argv) > 1 else 'tekex'
 out = sys.argv[2] if len(sys.argv) > 2 else 'assets/seed/tekex-'
 base = os.environ.get('QA_BASE', 'http://localhost:8765/')
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-init = "try { sessionStorage.setItem('hs-in', '1'); localStorage.setItem('hs-ws-current', '%s'); localStorage.setItem('hs-theme', 'light'); } catch (e) {}" % client
+# drawn at 720px wide so tiles are sharp on retina screens (the app's own captures stay at 480)
+init = "try { window.__hsThumbW = 720; sessionStorage.setItem('hs-in', '1'); localStorage.setItem('hs-ws-current', '%s'); localStorage.setItem('hs-theme', 'light'); } catch (e) {}" % client
 p, ws = browser(9540, init, reduce_motion=False)
 try:
     size(ws, 1440, 900)
@@ -33,7 +34,7 @@ try:
     for n, url in pics:
         im = Image.open(io.BytesIO(base64.b64decode(url.split(',', 1)[1]))).convert('RGB')
         path = os.path.join(root, f'{out}{n:02d}.webp')
-        im.save(path, 'WEBP', quality=78, method=6); total += os.path.getsize(path)
+        im.save(path, 'WEBP', quality=74, method=6); total += os.path.getsize(path)
     print(f'{len(pics)} thumbnails written to {out}NN.webp ({total // 1024}KB)')
 finally:
     p.terminate()

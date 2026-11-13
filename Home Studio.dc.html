@@ -2385,10 +2385,14 @@ class Component extends DCLogic {
   async renderThumb(node, d) {
     const shot = await ensureShot();
     const S = SIZES[d.size];
-    return shot.domToDataUrl(node, shotOpts({ width: S.w, height: S.h, scale: 480 / S.w, type: "image/jpeg", quality: 0.74, backgroundColor: BRAND.themes[d.theme].ground, style: { transform: "none", boxShadow: "none", margin: "0", position: "static" }, filter: (el) => !(el.getAttribute && el.getAttribute("data-guide")) }));
+    // 480px wide by default (thumbnails live in browser storage); the examples' ready-made files are drawn at 720 so tiles
+    // stay sharp on retina screens (tools/seed_thumbs.py sets __hsThumbW)
+    const W = window.__hsThumbW || 480;
+    return shot.domToDataUrl(node, shotOpts({ width: S.w, height: S.h, scale: W / S.w, type: "image/jpeg", quality: 0.74, backgroundColor: BRAND.themes[d.theme].ground, style: { transform: "none", boxShadow: "none", margin: "0", position: "static" }, filter: (el) => !(el.getAttribute && el.getAttribute("data-guide")) }));
   }
   storeThumb(id, url) {
-    if (!url || url.length < 1500 || url.length > 140000 || url.indexOf("data:image/") !== 0) return;
+    const big = Math.pow((window.__hsThumbW || 480) / 480, 2);
+    if (!url || url.length < 1500 || url.length > 140000 * big || url.indexOf("data:image/") !== 0) return;
     const probe = new Image();
     probe.onload = () => {
       if (!probe.naturalWidth) return;
