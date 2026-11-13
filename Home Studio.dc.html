@@ -3389,7 +3389,7 @@ class Component extends DCLogic {
       templateTiles: TEMPLATES.filter(t => BRAND.templatesOn.indexOf(t.key) >= 0 || d.tpl === t.key).map(t => { const o = pickBy["t:" + t.key] || {}; return { name: t.name, on: d.tpl === t.key, pick: () => this.switchTemplate(t.key), pic: o.pic || "", hasPic: !!o.pic }; }),
       tplNow: { name: tplDef.name, pic: (pickBy["t:" + d.tpl] || {}).pic || "", hasPic: !!(pickBy["t:" + d.tpl] || {}).pic }, tplPickOpen: !!s.tplPickOpen, tplPickLabel: s.tplPickOpen ? "Hide" : "Change", toggleTplPick: this.toggleTplPick,
       hasLayouts: (tplDef.layouts || []).length > 1, layoutTiles: (tplDef.layouts || []).map((name, i) => { const o = pickBy["l:" + d.tpl + ":" + i] || {}; return { name, on: (d.layout || 0) === i, pick: () => this.setLayout(i), pic: o.pic || "", hasPic: !!o.pic }; }),
-      apprHint: ((BRAND.compliance || {}).approver || "").trim() ? "A Potting Shed design check is optional." : "Approval is optional.",
+      apprHint: (((BRAND.compliance || {}).approver || "").trim() ? "A Potting Shed design check is optional." : "Approval is optional.") + " It opens an email to the studio with a reference.",
       apprNone: this.appr(d).status === "none", apprSubmitted: this.appr(d).status === "submitted", apprResubmit: ["changes", "changed"].indexOf(this.appr(d).status) >= 0,
       apprLabel: this.apprLabel(d), apprClass: this.apprClass(d), apprNote: this.appr(d).note || "", apprGuardianNote: this.appr(d).guardianNote || "",
       apprWhen: (() => { const a = this.appr(d); if (a.status === "submitted") return "Sent " + fmtWhen(new Date(a.at).getTime()) + " · " + a.ref; if (a.decidedAt) return fmtWhen(new Date(a.decidedAt).getTime()) + " · " + a.ref; return a.ref || ""; })(),
