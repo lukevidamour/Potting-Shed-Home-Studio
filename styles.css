@@ -28,3 +28,9 @@
   --tkx-blue:#2F479D;
   --tkx-navy:#0D183B;
 }
+/* PP Neue Montreal for the TEKEX templates, with its real SemiBold. Kept under its own name so the app's interface,
+   which uses weight 600 with the Medium file, does not change. */
+@font-face{font-family:"TK Neue";src:url("assets/fonts/neue-montreal-book.woff2") format("woff2");font-weight:300;font-style:normal;font-display:block}
+@font-face{font-family:"TK Neue";src:url("assets/fonts/neue-montreal-regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:"TK Neue";src:url("assets/fonts/neue-montreal-medium.woff2") format("woff2");font-weight:500;font-style:normal;font-display:block}
+@font-face{font-family:"TK Neue";src:url("assets/fonts/neue-montreal-semibold.woff2") format("woff2");font-weight:600;font-style:normal;font-display:block}

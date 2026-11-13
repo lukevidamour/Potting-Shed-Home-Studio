@@ -20,3 +20,6 @@ assets/hh/
 # Responsive QA output (reports and screenshots may show client work)
 tools/qa/out/
 tools/qa/__pycache__/
+
+# Working research (Figma inventories, reference crops): kept locally, not published
+research/

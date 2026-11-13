@@ -1,0 +1,1102 @@
+[
+  {
+    "id": "tkl-aj-coetzee-cutout",
+    "name": "AJ Coetzee, Summit; TEKEX Podcast #3 guest (cut-out; named left-to-right from the cover, check)",
+    "src": "assets/tekex/library/speakers/aj-coetzee-cutout.webp",
+    "group": "Speakers",
+    "w": 2000,
+    "h": 1951,
+    "cut": true,
+    "source": "figma mNSDBhKxUDNbgyCuBeK4ZT 1:5 (podcast cover; layers 2:7 / 2:8)"
+  },
+  {
+    "id": "tkl-andy-robins-rathbones",
+    "name": "Andy Robins, Rathbones; sponsor post portrait",
+    "src": "assets/tekex/library/speakers/andy-robins-rathbones.webp",
+    "group": "Speakers",
+    "w": 1080,
+    "h": 1080,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9061:92"
+  },
+  {
+    "id": "tkl-ben-dryden-cutout",
+    "name": "Ben Dryden, Summit; TEKEX Podcast #3 guest (cut-out; named left-to-right from the cover, check)",
+    "src": "assets/tekex/library/speakers/ben-dryden-cutout.webp",
+    "group": "Speakers",
+    "w": 2000,
+    "h": 1633,
+    "cut": true,
+    "source": "figma mNSDBhKxUDNbgyCuBeK4ZT 1:5 (podcast cover; layers 2:7 / 2:8)"
+  },
+  {
+    "id": "tkl-carol-glover-cutout",
+    "name": "Carol Glover, Vice President, Chamber of Commerce; TEKEX IOM #3 panellist (cut-out)",
+    "src": "assets/tekex/library/speakers/carol-glover-cutout.webp",
+    "group": "Speakers",
+    "w": 998,
+    "h": 1269,
+    "cut": true,
+    "source": "figma GR5Bd2WU3HI3IYfwSe9ilP 12011:1318"
+  },
+  {
+    "id": "tkl-chris-lee-cutout",
+    "name": "Chris Lee, TEKEX #36 speaker (cut-out)",
+    "src": "assets/tekex/library/speakers/chris-lee-cutout.webp",
+    "group": "Speakers",
+    "w": 1076,
+    "h": 1135,
+    "cut": true,
+    "source": "figma D2H9Lf2gvm0m4j7ORsUmaD 6001:540"
+  },
+  {
+    "id": "tkl-chris-sheldrick-cutout",
+    "name": "Chris Sheldrick, TEKEX #36 speaker (cut-out)",
+    "src": "assets/tekex/library/speakers/chris-sheldrick-cutout.webp",
+    "group": "Speakers",
+    "w": 2000,
+    "h": 1963,
+    "cut": true,
+    "source": "figma D2H9Lf2gvm0m4j7ORsUmaD 6001:273"
+  },
+  {
+    "id": "tkl-claire-owen-cutout",
+    "name": "Claire Owen, TEKEX #35 speaker (cut-out)",
+    "src": "assets/tekex/library/speakers/claire-owen-cutout.webp",
+    "group": "Speakers",
+    "w": 1246,
+    "h": 2000,
+    "cut": true,
+    "source": "figma EpQlazaPNN518sycKxGz6w 2003:5487"
+  },
+  {
+    "id": "tkl-fred-kalinke-cutout",
+    "name": "Fred Kalinke, TEKEX #36 speaker (cut-out)",
+    "src": "assets/tekex/library/speakers/fred-kalinke-cutout.webp",
+    "group": "Speakers",
+    "w": 1566,
+    "h": 1842,
+    "cut": true,
+    "source": "figma D2H9Lf2gvm0m4j7ORsUmaD 6001:607"
+  },
+  {
+    "id": "tkl-gus-fraser",
+    "name": "Gus Fraser, TEKEX #34 speaker (photo)",
+    "src": "assets/tekex/library/speakers/gus-fraser.webp",
+    "group": "Speakers",
+    "w": 1339,
+    "h": 1205,
+    "cut": false,
+    "source": "figma FM3l7K1nHbIAyi5nKCMw9K 5:134"
+  },
+  {
+    "id": "tkl-guy-templer",
+    "name": "Guy Templer, Chair, Junior Achievement; TEKEX IOM #3 panellist (black and white)",
+    "src": "assets/tekex/library/speakers/guy-templer.webp",
+    "group": "Speakers",
+    "w": 2000,
+    "h": 1500,
+    "cut": false,
+    "source": "figma GR5Bd2WU3HI3IYfwSe9ilP 12011:658"
+  },
+  {
+    "id": "tkl-jayne-sibley-cutout",
+    "name": "Jayne Sibley, TEKEX #35 speaker (cut-out, small original)",
+    "src": "assets/tekex/library/speakers/jayne-sibley-cutout.webp",
+    "group": "Speakers",
+    "w": 291,
+    "h": 483,
+    "cut": true,
+    "source": "figma EpQlazaPNN518sycKxGz6w 2003:1822"
+  },
+  {
+    "id": "tkl-jen-lothian-cutout",
+    "name": "Jen Lothian, TEKEX #36 speaker (cut-out)",
+    "src": "assets/tekex/library/speakers/jen-lothian-cutout.webp",
+    "group": "Speakers",
+    "w": 1634,
+    "h": 1759,
+    "cut": true,
+    "source": "figma D2H9Lf2gvm0m4j7ORsUmaD 6001:679"
+  },
+  {
+    "id": "tkl-jenson-artus",
+    "name": "Jenson Artus, Lead Isle of Man, Director MGS; TEKEX IOM #3 panellist",
+    "src": "assets/tekex/library/speakers/jenson-artus.webp",
+    "group": "Speakers",
+    "w": 1336,
+    "h": 2000,
+    "cut": false,
+    "source": "figma GR5Bd2WU3HI3IYfwSe9ilP 12011:1368"
+  },
+  {
+    "id": "tkl-jenson-artus-portrait",
+    "name": "Jenson Artus, portrait (tekex.co team section)",
+    "src": "assets/tekex/library/speakers/jenson-artus-portrait.webp",
+    "group": "Speakers",
+    "w": 640,
+    "h": 800,
+    "cut": false,
+    "source": "https://www.tekex.co/about"
+  },
+  {
+    "id": "tkl-lauren-perchard-rees-cutout",
+    "name": "Lauren Perchard-Rees, TEKEX #35 speaker (cut-out)",
+    "src": "assets/tekex/library/speakers/lauren-perchard-rees-cutout.webp",
+    "group": "Speakers",
+    "w": 1340,
+    "h": 2000,
+    "cut": true,
+    "source": "figma EpQlazaPNN518sycKxGz6w 2003:5490"
+  },
+  {
+    "id": "tkl-lindsay-de-sausmarez-cutout",
+    "name": "Lindsay de Sausmarez, TEKEX #35 speaker (cut-out)",
+    "src": "assets/tekex/library/speakers/lindsay-de-sausmarez-cutout.webp",
+    "group": "Speakers",
+    "w": 442,
+    "h": 1003,
+    "cut": true,
+    "source": "figma EpQlazaPNN518sycKxGz6w 2015:902"
+  },
+  {
+    "id": "tkl-louis-pike-cutout",
+    "name": "Louis Pike, IoD; TEKEX post 43 (cut-out, small original)",
+    "src": "assets/tekex/library/speakers/louis-pike-cutout.webp",
+    "group": "Speakers",
+    "w": 449,
+    "h": 512,
+    "cut": true,
+    "source": "figma E7viRv163FwdwvSYYleNkD 15040:1938"
+  },
+  {
+    "id": "tkl-louis-pike-portrait",
+    "name": "Louis Pike, portrait (tekex.co team section)",
+    "src": "assets/tekex/library/speakers/louis-pike-portrait.webp",
+    "group": "Speakers",
+    "w": 640,
+    "h": 800,
+    "cut": false,
+    "source": "https://www.tekex.co/about"
+  },
+  {
+    "id": "tkl-lyle-wraxall",
+    "name": "Lyle Wraxall, CEO, Digital Isle of Man; TEKEX IOM #3 panellist (black and white)",
+    "src": "assets/tekex/library/speakers/lyle-wraxall.webp",
+    "group": "Speakers",
+    "w": 2000,
+    "h": 1500,
+    "cut": false,
+    "source": "figma GR5Bd2WU3HI3IYfwSe9ilP 12011:608"
+  },
+  {
+    "id": "tkl-matt-tabb-cutout",
+    "name": "Matt Tabb, BDO; partner post (cut-out)",
+    "src": "assets/tekex/library/speakers/matt-tabb-cutout.webp",
+    "group": "Speakers",
+    "w": 1713,
+    "h": 2000,
+    "cut": true,
+    "source": "figma gyoY3wOZTz7a8jOWCtZySD 2028:619"
+  },
+  {
+    "id": "tkl-millie-venner-cutout",
+    "name": "Millie Venner, TEKEX #35 speaker (cut-out)",
+    "src": "assets/tekex/library/speakers/millie-venner-cutout.webp",
+    "group": "Speakers",
+    "w": 1147,
+    "h": 2000,
+    "cut": true,
+    "source": "figma EpQlazaPNN518sycKxGz6w 2003:5488"
+  },
+  {
+    "id": "tkl-nyx-redondo",
+    "name": "Nyx Redondo, TEKEX #34 speaker (photo)",
+    "src": "assets/tekex/library/speakers/nyx-redondo.webp",
+    "group": "Speakers",
+    "w": 1254,
+    "h": 1373,
+    "cut": false,
+    "source": "figma FM3l7K1nHbIAyi5nKCMw9K 0:77"
+  },
+  {
+    "id": "tkl-nyx-redondo-cutout",
+    "name": "Nyx Redondo, TEKEX #34 speaker (cut-out)",
+    "src": "assets/tekex/library/speakers/nyx-redondo-cutout.webp",
+    "group": "Speakers",
+    "w": 731,
+    "h": 933,
+    "cut": true,
+    "source": "figma FM3l7K1nHbIAyi5nKCMw9K 0:12"
+  },
+  {
+    "id": "tkl-richard-tavernor-cutout",
+    "name": "Richard Tavernor, TEKEX #36 speaker (cut-out)",
+    "src": "assets/tekex/library/speakers/richard-tavernor-cutout.webp",
+    "group": "Speakers",
+    "w": 1822,
+    "h": 2000,
+    "cut": true,
+    "source": "figma D2H9Lf2gvm0m4j7ORsUmaD 6001:605"
+  },
+  {
+    "id": "tkl-rus-newton-cutout",
+    "name": "Rus Newton, TEKEX #36 speaker (cut-out)",
+    "src": "assets/tekex/library/speakers/rus-newton-cutout.webp",
+    "group": "Speakers",
+    "w": 734,
+    "h": 1080,
+    "cut": true,
+    "source": "figma D2H9Lf2gvm0m4j7ORsUmaD 6001:680"
+  },
+  {
+    "id": "tkl-steve-billinghurst",
+    "name": "Steve Billinghurst, Chair, IoD; TEKEX IOM #3 panellist",
+    "src": "assets/tekex/library/speakers/steve-billinghurst.webp",
+    "group": "Speakers",
+    "w": 1753,
+    "h": 2000,
+    "cut": false,
+    "source": "figma GR5Bd2WU3HI3IYfwSe9ilP 12011:758"
+  },
+  {
+    "id": "tkl-tim-huelin",
+    "name": "Tim Huelin, Founder and CEO, Daysium; TEKEX #34 speaker (photo)",
+    "src": "assets/tekex/library/speakers/tim-huelin.webp",
+    "group": "Speakers",
+    "w": 2000,
+    "h": 1333,
+    "cut": false,
+    "source": "figma FM3l7K1nHbIAyi5nKCMw9K 4:68"
+  },
+  {
+    "id": "tkl-tom-langford-cutout",
+    "name": "Tom Langford, speaker at the AI Sprint events in Guernsey (cut-out)",
+    "src": "assets/tekex/library/speakers/tom-langford-cutout.webp",
+    "group": "Speakers",
+    "w": 1046,
+    "h": 1318,
+    "cut": true,
+    "source": "figma DpZFCKuSXG7GCgOCYMYYWg 10011:1926"
+  },
+  {
+    "id": "tkl-tom-ogden",
+    "name": "Tom Ogden, TEKEX #34 speaker (photo)",
+    "src": "assets/tekex/library/speakers/tom-ogden.webp",
+    "group": "Speakers",
+    "w": 1565,
+    "h": 1294,
+    "cut": false,
+    "source": "figma FM3l7K1nHbIAyi5nKCMw9K 5:68"
+  },
+  {
+    "id": "tkl-audience-in-hall",
+    "name": "TEKEX event audience in a large hall, seen from above",
+    "src": "assets/tekex/library/events/audience-in-hall.webp",
+    "group": "Events",
+    "w": 2000,
+    "h": 1223,
+    "cut": false,
+    "source": "https://www.tekex.co/about"
+  },
+  {
+    "id": "tkl-ed-prow-and-jenson-artus",
+    "name": "Ed Prow and Jenson Artus at a TEKEX event",
+    "src": "assets/tekex/library/events/ed-prow-and-jenson-artus.webp",
+    "group": "Events",
+    "w": 2000,
+    "h": 1126,
+    "cut": false,
+    "source": "https://www.tekex.co/journal"
+  },
+  {
+    "id": "tkl-event-artwork-ai-sprint-guernsey",
+    "name": "TEKEX AI Sprint Guernsey artwork: the All-in and TEKEX marks on a green gradient, with the session title and date",
+    "src": "assets/tekex/library/events/event-artwork-ai-sprint-guernsey.webp",
+    "group": "Events",
+    "w": 1880,
+    "h": 940,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-bootcamp-special",
+    "name": "TEKEX Bootcamp Special event artwork",
+    "src": "assets/tekex/library/events/event-artwork-bootcamp-special.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-gsy-4",
+    "name": "TEKEX Gsy #4 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-gsy-4.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-gsy-5",
+    "name": "TEKEX Gsy #5 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-gsy-5.webp",
+    "group": "Events",
+    "w": 940,
+    "h": 470,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-health-innovation-jersey",
+    "name": "Health Innovation Jersey event artwork",
+    "src": "assets/tekex/library/events/event-artwork-health-innovation-jersey.webp",
+    "group": "Events",
+    "w": 1880,
+    "h": 940,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-innovation-breakfast-iom",
+    "name": "Innovation Breakfast: Isle of Man event artwork",
+    "src": "assets/tekex/library/events/event-artwork-innovation-breakfast-iom.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-iom-1-launch",
+    "name": "TEKEX IOM #1: Isle of Man launch event artwork",
+    "src": "assets/tekex/library/events/event-artwork-iom-1-launch.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-iom-2",
+    "name": "TEKEX IOM #2 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-iom-2.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-iom-3",
+    "name": "TEKEX IOM #3 key art: the letters T-E-K-E-X carved in rock at sunset, two figures standing on top, with the partner logos beneath",
+    "src": "assets/tekex/library/events/event-artwork-iom-3.webp",
+    "group": "Events",
+    "w": 2000,
+    "h": 1000,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-summer-social",
+    "name": "TEKEX Summer Social event artwork",
+    "src": "assets/tekex/library/events/event-artwork-summer-social.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-summer-sundown-social",
+    "name": "Summer Sundown Social Jam Night event artwork",
+    "src": "assets/tekex/library/events/event-artwork-summer-sundown-social.webp",
+    "group": "Events",
+    "w": 1880,
+    "h": 940,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-12-first-birthday",
+    "name": "TEKEX #12: First birthday event artwork (one example of the 2019-style #1 to #22 series)",
+    "src": "assets/tekex/library/events/event-artwork-tekex-12-first-birthday.webp",
+    "group": "Events",
+    "w": 1880,
+    "h": 940,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-26",
+    "name": "TEKEX #26: Happier Healthier Humans event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-26.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-27",
+    "name": "TEKEX #27 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-27.webp",
+    "group": "Events",
+    "w": 1880,
+    "h": 940,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-28-bootcamp-2024",
+    "name": "TEKEX #28: Bootcamp 2024 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-28-bootcamp-2024.webp",
+    "group": "Events",
+    "w": 1880,
+    "h": 940,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-29",
+    "name": "TEKEX #29 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-29.webp",
+    "group": "Events",
+    "w": 1880,
+    "h": 940,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-30-female-founders",
+    "name": "TEKEX #30: Female Founders event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-30-female-founders.webp",
+    "group": "Events",
+    "w": 1880,
+    "h": 940,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-31",
+    "name": "TEKEX #31 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-31.webp",
+    "group": "Events",
+    "w": 1880,
+    "h": 940,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-32",
+    "name": "TEKEX #32 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-32.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-33",
+    "name": "TEKEX #33 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-33.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-34",
+    "name": "TEKEX #34 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-34.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-35-female-founders",
+    "name": "TEKEX #35: Female Founders event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-35-female-founders.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-36",
+    "name": "TEKEX #36 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-36.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekex-gen-1",
+    "name": "TEKEX Gen #1 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekex-gen-1.webp",
+    "group": "Events",
+    "w": 1200,
+    "h": 600,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-event-artwork-tekexmas-2023",
+    "name": "TEKEXmas 2023 event artwork",
+    "src": "assets/tekex/library/events/event-artwork-tekexmas-2023.webp",
+    "group": "Events",
+    "w": 1880,
+    "h": 940,
+    "cut": false,
+    "source": "https://www.tekex.co/events"
+  },
+  {
+    "id": "tkl-health-innovation-jersey-audience",
+    "name": "TEKEX Health Innovation Jersey audience applauding a speaker",
+    "src": "assets/tekex/library/events/health-innovation-jersey-audience.webp",
+    "group": "Events",
+    "w": 2000,
+    "h": 1126,
+    "cut": false,
+    "source": "https://www.tekex.co/"
+  },
+  {
+    "id": "tkl-jenson-artus-appointment",
+    "name": "Jenson Artus with a colleague at a TEKEX event (appointment post 82)",
+    "src": "assets/tekex/library/events/jenson-artus-appointment.webp",
+    "group": "Events",
+    "w": 2000,
+    "h": 2000,
+    "cut": false,
+    "source": "figma Td4QcZxLv3dJ32UZfDEONG 13039:50"
+  },
+  {
+    "id": "tkl-last-friday-club-beer-and-swirl",
+    "name": "Last Friday Club: pint glass with violet and orange swirl, transparent",
+    "src": "assets/tekex/library/events/last-friday-club-beer-and-swirl.webp",
+    "group": "Events",
+    "w": 784,
+    "h": 961,
+    "cut": false,
+    "source": "figma xzEjCjaksdPa8C4vxWZdhW 11006:354"
+  },
+  {
+    "id": "tkl-last-friday-club-hand-and-pint",
+    "name": "Last Friday Club: hand holding a pint, transparent",
+    "src": "assets/tekex/library/events/last-friday-club-hand-and-pint.webp",
+    "group": "Events",
+    "w": 613,
+    "h": 1145,
+    "cut": false,
+    "source": "figma xzEjCjaksdPa8C4vxWZdhW 11006:397"
+  },
+  {
+    "id": "tkl-last-friday-club-tekex-drink-from-above",
+    "name": "Last Friday Club: drink from above with a TEKEX lemon slice, transparent",
+    "src": "assets/tekex/library/events/last-friday-club-tekex-drink-from-above.webp",
+    "group": "Events",
+    "w": 672,
+    "h": 680,
+    "cut": false,
+    "source": "figma xzEjCjaksdPa8C4vxWZdhW 11025:144"
+  },
+  {
+    "id": "tkl-last-friday-club-tekex-pint",
+    "name": "Last Friday Club: TEKEX-branded pint glass on black",
+    "src": "assets/tekex/library/events/last-friday-club-tekex-pint.webp",
+    "group": "Events",
+    "w": 1254,
+    "h": 1254,
+    "cut": false,
+    "source": "figma xzEjCjaksdPa8C4vxWZdhW 11008:47"
+  },
+  {
+    "id": "tkl-podcast-3-studio",
+    "name": "TEKEX Podcast #3 recording, studio with host and guests (Summit: Deals from A to Z)",
+    "src": "assets/tekex/library/events/podcast-3-studio.webp",
+    "group": "Events",
+    "w": 2000,
+    "h": 1125,
+    "cut": false,
+    "source": "figma mNSDBhKxUDNbgyCuBeK4ZT 4:89"
+  },
+  {
+    "id": "tkl-tekex-35-female-founders-audience",
+    "name": "TEKEX #35 Female Founders audience at the C5 hub",
+    "src": "assets/tekex/library/events/tekex-35-female-founders-audience.webp",
+    "group": "Events",
+    "w": 2000,
+    "h": 1500,
+    "cut": false,
+    "source": "figma E7viRv163FwdwvSYYleNkD 13039:1067; caption from https://www.tekex.co/journal"
+  },
+  {
+    "id": "tkl-3d-blob-on-black",
+    "name": "Iridescent 3D blob on black (Understanding Tekex ad campaign)",
+    "src": "assets/tekex/library/graphics/3d-blob-on-black.webp",
+    "group": "Graphics",
+    "w": 1560,
+    "h": 964,
+    "cut": false,
+    "source": "figma 7mn8qElo8GZbxg4GzmRmIB 4181:378"
+  },
+  {
+    "id": "tkl-3d-bubbles-on-black",
+    "name": "Iridescent 3D bubble cluster on black (Understanding Tekex ad campaign)",
+    "src": "assets/tekex/library/graphics/3d-bubbles-on-black.webp",
+    "group": "Graphics",
+    "w": 1861,
+    "h": 1077,
+    "cut": false,
+    "source": "figma 7mn8qElo8GZbxg4GzmRmIB 4181:378"
+  },
+  {
+    "id": "tkl-3d-coil-on-black",
+    "name": "Iridescent 3D coil on black (Understanding Tekex ad campaign)",
+    "src": "assets/tekex/library/graphics/3d-coil-on-black.webp",
+    "group": "Graphics",
+    "w": 1476,
+    "h": 1013,
+    "cut": false,
+    "source": "figma 7mn8qElo8GZbxg4GzmRmIB 4181:378"
+  },
+  {
+    "id": "tkl-3d-firework-on-black",
+    "name": "Iridescent 3D firework burst on black (Understanding Tekex ad campaign)",
+    "src": "assets/tekex/library/graphics/3d-firework-on-black.webp",
+    "group": "Graphics",
+    "w": 1488,
+    "h": 987,
+    "cut": false,
+    "source": "figma 7mn8qElo8GZbxg4GzmRmIB 4181:378"
+  },
+  {
+    "id": "tkl-3d-glass-cross",
+    "name": "3D clear glass cross, transparent (Post 81)",
+    "src": "assets/tekex/library/graphics/3d-glass-cross.webp",
+    "group": "Graphics",
+    "w": 973,
+    "h": 966,
+    "cut": false,
+    "source": "figma DpZFCKuSXG7GCgOCYMYYWg 10065:9"
+  },
+  {
+    "id": "tkl-3d-glass-ring",
+    "name": "3D clear glass ring, transparent (Post 81 agenda background study)",
+    "src": "assets/tekex/library/graphics/3d-glass-ring.webp",
+    "group": "Graphics",
+    "w": 969,
+    "h": 970,
+    "cut": false,
+    "source": "figma DpZFCKuSXG7GCgOCYMYYWg 10065:9"
+  },
+  {
+    "id": "tkl-3d-glass-twisted-square",
+    "name": "3D clear glass twisted square, transparent (Post 81)",
+    "src": "assets/tekex/library/graphics/3d-glass-twisted-square.webp",
+    "group": "Graphics",
+    "w": 977,
+    "h": 978,
+    "cut": false,
+    "source": "figma DpZFCKuSXG7GCgOCYMYYWg 10065:9"
+  },
+  {
+    "id": "tkl-3d-inflated-cross-pink-violet",
+    "name": "3D inflated cross, pink to violet, transparent (Post 81)",
+    "src": "assets/tekex/library/graphics/3d-inflated-cross-pink-violet.webp",
+    "group": "Graphics",
+    "w": 919,
+    "h": 948,
+    "cut": false,
+    "source": "figma DpZFCKuSXG7GCgOCYMYYWg 10065:13"
+  },
+  {
+    "id": "tkl-3d-pink-arc",
+    "name": "3D soft pink arc, transparent (Post 81)",
+    "src": "assets/tekex/library/graphics/3d-pink-arc.webp",
+    "group": "Graphics",
+    "w": 861,
+    "h": 570,
+    "cut": false,
+    "source": "figma DpZFCKuSXG7GCgOCYMYYWg 10065:13"
+  },
+  {
+    "id": "tkl-3d-pink-capsule",
+    "name": "3D soft pink capsule, transparent (Post 81)",
+    "src": "assets/tekex/library/graphics/3d-pink-capsule.webp",
+    "group": "Graphics",
+    "w": 600,
+    "h": 734,
+    "cut": false,
+    "source": "figma DpZFCKuSXG7GCgOCYMYYWg 10065:13"
+  },
+  {
+    "id": "tkl-3d-pink-x",
+    "name": "3D soft pink X, transparent (Post 81)",
+    "src": "assets/tekex/library/graphics/3d-pink-x.webp",
+    "group": "Graphics",
+    "w": 681,
+    "h": 721,
+    "cut": false,
+    "source": "figma DpZFCKuSXG7GCgOCYMYYWg 10065:13"
+  },
+  {
+    "id": "tkl-3d-ring-on-black",
+    "name": "Iridescent 3D ring on black (Understanding Tekex ad campaign)",
+    "src": "assets/tekex/library/graphics/3d-ring-on-black.webp",
+    "group": "Graphics",
+    "w": 1060,
+    "h": 616,
+    "cut": false,
+    "source": "figma 7mn8qElo8GZbxg4GzmRmIB 4181:378"
+  },
+  {
+    "id": "tkl-3d-spiky-star-on-black",
+    "name": "Iridescent 3D spiky star on black (Understanding Tekex ad campaign)",
+    "src": "assets/tekex/library/graphics/3d-spiky-star-on-black.webp",
+    "group": "Graphics",
+    "w": 1917,
+    "h": 1085,
+    "cut": false,
+    "source": "figma 7mn8qElo8GZbxg4GzmRmIB 4181:378"
+  },
+  {
+    "id": "tkl-3d-star-ring-on-black",
+    "name": "Iridescent 3D star ring on black (Understanding Tekex ad campaign)",
+    "src": "assets/tekex/library/graphics/3d-star-ring-on-black.webp",
+    "group": "Graphics",
+    "w": 1618,
+    "h": 1064,
+    "cut": false,
+    "source": "figma 7mn8qElo8GZbxg4GzmRmIB 4181:378"
+  },
+  {
+    "id": "tkl-dark-bubbles",
+    "name": "Dark glass bubbles background (Health Innovation Jersey last-chance post)",
+    "src": "assets/tekex/library/graphics/dark-bubbles.webp",
+    "group": "Graphics",
+    "w": 1918,
+    "h": 1074,
+    "cut": false,
+    "source": "figma 2yg5mpDlpBDkLYqxqAVllM 5:124"
+  },
+  {
+    "id": "tkl-doodad-blue-z-on-peach",
+    "name": "Doodad: blue 3D Z on peach #FEDC8A, cropped by its frame (Wrapped, Fundraising ground)",
+    "src": "assets/tekex/library/graphics/doodad-blue-z-on-peach.webp",
+    "group": "Graphics",
+    "w": 1236,
+    "h": 1290,
+    "cut": false,
+    "source": "figma SO455XNoL6vfqCKx0kVmSW 3:15631"
+  },
+  {
+    "id": "tkl-doodad-multicolour-w-on-mint",
+    "name": "Doodad: multicolour 3D W on mint #D0FFBF (Events ground)",
+    "src": "assets/tekex/library/graphics/doodad-multicolour-w-on-mint.webp",
+    "group": "Graphics",
+    "w": 1750,
+    "h": 1162,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9038:13400"
+  },
+  {
+    "id": "tkl-doodad-orange-bolt-on-peach",
+    "name": "Doodad: orange and cream 3D bolt on peach #FEDC8A (Fundraising ground)",
+    "src": "assets/tekex/library/graphics/doodad-orange-bolt-on-peach.webp",
+    "group": "Graphics",
+    "w": 1709,
+    "h": 1836,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9038:3197"
+  },
+  {
+    "id": "tkl-doodad-white-z-on-lilac",
+    "name": "Doodad: soft white 3D Z on lilac #F0BFFF (News ground)",
+    "src": "assets/tekex/library/graphics/doodad-white-z-on-lilac.webp",
+    "group": "Graphics",
+    "w": 1647,
+    "h": 1712,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9038:25142"
+  },
+  {
+    "id": "tkl-doodad-white-zigzag-on-lilac",
+    "name": "Doodad: soft white and pink 3D zig-zag on lilac #F0BFFF (News ground)",
+    "src": "assets/tekex/library/graphics/doodad-white-zigzag-on-lilac.webp",
+    "group": "Graphics",
+    "w": 1950,
+    "h": 1809,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9038:21071"
+  },
+  {
+    "id": "tkl-mono-swirl-knot",
+    "name": "Black and white 3D knot, transparent",
+    "src": "assets/tekex/library/graphics/mono-swirl-knot.webp",
+    "group": "Graphics",
+    "w": 800,
+    "h": 696,
+    "cut": false,
+    "source": "https://www.tekex.co/about"
+  },
+  {
+    "id": "tkl-mono-swirl-z",
+    "name": "Black and white 3D Z, transparent",
+    "src": "assets/tekex/library/graphics/mono-swirl-z.webp",
+    "group": "Graphics",
+    "w": 1600,
+    "h": 1469,
+    "cut": false,
+    "source": "https://www.tekex.co/"
+  },
+  {
+    "id": "tkl-mono-swirl-zigzag",
+    "name": "Black and white 3D zig-zag, transparent",
+    "src": "assets/tekex/library/graphics/mono-swirl-zigzag.webp",
+    "group": "Graphics",
+    "w": 1600,
+    "h": 1663,
+    "cut": false,
+    "source": "https://www.tekex.co/about"
+  },
+  {
+    "id": "tkl-orange-tubes-on-cream",
+    "name": "Soft orange 3D tubes on cream (IOM Tekex 2 day-of-event background)",
+    "src": "assets/tekex/library/graphics/orange-tubes-on-cream.webp",
+    "group": "Graphics",
+    "w": 541,
+    "h": 677,
+    "cut": false,
+    "source": "figma GR5Bd2WU3HI3IYfwSe9ilP 10002:82"
+  },
+  {
+    "id": "tkl-orange-tubes-on-yellow",
+    "name": "Orange 3D tubes on yellow, cropped by its frame (IOM #3 day-of-event and ticket-sales background)",
+    "src": "assets/tekex/library/graphics/orange-tubes-on-yellow.webp",
+    "group": "Graphics",
+    "w": 1458,
+    "h": 1458,
+    "cut": false,
+    "source": "figma lC1LSOeLB9zWDq8M25Udvy 8005:2724"
+  },
+  {
+    "id": "tkl-soft-blur-pink-mint",
+    "name": "Soft blurred pink, white and mint gradient background, 4:5 (Post 81)",
+    "src": "assets/tekex/library/graphics/soft-blur-pink-mint.webp",
+    "group": "Graphics",
+    "w": 1080,
+    "h": 1350,
+    "cut": false,
+    "source": "figma DpZFCKuSXG7GCgOCYMYYWg 10065:5"
+  },
+  {
+    "id": "tkl-tekex-balloon-letters",
+    "name": "TEKEX in silver balloon letters, transparent (Wrapped)",
+    "src": "assets/tekex/library/graphics/tekex-balloon-letters.webp",
+    "group": "Graphics",
+    "w": 2000,
+    "h": 455,
+    "cut": false,
+    "source": "figma SO455XNoL6vfqCKx0kVmSW 3:11859"
+  },
+  {
+    "id": "tkl-tekex-letters-film-reel",
+    "name": "TEKEX letters on a film reel (generated image; event posts)",
+    "src": "assets/tekex/library/graphics/tekex-letters-film-reel.webp",
+    "group": "Graphics",
+    "w": 2000,
+    "h": 2000,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9028:960"
+  },
+  {
+    "id": "tkl-tekex-letters-microphone",
+    "name": "TEKEX letters on a black microphone (generated image; event posts)",
+    "src": "assets/tekex/library/graphics/tekex-letters-microphone.webp",
+    "group": "Graphics",
+    "w": 2000,
+    "h": 2000,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9028:1204"
+  },
+  {
+    "id": "tkl-tekex-letters-moon",
+    "name": "TEKEX letters on the moon (generated image; welcome post)",
+    "src": "assets/tekex/library/graphics/tekex-letters-moon.webp",
+    "group": "Graphics",
+    "w": 2000,
+    "h": 2000,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9045:330"
+  },
+  {
+    "id": "tkl-tekex-letters-mountain-road",
+    "name": "TEKEX letters over a mountain road (generated image; TEKEX #31 Founders, Film and New Frontiers)",
+    "src": "assets/tekex/library/graphics/tekex-letters-mountain-road.webp",
+    "group": "Graphics",
+    "w": 2000,
+    "h": 2000,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9028:956"
+  },
+  {
+    "id": "tkl-tekex-letters-on-fire",
+    "name": "TEKEX letters on fire (generated image; TEKEX #31 Founders, Film and New Frontiers)",
+    "src": "assets/tekex/library/graphics/tekex-letters-on-fire.webp",
+    "group": "Graphics",
+    "w": 2000,
+    "h": 1143,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9028:850"
+  },
+  {
+    "id": "tkl-tekex-letters-pink-clouds",
+    "name": "TEKEX letters in pink clouds (generated image; welcome post and Wrapped)",
+    "src": "assets/tekex/library/graphics/tekex-letters-pink-clouds.webp",
+    "group": "Graphics",
+    "w": 2000,
+    "h": 2000,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9045:248"
+  },
+  {
+    "id": "tkl-tekex-letters-pink-drip",
+    "name": "TEKEX letters in dripping pink (generated image; event posts)",
+    "src": "assets/tekex/library/graphics/tekex-letters-pink-drip.webp",
+    "group": "Graphics",
+    "w": 2000,
+    "h": 1143,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9028:627"
+  },
+  {
+    "id": "tkl-all-in",
+    "name": "All—in logo (AI Sprints Guernsey co-brand)",
+    "src": "assets/tekex/library/logos/all-in.svg",
+    "group": "Logos",
+    "w": 257,
+    "h": 62,
+    "cut": false,
+    "source": "figma DpZFCKuSXG7GCgOCYMYYWg 10011:1969"
+  },
+  {
+    "id": "tkl-bdo",
+    "name": "BDO logo (sponsor)",
+    "src": "assets/tekex/library/logos/bdo.svg",
+    "group": "Logos",
+    "w": 283,
+    "h": 109,
+    "cut": false,
+    "source": "figma gyoY3wOZTz7a8jOWCtZySD 2028:398"
+  },
+  {
+    "id": "tkl-c5-alliance",
+    "name": "C5 Alliance logo (sponsor)",
+    "src": "assets/tekex/library/logos/c5-alliance.svg",
+    "group": "Logos",
+    "w": 172,
+    "h": 154,
+    "cut": false,
+    "source": "figma gyoY3wOZTz7a8jOWCtZySD 2028:403"
+  },
+  {
+    "id": "tkl-digital-jersey",
+    "name": "Digital Jersey logo (partner)",
+    "src": "assets/tekex/library/logos/digital-jersey.svg",
+    "group": "Logos",
+    "w": 137,
+    "h": 52,
+    "cut": false,
+    "source": "figma mNSDBhKxUDNbgyCuBeK4ZT 3:642 (supporters row)"
+  },
+  {
+    "id": "tkl-pwc",
+    "name": "PwC logo (partner)",
+    "src": "assets/tekex/library/logos/pwc.svg",
+    "group": "Logos",
+    "w": 59,
+    "h": 45,
+    "cut": false,
+    "source": "figma mNSDBhKxUDNbgyCuBeK4ZT 3:642 (supporters row)"
+  },
+  {
+    "id": "tkl-rathbones",
+    "name": "Rathbones logo (sponsor)",
+    "src": "assets/tekex/library/logos/rathbones.svg",
+    "group": "Logos",
+    "w": 877,
+    "h": 101,
+    "cut": false,
+    "source": "figma gyoY3wOZTz7a8jOWCtZySD 2028:450"
+  },
+  {
+    "id": "tkl-rathbones-small",
+    "name": "Rathbones logo with emblem (compact lockup)",
+    "src": "assets/tekex/library/logos/rathbones-small.svg",
+    "group": "Logos",
+    "w": 257,
+    "h": 26,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9061:92"
+  },
+  {
+    "id": "tkl-red5-systems",
+    "name": "Red5 Systems logo (sponsor)",
+    "src": "assets/tekex/library/logos/red5-systems.svg",
+    "group": "Logos",
+    "w": 352,
+    "h": 120,
+    "cut": false,
+    "source": "figma gyoY3wOZTz7a8jOWCtZySD 2028:414"
+  },
+  {
+    "id": "tkl-tekex-health-innovation-jsy",
+    "name": "TEKEX Health Innovation JSY lockup",
+    "src": "assets/tekex/library/logos/tekex-health-innovation-jsy.svg",
+    "group": "Logos",
+    "w": 526,
+    "h": 155,
+    "cut": false,
+    "source": "figma 2yg5mpDlpBDkLYqxqAVllM 5:126"
+  },
+  {
+    "id": "tkl-the-oche-club",
+    "name": "The Oche Club logo (raster only in Figma)",
+    "src": "assets/tekex/library/logos/the-oche-club.webp",
+    "group": "Logos",
+    "w": 2000,
+    "h": 656,
+    "cut": false,
+    "source": "figma rVWbcVBLtLKYvbMFFs8XZV 9052:160"
+  },
+  {
+    "id": "tkl-wild-peak-holdings",
+    "name": "Wild Peak Holdings logo (sponsor)",
+    "src": "assets/tekex/library/logos/wild-peak-holdings.svg",
+    "group": "Logos",
+    "w": 233,
+    "h": 154,
+    "cut": false,
+    "source": "figma gyoY3wOZTz7a8jOWCtZySD 2028:416"
+  },
+  {
+    "id": "tkl-yoono",
+    "name": "Yoono logo (sponsor)",
+    "src": "assets/tekex/library/logos/yoono.svg",
+    "group": "Logos",
+    "w": 517,
+    "h": 103,
+    "cut": false,
+    "source": "figma gyoY3wOZTz7a8jOWCtZySD 2028:401"
+  }
+]

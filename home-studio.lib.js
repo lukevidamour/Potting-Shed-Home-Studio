@@ -13,6 +13,14 @@ const SIZES = {
 };
 const SIZE_ORDER = ["square", "portrait", "story", "landscape", "linkedin"];
 
+/* Colour pairs from the TEKEX toolkit in Figma that the first six colourways did not cover: News, Fundraising, the dark
+   campaign pair, and the Isle of Man event series. Each TEKEX template opens in its category's pair. */
+const TK_THEMES = [
+  { name: "Lilac & red",       ground: "rgb(240,191,255)", accent: "rgb(255,0,0)" },
+  { name: "Peach & blue",      ground: "rgb(254,220,138)", accent: "rgb(36,47,255)" },
+  { name: "Midnight & white",  ground: "rgb(28,0,52)",     accent: "rgb(255,255,255)" },
+  { name: "Cream & magenta",   ground: "rgb(254,231,193)", accent: "rgb(248,36,255)" }
+];
 /* TEKEX brand configuration — values carried over from the existing prototype. */
 const BRAND = {
   workspace: "TEKEX",
@@ -55,7 +63,8 @@ const BRAND = {
     { name: "Ink & mint",      ground: "rgb(20,20,20)",    accent: "rgb(129,255,231)" },
     { name: "Violet & light",  ground: "rgb(120,36,255)",  accent: "rgb(229,230,231)" },
     { name: "Light & violet",  ground: "rgb(229,230,231)", accent: "rgb(120,36,255)" },
-    { name: "Magenta & ink",   ground: "rgb(248,36,255)",  accent: "rgb(20,20,20)" }
+    { name: "Magenta & ink",   ground: "rgb(248,36,255)",  accent: "rgb(20,20,20)" },
+    ...TK_THEMES
   ],
   partners: [
     { key: "ps",        name: "Potting Shed",       src: "assets/ps-logo.svg" },
@@ -221,7 +230,7 @@ function eventImageFor(seed) { return libImg(EVENT_IDS[hashStr(seed) % EVENT_IDS
 function fillImages(d) {
   const images = Object.assign({}, d.images || {}); let changed = false;
   const put = (slot, im) => { if (!images[slot] && im) { images[slot] = im; changed = true; } };
-  if (packTpl(d.tpl) && PACK.fill) { PACK.fill(d, put, libImg, portraitMatch); return changed ? images : (d.images || {}); }
+  const pk = packOf(d.tpl); if (pk && pk.fill) { pk.fill(d, put, libImg, portraitMatch); return changed ? images : (d.images || {}); }
   if (d.tpl === "speaker") put("speaker-photo", portraitFor(d.copy && d.copy.name, d.id));
   if (d.tpl === "event") put("event-image", eventImageFor(d.id));
   if (d.tpl === "trio") (d.trio || []).forEach((t, i) => put("trio-" + (i + 1), portraitFor(t.name, d.id + i)));
@@ -536,12 +545,14 @@ function fitSize(str, base, minRatio) {
   const r = n <= 14 ? 1 : n <= 20 ? 0.82 : n <= 28 ? 0.66 : n <= 40 ? 0.54 : minRatio;
   return Math.round(base * Math.max(r, minRatio));
 }
+/* A template can open in its own colourway (TEKEX's categories each own one); otherwise the first. */
+function themeFor(tpl) { const want = TPL[tpl] && TPL[tpl].theme; if (!want) return 0; const i = (BRAND.themes || []).findIndex(t => String(t.name).toLowerCase() === String(want).toLowerCase()); return i < 0 ? 0 : i; }
 function newDesign(tpl, size, projectId) {
   if (TPL[tpl] && TPL[tpl].sizes && TPL[tpl].sizes.indexOf(size) < 0) size = TPL[tpl].sizes[0]; // a template that comes in fixed sizes
   const d = {
-    id: uid("d"), tpl, size, theme: 0, layout: 0, title: TPL[tpl].name, projectId: projectId || null, familyId: uid("f"), scheduledAt: "", thumb: "",
+    id: uid("d"), tpl, size, theme: themeFor(tpl), layout: 0, title: TPL[tpl].name, projectId: projectId || null, familyId: uid("f"), scheduledAt: "", thumb: "",
     platforms: (DEFAULT_PLATFORMS[size] || ["linkedin"]).slice(), caption: { mode: "auto", variant: 0, text: {} },
-    copy: Object.assign({}, EXAMPLE_COPY, packTpl(tpl) && PACK.examples ? PACK.examples[tpl] : null),
+    copy: Object.assign({}, EXAMPLE_COPY, packOf(tpl) ? (packOf(tpl).exampleFor ? packOf(tpl).exampleFor(tpl, 0) : (packOf(tpl).examples || {})[tpl]) : null),
     speakers: EXAMPLE_SPEAKERS.map(s => Object.assign({}, s)),
     trio: EXAMPLE_TRIO.map(t => Object.assign({}, t)),
     images: {}, partnersOn: BRAND.partners.map(p => p.key),
@@ -555,7 +566,7 @@ function newDesign(tpl, size, projectId) {
 function fieldsFor(d) { const L = d.layout || 0; return (FIELDS[d.tpl] || []).filter(f => !f.on || f.on.indexOf(L) >= 0); }
 const CARD_RATIO = 4 / 5; // height over width of a card's artwork box
 function slotsFor(d) {
-  if (packTpl(d.tpl) && PACK.slots) { const ps = PACK.slots(d); if (ps) return ps; }
+  const pk = packOf(d.tpl); if (pk && pk.slots) { const ps = pk.slots(d); if (ps) return ps; }
   if (d.tpl === "speaker") return [{ id: "speaker-photo", label: "Speaker portrait" }];
   if (d.tpl === "event")   return [{ id: "event-image", label: "Event image" }];
   if (d.tpl === "trio")    return d.trio.map((t, i) => ({ id: "trio-" + (i + 1), label: t.name || "Session " + (i + 1) }));
@@ -571,7 +582,7 @@ function slotsFor(d) {
 function liveSrc(src) { return typeof src === "string" ? src.replace(/^(assets\/(?:photos|graphics)\/[\w-]+)\.(?:jpe?g|png)$/, "$1.webp") : src; }
 /* Each library image has a small version beside it (sm/name.webp, made by tools/images.py). Tiles, thumbnails and pickers
    use it, so a first visit downloads kilobytes, not the full photographs. Uploads and anything else are used as they are. */
-const SMALL_DIRS = ["assets/photos/", "assets/graphics/", "assets/"];
+const SMALL_DIRS = ["assets/photos/", "assets/graphics/", "assets/", "assets/tekex/library/speakers/", "assets/tekex/library/events/", "assets/tekex/library/graphics/", "assets/tekex/shapes/"];
 function smallSrc(src) {
   src = liveSrc(src);
   const m = typeof src === "string" && /^(.*\/)([^\/]+)\.(?:jpe?g|png|webp)$/i.exec(src);
@@ -675,7 +686,28 @@ if (PACK) {
   (PACK.templates || []).forEach(t => { if (!TPL[t.key]) { TEMPLATES.push(t); TPL[t.key] = t; } });
   Object.assign(FIELDS, PACK.fields || {});
 }
-const packTpl = (key) => !!(PACK && TPL[key] && TPL[key].set === PACK.set);
+/* TEKEX's own template pack (assets/tekex): public, so it loads wherever the app runs. */
+const TKP = (typeof window !== "undefined" && window.HS_TEKEX) || null;
+if (TKP) {
+  (TKP.templates || []).forEach(t => { if (!TPL[t.key]) { TEMPLATES.push(t); TPL[t.key] = t; } });
+  Object.assign(FIELDS, TKP.fields || {});
+  /* TEKEX's own media library (assets/tekex/library), from its Figma files and tekex.co. A person's entry is named
+     "Name — cut-out" or "Name — photo", so a speaker typed by name finds their own picture. */
+  (TKP.library || []).forEach(x => {
+    if (!x || !x.id || LIB[x.id]) return;
+    const raw = String(x.name || ""), isPerson = x.group === "Speakers", person = isPerson ? raw.split(",")[0].replace(/\s*\(.*$/, "").trim() : "";
+    const name = isPerson ? person + " — " + (x.cut ? "cut-out" : "photo") : raw.replace(/\s*\([^)]*\)\s*$/, "").replace(/;.*$/, "");
+    const im = { id: x.id, name, src: x.src, group: x.group, w: x.w, h: x.h, cut: !!x.cut, person: person || undefined };
+    BRAND.library.push(im); LIB[im.id] = im;
+    if (isPerson) PORTRAIT_IDS.push(im.id); else if (x.group === "Events") EVENT_IDS.push(im.id);
+    if (LIB_GROUPS.indexOf(x.group) < 0) LIB_GROUPS.push(x.group);
+  });
+}
+/* The pack that draws a template, if any: TEKEX's public pack, or a client's private one. */
+function packOf(key) { const t = TPL[key]; if (!t) return null; if (TKP && t.pack === TKP.id) return TKP; if (PACK && t.set === PACK.set && !t.pack) return PACK; return null; }
+const packTpl = (key) => !!packOf(key);
+/* The private client pack's own templates (their dates and labels are set in capitals). */
+const clientTpl = (key) => !!PACK && packOf(key) === PACK;
 const RETIRED_WS = ["potting-shed"]; // clients that have been removed: dropped from the list, and their saved work cleared
 function wsList() { let l = null; try { l = JSON.parse(localStorage.getItem(WS_KEY) || "null"); } catch (e) {} const rest = (l || []).filter(w => w && w.id && w.id !== DEFAULT_WS); return [{ id: DEFAULT_WS, name: (wsBrandName(DEFAULT_WS) || BRAND_DEFAULT.name) }].concat(rest); }
 function wsBrandName(id) { try { const b = JSON.parse(localStorage.getItem((id === DEFAULT_WS ? "" : "hs-ws-" + id + ":") + BRAND_KEY) || "null"); return b && b.name; } catch (e) { return ""; } }
@@ -726,6 +758,17 @@ if (WS_ID !== DEFAULT_WS) {
   if (PACK && meta.preset === PACK.preset && PACK.exampleCopy) Object.assign(EXAMPLE_COPY, PACK.exampleCopy);
 }
 applyBrand(Store.get(BRAND_KEY, null));
+if (WS_ID === DEFAULT_WS && TKP) {
+  TK_THEMES.forEach(t => { if (!BRAND.themes.some(x => x.name === t.name)) BRAND.themes.push(Object.assign({}, t)); });
+  // The TEKEX templates from the toolkit are what new work is made from. Designs made with the first six keep working.
+  const seen = Store.get("hs-tk-seen", []), fresh = TKP.order.filter(k => seen.indexOf(k) < 0);
+  if (!Store.raw(BRAND_KEY)) BRAND.templatesOn = TKP.order.slice(); // an untouched brand book: the toolkit's templates
+  else if (fresh.length) {
+    const on = seen.length ? BRAND.templatesOn.filter(k => TPL[k]) : [];
+    BRAND.templatesOn = on.concat(fresh.filter(k => on.indexOf(k) < 0));
+    try { Store.set("hs-tk-seen", TKP.order.slice()); const saved = Store.get(BRAND_KEY, null); if (saved) { saved.templatesOn = BRAND.templatesOn; saved.themes = BRAND.themes; Store.set(BRAND_KEY, saved); } } catch (e) {}
+  }
+}
 const THUMBS_KEY = "hs-thumbs-v1";
 /* Ready-made pictures of the example designs (tools/seed_thumbs.py writes them). n must equal the number of examples. */
 const SEED_THUMBS = { dir: "assets/seed/tekex-", n: 27 };
@@ -821,4 +864,4 @@ function ensureGsap() {
 }
 
 /* expose for tests (node) */
-if (typeof module !== 'undefined') module.exports = { liveSrc, smallSrc, shotOpts, zipStore, crc32, fieldsFor, portraitMatch, readBrief, PRESETS, PACK, packTpl, imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };
+if (typeof module !== 'undefined') module.exports = { packOf, themeFor, TKP, TK_THEMES, liveSrc, smallSrc, shotOpts, zipStore, crc32, fieldsFor, portraitMatch, readBrief, PRESETS, PACK, packTpl, imgVals, CUT_SRC, seedWeeks, redateExamples, FOCUS, focusOf, libImg, LIB, hexToRgb, rgbToHex, validHex, normHex, contrastVerdict, blankBrand, applyBrand, BRAND_DEFAULT, Store, SIZES, SIZE_ORDER, BRAND, TEMPLATES, TPL, FIELDS, PLATFORMS, DEFAULT_PLATFORMS, composeDateLine, composeEyebrow, fitSize, slug, join, draftCaption, newDesign, newProject, slotsFor, seedExamples, contrast, listNames, isoDay, fmtShort, fillImages, portraitFor };

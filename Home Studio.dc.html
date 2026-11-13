@@ -9,15 +9,24 @@
 <link rel="preload" href="assets/fonts/neue-montreal-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/quarto-medium-italic.woff2" as="font" type="font/woff2" crossorigin>
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
-<script>(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};if(local){var js=get("assets/hh/pack.js");if(js){try{(0,eval)(js);}catch(e){console.warn("Client pack could not be read",e);}if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href&&window.HS_PACK.markup)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_PACK.markup;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}}}document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_PACK&&window.HS_PACK.markup)slot.outerHTML=window.HS_PACK.markup;else slot.remove();});})();</script>
+<script>/* Template packs. TEKEX's is public and always loads; a private client pack (assets/hh) loads only on this machine.
+   Each pack's markup goes where the pack slot element sits in the artwork. */
+(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};var run=function(js,name){if(!js)return;try{(0,eval)(js);}catch(e){console.warn("Template pack could not be read: "+name,e);}};
+var markup="";
+run(get("assets/tekex/pack.js?v=20261113b"),"tekex");if(window.HS_TEKEX){(window.HS_TEKEX.parts||[]).forEach(function(p){run(get("assets/tekex/t-"+p+".js?v=20261113b"),"tekex "+p);});run(get("assets/tekex/examples.js?v=20261113b"),"tekex examples");markup+=get("assets/tekex/templates.html?v=20261113b");try{window.HS_TEKEX.library=JSON.parse(get("assets/tekex/library/manifest.json")||"[]");}catch(e){window.HS_TEKEX.library=[];}}
+if(local){var js=get("assets/hh/pack.js");if(js){run(js,"client");if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");markup+=window.HS_PACK.markup;}}}
+window.HS_MARKUP=markup;if(markup){var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_MARKUP;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}
+document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_MARKUP)slot.outerHTML=window.HS_MARKUP;else slot.remove();});})();
+</script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261112zl"></script>
+<script src="home-studio.lib.js?v=20261113b"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="styles.css?v=20261111b">
-<link rel="stylesheet" href="home-studio.css?v=20261112zl">
+<link rel="stylesheet" href="styles.css?v=20261113b">
+<link rel="preload" href="assets/fonts/neue-montreal-semibold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="home-studio.css?v=20261113b">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -1213,6 +1222,21 @@ class Component extends DCLogic {
     this.applyTheme(this.state.theme);
     let drafts = Store.get(DRAFTS_KEY, []), projects = Store.get(PROJECTS_KEY, []);
     let seeded = []; // examples made on this visit: [design id, ready-made thumbnail file]
+    const dropThumbs = []; // examples removed on this visit
+    // TEKEX's examples are made from the toolkit templates. The first time the new set arrives, the example projects
+    // made from the first six templates are removed with their designs (Luke, 12 November 2026). Work people made
+    // themselves is never touched, whatever template it uses.
+    if (WS_ID === DEFAULT_WS && TKP && TKP.seed && !Store.raw("hs-seed-tk-1")) {
+      const oldEx = projects.filter(p => p.example && !p.tk).map(p => p.id);
+      drafts.filter(d => oldEx.indexOf(d.projectId) >= 0).forEach(d => dropThumbs.push(d.id)); // their pictures go once the store is read below
+      drafts = drafts.filter(d => oldEx.indexOf(d.projectId) < 0); projects = projects.filter(p => oldEx.indexOf(p.id) < 0);
+      const tkAt = Date.now(), ex = TKP.seed(Object.assign(this.packSeedApi(), { now: tkAt }));
+      ex.projects.forEach(p => { p.tk = true; });
+      const st = TKP.seedThumbs;
+      if (st && ex.drafts.length === st.n) { ex.drafts.forEach((d, i) => { d.seedN = i; }); seeded = seeded.concat(ex.drafts.map(d => [d.id, st.dir + ("0" + d.seedN).slice(-2) + ".webp"])); }
+      projects = ex.projects.concat(projects); drafts = ex.drafts.concat(drafts);
+      try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.flag("hs-seed-tk-1"); Store.flag("hs-seed-v2"); Store.set("hs-redate-w", seedWeeks()); Store.set("hs-tk-seed-at", tkAt); } catch (e) {}
+    }
     if (WS_ID === DEFAULT_WS && !Store.raw("hs-seed-v2")) {
       const ex = seedExamples(projects);
       if (ex.drafts.length === SEED_THUMBS.n) { ex.drafts.forEach((d, i) => { d.seedN = i; }); seeded = ex.drafts.map(d => [d.id, SEED_THUMBS.dir + ("0" + d.seedN).slice(-2) + ".webp"]); }
@@ -1249,6 +1273,28 @@ class Component extends DCLogic {
     let thumbs = Store.get(THUMBS_KEY, {});
     Object.keys(thumbs).forEach(k => { const v = thumbs[k]; if (typeof v !== "string" || !(realThumb(v) ? v.length >= 5000 : /^assets\/[\w\/-]+\.(?:jpg|webp)$/.test(v))) delete thumbs[k]; });
     if (drafts.some(d => d.thumb)) { drafts.forEach(d => { if (d.thumb) thumbs[d.id] = d.thumb; }); drafts = drafts.map(d => { const c = Object.assign({}, d); delete c.thumb; return c; }); try { Store.set(THUMBS_KEY, thumbs); Store.set(DRAFTS_KEY, drafts); } catch (e) {} }
+    // TEKEX's examples keep themselves current: a week or more after they were dated, every date, title and brief that
+    // nobody has changed moves on by whole weeks (so weekdays stay true), and those designs redraw their thumbnails.
+    if (WS_ID === DEFAULT_WS && TKP && TKP.seed && Store.get("hs-tk-seed-at", 0)) {
+      const was = Store.get("hs-tk-seed-at", 0), wk = Math.floor((Date.now() - was) / (7 * 86400000));
+      if (wk >= 1) {
+        const to = was + wk * 7 * 86400000, a = TKP.seed(Object.assign(this.packSeedApi(), { now: was })), b = TKP.seed(Object.assign(this.packSeedApi(), { now: to }));
+        const same = (x, y) => JSON.stringify(x) === JSON.stringify(y), exIds = {};
+        projects = projects.map(pj => {
+          if (!pj.example || !pj.tk) return pj; const i = a.projects.findIndex(o => o.name === pj.name); if (i < 0) return pj;
+          exIds[pj.id] = 1; const o = a.projects[i], n = b.projects[i]; return Object.assign({}, pj, { name: n.name, brief: pj.brief === o.brief ? n.brief : pj.brief });
+        });
+        drafts = drafts.map(d => {
+          const o = d.seedN != null && exIds[d.projectId] && a.drafts[d.seedN], n = o && b.drafts[d.seedN]; if (!o || !n || o.tpl !== d.tpl) return d;
+          const next = Object.assign({}, d, { copy: Object.assign({}, d.copy) }); let hit = false;
+          if (d.title === o.title && n.title !== o.title) { next.title = n.title; hit = true; }
+          if (d.scheduledAt === o.scheduledAt && n.scheduledAt !== o.scheduledAt) { next.scheduledAt = n.scheduledAt; hit = true; }
+          Object.keys(o.copy).forEach(k => { if (same(d.copy[k], o.copy[k]) && !same(n.copy[k], o.copy[k])) { next.copy[k] = n.copy[k]; hit = true; } });
+          if (hit) { delete thumbs[d.id]; return next; } return d;
+        });
+        try { Store.set(PROJECTS_KEY, projects); Store.set(DRAFTS_KEY, drafts); Store.set(THUMBS_KEY, thumbs); Store.set("hs-tk-seed-at", to); } catch (e) {}
+      }
+    }
     const seedKey = PACK ? "hs-seed-pack" + ((PACK.seedVersion || 1) > 1 ? "-" + PACK.seedVersion : "") : "";
     if (PACK && WS_ID === PACK.id && PACK.seed && !Store.raw(seedKey)) {
       // An earlier example set that nobody has scheduled or sent for approval is replaced, not doubled up.
@@ -1262,7 +1308,8 @@ class Component extends DCLogic {
     }
     // The examples arrive with ready-made pictures, so a first visit shows the wall at once instead of drawing every tile.
     // Each is redrawn from the real design in a quiet moment (see thumbBacklog), which also brings its dates up to today.
-    if (seeded.length) { seeded.forEach(([id, file]) => { if (!thumbs[id]) thumbs[id] = file; }); try { Store.set(THUMBS_KEY, thumbs); } catch (e) {} }
+    if (dropThumbs.length) dropThumbs.forEach(id => { delete thumbs[id]; });
+    if (seeded.length || dropThumbs.length) { seeded.forEach(([id, file]) => { if (!thumbs[id]) thumbs[id] = file; }); try { Store.set(THUMBS_KEY, thumbs); } catch (e) {} }
     this._quietAt = Date.now() + 3500; setTimeout(() => this.setState({ thumbTick: (this.state.thumbTick || 0) + 1 }), 3600);
     drafts = drafts.map(x => BRAND.themes[x.theme] ? x : Object.assign({}, x, { theme: 0 }));
     // Example content keeps itself current: fields nobody has edited move with today, the first time and then whenever they drift by four weeks.
@@ -1340,7 +1387,9 @@ class Component extends DCLogic {
     window.addEventListener("beforeunload", this._onLeave);
     if (typeof ResizeObserver !== "undefined") { this._ro = new ResizeObserver(() => this.measure()); }
     // Inline partner logos as data URLs so the export never depends on a fetch mid-render.
-    BRAND.partners.concat(PACK && WS_ID === PACK.id ? (PACK.preload || []).map(src => ({ src })) : []).forEach(p => {
+    // TEKEX's templates measure their words in the TEKEX font: once it has loaded, draw again so every line break is right.
+    if (TKP && document.fonts && document.fonts.load) Promise.all([300, 500, 600].map(w => document.fonts.load(w + " 40px 'TK Neue'"))).then(() => this.setState(s => ({ fontTick: (s.fontTick || 0) + 1 }))).catch(() => {});
+    BRAND.partners.concat(PACK && WS_ID === PACK.id ? (PACK.preload || []).map(src => ({ src })) : []).concat(TKP && WS_ID === DEFAULT_WS ? (TKP.preload || []).map(src => ({ src })) : []).forEach(p => {
       fetch(p.src).then(r => r.ok ? r.text() : "").then(svg => {
         if (!svg) return;
         const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg).replace(/[()'"]/g, ch => "%" + ch.charCodeAt(0).toString(16).toUpperCase());
@@ -1853,13 +1902,13 @@ class Component extends DCLogic {
     // "Change the headline to …": a plain edit to the piece just made.
     const edit = last && text.match(/^(?:please\s+)?(?:change|make|set|update)\s+(?:the\s+)?(headline|title|label|strapline|summary|body|text|button|date)\s+(?:to|say|read)\s*:?\s*["“']?(.+?)["”']?$/i);
     const editOn = edit && this.state.drafts.find(x => x.familyId === last || x.setId === last);
-    if (edit && editOn && !(edit[1].toLowerCase() === "date" && !packTpl(editOn.tpl))) { // other clients' dates go through the brief reader, which knows their date row
+    if (edit && editOn && !(edit[1].toLowerCase() === "date" && !clientTpl(editOn.tpl))) { // other clients' dates go through the brief reader, which knows their date row
       const key = { headline: "headline", title: "headline", label: "eyebrow", strapline: "body", summary: "body", body: "body", text: "body", button: "cta", date: "date" }[edit[1].toLowerCase()];
       const mine = this.state.drafts.filter(x => x.familyId === last || x.setId === last); let reply;
       if (mine.length > 1 && mine[0].setId === last) reply = { who: "hs", text: "That set has " + mine.length + " pieces, each with its own words. Open the one you mean and change it there.", fam: last, chips: ["Open in the editor"] };
       else if (!mine.length || !fieldsFor(mine[0]).some(f => f.key === key)) reply = { who: "hs", text: "This layout has no " + edit[1].toLowerCase() + " to change.", fam: last, chips: ["Open in the editor"] };
       else {
-        const val = key === "eyebrow" || key === "date" ? (packTpl(mine[0].tpl) ? edit[2].toUpperCase() : edit[2]) : edit[2], thumbs = Object.assign({}, this.state.thumbs);
+        const val = key === "eyebrow" || key === "date" ? (clientTpl(mine[0].tpl) ? edit[2].toUpperCase() : edit[2]) : edit[2], thumbs = Object.assign({}, this.state.thumbs);
         const drafts = this.state.drafts.map(x => { if (x.familyId !== last) return x; delete thumbs[x.id]; return Object.assign({}, x, { copy: Object.assign({}, x.copy, { [key]: val }), updatedAt: Date.now() }); });
         try { this.persistDrafts(drafts); Store.set(THUMBS_KEY, thumbs); } catch (e) {}
         this._thumbTried = new Set(); this.setState({ drafts, thumbs });
@@ -1875,6 +1924,7 @@ class Component extends DCLogic {
     // A brief that plainly asks for something new is never read as a change to the last piece.
     const fresh = PACK && WS_ID === PACK.id && PACK.startsNew && PACK.startsNew(text);
     if (PACK && WS_ID === PACK.id && PACK.fromBrief && (!adjusting || fresh)) r = PACK.fromBrief(r, text);
+    else if (TKP && WS_ID === DEFAULT_WS && TKP.fromBrief && !adjusting) r = TKP.fromBrief(r, text);
     const follow = !r.tpl && last && this.state.drafts.some(x => x.familyId === last || x.setId === last) && (r.sizes.length || r.theme != null || r.nextTheme || r.remove || r.copy.date || r.copy.startTime || r.copy.venue);
     const reply = follow ? this.makeAdjust(r, last) : this.makeCreate(r, text);
     const settle = () => requestAnimationFrame(() => { const sc = document.querySelector(".mkscroll"); if (sc) sc.scrollTo({ top: sc.scrollHeight, behavior: "smooth" }); const el = document.getElementById("mk-input"); if (el) { this.growComposer(el); el.focus({ preventScroll: true }); } });
@@ -1964,13 +2014,14 @@ class Component extends DCLogic {
       project: (name, brief) => { const p = newProject(name, brief, ""); p.example = true; return p; },
       // the same design in other formats, grouped as one family so its tile shows them layered
       sizes: (d, keys) => { if (!d.familyId) d.familyId = uid("f"); return keys.filter(k => SIZES[k] && k !== d.size).map(k => Object.assign(JSON.parse(JSON.stringify(d)), { id: uid("d"), size: k, title: d.title + " · " + SIZES[k].label })); },
-      design: (p, tpl, title, theme, copy, pics, layout) => { const d = newDesign(tpl, (TPL[tpl].sizes || ["square"])[0], p.id); d.title = title; d.theme = theme; d.layout = layout || 0; d.copy = Object.assign({}, d.copy, copy || {}); d.images = {}; Object.keys(pics || {}).forEach(k => { const im = libImg(pics[k]); if (im) d.images[k] = im; }); d.images = fillImages(d); return d; }
+      design: (p, tpl, title, theme, copy, pics, layout) => { const d = newDesign(tpl, (TPL[tpl].sizes || ["square"])[0], p.id); d.title = title; if (typeof theme === "string") { const ti = BRAND.themes.findIndex(t => t.name === theme); if (ti >= 0) d.theme = ti; } else if (theme != null) d.theme = theme; d.layout = layout || 0; d.copy = Object.assign({}, d.copy, copy || {}); d.images = {}; Object.keys(pics || {}).forEach(k => { const im = libImg(pics[k]); if (im) d.images[k] = im; }); d.images = fillImages(d); return d; }
     };
   }
   /* The full example set for this client, freshly made, with the ready-made thumbnail that belongs to each design. */
   exampleSet() {
     let ex = null, st = null;
-    if (WS_ID === DEFAULT_WS) { ex = seedExamples([]); st = SEED_THUMBS; }
+    if (WS_ID === DEFAULT_WS && TKP && TKP.seed) { ex = TKP.seed(Object.assign(this.packSeedApi(), { now: Store.get("hs-tk-seed-at", 0) || Date.now() })); ex.projects.forEach(p => { p.tk = true; }); st = TKP.seedThumbs || null; }
+    else if (WS_ID === DEFAULT_WS) { ex = seedExamples([]); st = SEED_THUMBS; }
     else if (PACK && WS_ID === PACK.id && PACK.seed) { ex = PACK.seed(this.packSeedApi()); st = PACK.seedThumbs || null; }
     if (!ex) return null;
     const pics = {}; if (st && ex.drafts.length === st.n) ex.drafts.forEach((d, i) => { d.seedN = i; pics[d.id] = st.dir + ("0" + i).slice(-2) + ".webp"; });
@@ -2282,8 +2333,8 @@ class Component extends DCLogic {
   switchTemplate(key) { const d = this.state.design; if (!d || d.tpl === key) return; this.commit(this.templatePatch(d, key)); }
   /* A field still holding its example text takes the new template's or layout's example; anything someone typed is kept. */
   exampleSwap(d, tpl, layout) {
-    if (!PACK || !PACK.exampleFor || !packTpl(tpl)) return null;
-    const was = packTpl(d.tpl) ? PACK.exampleFor(d.tpl, d.layout || 0) : null, now = PACK.exampleFor(tpl, layout); if (!now) return null;
+    const pk = packOf(tpl); if (!pk || !pk.exampleFor) return null;
+    const pw = packOf(d.tpl), was = pw && pw.exampleFor ? pw.exampleFor(d.tpl, d.layout || 0) : null, now = pk.exampleFor(tpl, layout); if (!now) return null;
     const copy = Object.assign({}, d.copy);
     Object.keys(now).forEach(k => { const cur = String(copy[k] || ""); if (!cur.trim() || (was && cur === String(was[k] || "")) || cur === String(EXAMPLE_COPY[k] || "")) copy[k] = now[k]; });
     return copy;
@@ -2754,8 +2805,9 @@ class Component extends DCLogic {
       fsDocEyebrow: r(24), fsDocTitle: r(fitSize(headline, 94, 0.55)), fsDocIntro: r(26), fsDocDate: r(26),
       fsRowName: lName, fsRowMeta: lMeta
     }, extra || {});
-    if (packTpl(d.tpl) && PACK.vals) {
-      const pv = PACK.vals(d, { S, r, th, img, mask, live, tw: (str, px, w, tr) => this.textW(str, px, w, tr) }), patch = pv.canvasPatch || {}; delete pv.canvasPatch;
+    const pk = packOf(d.tpl);
+    if (pk && pk.vals) {
+      const pv = pk.vals(d, { S, r, th, img, mask, live, tw: (str, px, w, tr, fam) => this.textW(str, px, w, tr, fam), tick: this.state.fontTick || 0 }), patch = pv.canvasPatch || {}; delete pv.canvasPatch;
       Object.assign(out, pv, { isPack: true });
       out.canvasStyle = Object.assign({}, out.canvasStyle, patch, { position: out.canvasStyle.position || "relative" });
     }
@@ -2763,11 +2815,11 @@ class Component extends DCLogic {
   }
 
   /* Text width in px, measured on a canvas so labels can be sized to the space they have. */
-  textW(str, px, weight, tracking) {
+  textW(str, px, weight, tracking, family) {
     if (!this._mctx) { try { this._mctx = document.createElement("canvas").getContext("2d"); } catch (e) { this._mctx = null; } }
     const n = String(str || "").length;
     if (!this._mctx) return n * px * 0.62;
-    this._mctx.font = (weight || 400) + " " + px + "px 'PP Neue Montreal','Helvetica Neue',Helvetica,Arial,sans-serif";
+    this._mctx.font = (weight || 400) + " " + px + "px " + (family ? "'" + family + "'," : "") + "'PP Neue Montreal','Helvetica Neue',Helvetica,Arial,sans-serif";
     return this._mctx.measureText(String(str || "")).width + n * px * (tracking || 0);
   }
   /* Largest size at which a line fits its space, never below a floor (after which it is allowed to wrap). */
@@ -3139,12 +3191,12 @@ class Component extends DCLogic {
       hasTimeRow: !!TIME_ROW[d.tpl], copy: c,
       setDate: (e) => this.setCopy("date", e.target.value), setStart: (e) => this.setCopy("startTime", e.target.value), setEnd: (e) => this.setCopy("endTime", e.target.value), setVenue: (e) => this.setCopy("venue", e.target.value),
       venueErrClass: over.indexOf("venue") >= 0 ? "err" : "", flashVenue: s.flashField === "venue" ? "flash" : "", flashDate: s.flashField === "date" ? "flash" : "",
-      isListing: d.tpl === "listing", isTrio: d.tpl === "trio", isPartners: d.tpl === "partners",
+      isListing: d.tpl === "listing", isTrio: d.tpl === "trio", isPartners: d.tpl === "partners" || !!(TPL[d.tpl] && TPL[d.tpl].partners),
       speakerCount: d.speakers.length + (d.speakers.length === 1 ? " speaker" : " speakers"),
       speakerRows: d.speakers.map((sp, i) => ({ n: i + 1, name: sp.name, role: sp.role, company: sp.company, setName: (e) => this.setSpeaker(sp.id, "name", e.target.value), setRole: (e) => this.setSpeaker(sp.id, "role", e.target.value), setCompany: (e) => this.setSpeaker(sp.id, "company", e.target.value), remove: () => this.removeSpeaker(sp.id) })),
       addSpeaker: this.addSpeaker,
       trioRows: d.trio.map((t, i) => ({ n: i + 1, name: t.name, company: t.company, setName: (e) => this.setTrio(i, "name", e.target.value), setCompany: (e) => this.setTrio(i, "company", e.target.value) })),
-      partnerToggles: BRAND.partners.map(p => ({ name: p.name, on: d.partnersOn.indexOf(p.key) >= 0, toggle: () => this.togglePartner(p.key) })),
+      partnerToggles: BRAND.partners.filter(p => !(TPL[d.tpl] && TPL[d.tpl].partners && p.key === "ps")).map(p => ({ name: p.name, on: d.partnersOn.indexOf(p.key) >= 0, toggle: () => this.togglePartner(p.key) })),
       hasFooter: !!FOOTER[d.tpl], flashBar: s.flashField === "barLabel" ? "flash" : "", flashUrl: s.flashField === "url" ? "flash" : "", barOptions: BRAND.barLabels, setBar: (e) => this.setCopy("barLabel", e.target.value), setUrl: (e) => this.setCopy("url", e.target.value),
       slotCards: slots.map(sl => { const im = d.images[sl.id]; const b = this.slotBox(sl.id); return {
         label: sl.label, has: !!im, status: im ? (im.name || "Image added").split(" — ")[0] : "No image yet", chooseLabel: im ? "Replace" : "Choose an image",

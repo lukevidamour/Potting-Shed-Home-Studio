@@ -1,0 +1,15 @@
+<!-- TEKEX templates (assets/tekex/pack.js and its parts). One generic list of elements, in drawing order:
+     boxes and keylines, brand marks (drawn in the ink through a mask), brand pictures, the person's pictures, and words. -->
+<sc-if value="{{ a.t_on }}">
+  <div style="{{ a.t_frame }}">
+    <sc-for list="{{ a.t_els }}" as="el">
+      <sc-if value="{{ el.isBox }}"><div style="{{ el.style }}"></div></sc-if>
+      <sc-if value="{{ el.isMask }}"><div style="{{ el.style }}" role="img" aria-label="{{ el.label }}"></div></sc-if>
+      <sc-if value="{{ el.isPic }}"><img sc-camel-src="{{ el.src }}" alt="" style="{{ el.style }}" /></sc-if>
+      <sc-if value="{{ el.isSlot }}"><div data-slot="{{ el.slot }}" style="{{ el.style }}"><sc-if value="{{ el.hasImg }}"><img sc-camel-src="{{ el.imgSrc }}" alt="" style="{{ el.imgStyle }}" /></sc-if><sc-if value="{{ !el.hasImg }}"><div class="ph" data-guide="1"><span>{{ el.label }}</span></div></sc-if></div></sc-if>
+      <sc-if value="{{ el.isText }}"><span style="{{ el.style }}"><sc-for list="{{ el.runs }}" as="ru"><span style="{{ ru.style }}">{{ ru.t }}</span></sc-for></span></sc-if>
+      <sc-if value="{{ el.isField }}"><span data-field="{{ el.field }}" style="{{ el.style }}"><sc-for list="{{ el.runs }}" as="ru"><span style="{{ ru.style }}">{{ ru.t }}</span></sc-for></span></sc-if>
+      <sc-if value="{{ el.isFit }}"><span data-field="{{ el.field }}" data-fit="{{ el.fit }}" style="{{ el.style }}"><sc-for list="{{ el.runs }}" as="ru"><span style="{{ ru.style }}">{{ ru.t }}</span></sc-for></span></sc-if>
+    </sc-for>
+  </div>
+</sc-if>
