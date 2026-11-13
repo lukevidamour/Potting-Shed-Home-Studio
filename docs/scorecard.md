@@ -12,6 +12,8 @@ Serve the app first (`python3 tools/qa/serve.py 8765`), then:
 node --test tests/*.mjs                                  # templates build in every layout and size; examples match their thumbnails
 sh tools/qa/run.sh --sizes quick                         # 11 screens x 8 sizes: overflow, overlap, tap targets, speed, layout shift
 node tools/qa/states.mjs /tmp/hs-qa tekex light,dark     # every control at rest, hovered and focused: contrast of words and icons
+node tools/qa/briefs.mjs /tmp/hs-qa [fresh|blind]        # the assistant against real TEKEX briefs
+node tools/qa/xheight.mjs /tmp/hs-qa                     # Neue Montreal and Quarto x-heights match on every screen
 ```
 
 ## History
@@ -19,8 +21,33 @@ node tools/qa/states.mjs /tmp/hs-qa tekex light,dark     # every control at rest
 | Date | Visual | Type & copy | Feel | Motion | Workflows | Artwork | Make | Access | Speed | Phone | Average |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 13 Nov 2026 | 85 | 86 | 84 | 83 | 76 | 88 | 68 | 84 | 64 | 70 | **79** |
+| 13 Nov 2026, evening | 89 | 91 | 90 | 91 | 88 | 91 | 86 | 92 | 82 | 91 | **89** |
 
-## The scores, 13 November 2026
+## Where it stands, 13 November 2026 (evening)
+
+Measured the same way as the morning: responsive audit (88 loads at 8 sizes, then all 13 phone sizes), every control hovered and focused in light and dark, the view probe at 1440 to 320, 25 unit tests, the journey suites, and three new checks: `tools/qa/briefs.mjs` (the assistant against 38 real-style TEKEX briefs), `tools/qa/xheight.mjs` (type parity) and a frame-by-frame recording of the curtain.
+
+| Category | Morning | Now | What moved it | What still caps it |
+|---|---|---|---|---|
+| Visual craft | 85 | 89 | Home Studio wordmark built from the logo's own outlines; brand book cover in the client's own logo, colours and graphic; rail icons in the footer icons' family; stacked tiles at true size; library logos whole and neutral | The stylesheet still has 22 font sizes, 17 radii and 55 raw colours (target 9, 5, tokens only) |
+| Type and copy | 86 | 91 | Neue Montreal and Quarto x-heights match to 0.01px everywhere (italic scaled from rendered glyphs, 109.7%); brand intro on two balanced lines; no repeated or cut names in the calendar; honest approval and help copy | One read-aloud pass of every empty state and message |
+| Interaction feel | 84 | 90 | 44px touch targets (182 small targets to 62); assistant grows from and folds into its button; calm prompt box; one tile per calendar day with a count; every size in one download; shortcuts listed | 62 small targets left, nearly all calendar chips on small phones (a 7-day month can't give each day 44px; they pass the 24px minimum) |
+| Motion | 83 | 91 | No layout animation, no linear one-shots, one global reduced-motion rule (30 guards); curtain reveals a finished page with no pop or flash; page lightens from 10% darker; leaf lands with weight; footer rule draws in and cascades; joy pass (7 moments) | Not yet watched on a real phone at 60Hz and 120Hz |
+| Workflows | 76 | 88 | Calendar one tile per day; Unscheduled one row per design and its sizes schedule together; download all sizes as a .zip; carousels from the assistant | Work lives in one browser (no shared storage or real publishing): Potting Shed's call |
+| Artwork | 88 | 91 | Example thumbnails sharp on retina (720px); long sponsor quotes fit in wide sizes; Digital Jersey and PwC logos; official tekex.co team portraits | A designer's sign-off on the translated sizes (Luke) |
+| Make assistant | 68 | 86 | Reads every toolkit post type, requests as requests, names, titles and initials: 4/18 to 18/18, 12/12 and 8/8 (the blind set scored 5/8 before its general gaps were fixed) | Rule-based; one direction per brief, not three |
+| Accessibility | 84 | 92 | Page headings and heading order on every screen; editor heading; 0 contrast failures light and dark; touch targets; reduced motion for everything | Calendar chips on the smallest phones (see Feel) |
+| Speed | 64 | 82 | Layout shift 0.885 to 0; first content 5.2s to about 3.9s on a throttled mid-range phone; TEKEX pack 14 requests to 1; no speed majors | First content still 2.5 to 4s on a mid-range phone: the interface is assembled in the browser on every visit |
+| Phone | 70 | 91 | Readable wordmark header, no stray line, assistant docked in the tab bar, 0 blockers and 0 majors at all 13 phone sizes | The calendar exception above |
+
+## Plan for what's still under 90
+
+- **Speed 82 → 90:** pre-build the first screen (Drafts) as plain HTML so it paints before the app assembles, and compile the editor only when it opens. Move thumbnails into IndexedDB. Check: under 2.5s to the first content on the phone profile.
+- **Make 86 → 90:** offer three directions per brief (layouts or colourways side by side), and keep growing the brief set from real TEKEX requests, scoring every new one blind before fixing anything.
+- **Workflows 88 → 90:** drag a scheduled post between days with a clear landing, and show the week's readiness (scheduled, approved, downloaded) on Drafts.
+- **Visual 89 → 92:** the token pass: 9 type sizes, 5 radii, colours only from tokens, proved harmless with `tools/qa/snap.mjs`.
+
+## The scores, 13 November 2026 (morning)
 
 Measured on seven screens at 1440, 1024, 768, 390 and 320 wide; 88 page loads in the responsive matrix; every control hovered and focused in light and dark; 24 unit tests.
 
