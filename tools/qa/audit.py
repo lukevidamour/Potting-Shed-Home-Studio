@@ -145,6 +145,8 @@ textEls.forEach(el => { const fs = parseFloat(cs(el).fontSize); [...el.childNode
 const seen = new Set();
 for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
   const a = boxes[i], b = boxes[j]; if (a.el === b.el || a.el.contains(b.el) || b.el.contains(a.el)) continue;
+  // text inside an open modal dialog sits over the page, which is dimmed and inert behind it: not a collision
+  { const ma = a.el.closest('[aria-modal="true"]'), mb = b.el.closest('[aria-modal="true"]'); if (ma !== mb && (ma || mb)) continue; }
   const ox = Math.min(a.v.right, b.v.right) - Math.max(a.v.left, b.v.left), oy = Math.min(a.v.bottom, b.v.bottom) - Math.max(a.v.top, b.v.top);
   if (ox > 2 && oy > Math.min(a.v.height, b.v.height) * 0.35) { const k = name(a.el) + '|' + name(b.el); if (!seen.has(k)) { seen.add(k); add('text-overlap', a.el, `"${txt(a.el)}" overlaps ${name(b.el)} "${txt(b.el)}"`); } } }
 const clipSeen = new Set();
