@@ -2289,7 +2289,7 @@ class Component extends DCLogic {
     const top = gate.querySelector(".gate__top"), act = gate.querySelector(".gate__act"), wm = gate.querySelector(".gate__wm");
     const kids = under(); kids.forEach(el => { el.style.willChange = "transform"; el.style.transform = "translateY(32px)"; });
     const root = document.documentElement, pageBase = getComputedStyle(root).getPropertyValue("--hs-page").trim() || "#F2F2F2";
-    root.style.setProperty("--hs-page", "color-mix(in srgb, " + pageBase + " 95%, #000)");
+    root.style.setProperty("--hs-page", "color-mix(in srgb, " + pageBase + " 90%, #000)");
     // The rail's footer is the first thing the rising curtain uncovers: its rule draws in left to right as the curtain
     // clears it, then the avatar and each button rise in, one after another, on a soft spring.
     const foot = innerWidth > 860 ? document.querySelector(".gnav .gfoot") : null;
@@ -2310,8 +2310,8 @@ class Component extends DCLogic {
       if (act) act.style.transform = "translateY(" + (-up * h).toFixed(1) + "px)";
       if (wm) wm.style.transform = "translateY(" + ((-0.86 * up + 0.6 * sag) * h).toFixed(1) + "px)";
       const settle = ((1 - up) * 32).toFixed(1); kids.forEach(el => { el.style.transform = "translateY(" + settle + "px)"; });
-      // light comes into the room: the page starts 5% darker and reaches its own colour as the curtain clears
-      root.style.setProperty("--hs-page", "color-mix(in srgb, " + pageBase + " " + (100 - 5 * (1 - up)).toFixed(2) + "%, #000)");
+      // light comes into the room: the page starts 10% darker and reaches its own colour as the curtain clears
+      root.style.setProperty("--hs-page", "color-mix(in srgb, " + pageBase + " " + (100 - 10 * (1 - up)).toFixed(2) + "%, #000)");
       // the last frame: hide the curtain before its shape goes, or for one frame it would show whole (a flash of colour)
       if (t < 1) requestAnimationFrame(frame); else { gate.style.visibility = "hidden"; gate.style.clipPath = "inset(100% 0 0 0)"; svg.remove(); done(); }
     };
