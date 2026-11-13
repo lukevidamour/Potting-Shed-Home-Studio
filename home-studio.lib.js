@@ -718,6 +718,13 @@ if (TKP) {
     if (LIB_GROUPS.indexOf(x.group) < 0) LIB_GROUPS.push(x.group);
   });
 }
+/* TEKEX keeps only designs made from the Figma toolkit's templates: the rest go, and so does any project they leave empty. */
+function keepToolkit(drafts, projects) {
+  const ok = (d) => !!TKP && TKP.order.indexOf(d.tpl) >= 0;
+  const removed = drafts.filter(d => !ok(d)), held = new Set(removed.map(d => d.projectId));
+  const kept = drafts.filter(ok);
+  return { drafts: kept, projects: projects.filter(pj => !held.has(pj.id) || kept.some(d => d.projectId === pj.id)), removed: removed.map(d => d.id) };
+}
 /* The pack that draws a template, if any: TEKEX's public pack, or a client's private one. */
 function packOf(key) { const t = TPL[key]; if (!t) return null; if (TKP && t.pack === TKP.id) return TKP; if (PACK && t.set === PACK.set && !t.pack) return PACK; return null; }
 const packTpl = (key) => !!packOf(key);
