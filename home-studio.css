@@ -1880,4 +1880,16 @@ main[data-stage],.toolbar{min-width:0}
   .gnav .bead.logo{align-self:stretch;width:auto;justify-content:flex-start}
   .gnav .bead.logo .mark{width:90%;flex:0 0 90%} /* a touch smaller than the full rail (Luke), still aligned with everything below it */
 }
+/* Touch targets (Apple 44pt, Material 48dp). On touch screens and narrow windows every field and small button is at least
+   44px; text links keep their look and get an invisible 44px tap area; a calendar chip's tap area reaches its day's edges. */
+@media (max-width:1023px),(pointer:coarse){
+  .input,.title-in,.projtitle,select.input,.drawer .input{min-height:44px}
+  .btn.icon,.btn.sm,.projchip,.gnav .bead.round,.bb .bbsec button:not(.link),.calmore{min-height:44px;min-width:44px}
+  .calmore{min-height:0;min-width:0}
+  .calmore::after{inset:-11px}
+  button.link{position:relative}
+  button.link::after{content:"";position:absolute;left:-6px;right:-6px;top:50%;height:44px;translate:0 -50%}
+  .calcell .chip{position:relative}
+  .calcell .chip::after{content:"";position:absolute;inset:-4px}
+}
 
