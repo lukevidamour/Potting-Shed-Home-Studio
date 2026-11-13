@@ -1897,4 +1897,7 @@ main[data-stage],.toolbar{min-width:0}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important;scroll-behavior:auto!important}
 }
+/* The wordmark is clipped at its foot only while letters rise in from below; after the entrance nothing is clipped, so a
+   hover ripple's spring can dip below the baseline without cutting the bottoms of the o's */
+.gate .wm.is-settled{clip-path:none}
 

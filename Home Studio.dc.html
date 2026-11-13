@@ -2185,18 +2185,36 @@ class Component extends DCLogic {
         .from(gate.querySelector(".gate__leaf"), { scale: 0, rotation: -35, transformOrigin: "50% 50%", duration: 1.3, ease: jelly }, 0.05)
         .from(letters, { y: 165 * K, rotation: 7, transformOrigin: "50% 100%", duration: 1.5, ease: rise, stagger: 0.065 }, 0.1)
         .from(letters, { scaleY: 1.32, scaleX: 0.82, duration: 1.5, ease: jelly, stagger: 0.065 }, 0.1)
-        .from(leaves, { y: -95 * K, rotation: -40, transformOrigin: "25% 100%", duration: 1.6, ease: drop, stagger: 0.09 }, 0.92)
-        .from(leaves, { opacity: 0, duration: 0.25, ease: "power1.out", stagger: 0.09 }, 0.92)
-        .to(stems, { scaleY: 0.9, scaleX: 1.05, transformOrigin: "50% 100%", duration: 0.1, ease: "power2.out", stagger: 0.09 }, 1.24)
-        .to(stems, { scaleY: 1, scaleX: 1, duration: 1.1, ease: give, stagger: 0.09 }, 1.34)
-        .to(word, { y: 3.5 * K, duration: 0.1, ease: "power2.out" }, 1.24)
-        .to(word, { y: 0, duration: 1.2, ease: give }, 1.34)
+        .from(leaves, { opacity: 0, duration: 0.25, ease: "power1.out", stagger: 0.09 }, HW ? 1.28 : 0.92);
+      if (HW) {
+        /* The leaf lands with weight: it falls under gravity, and the moment it touches, the i's stem gives under it,
+           compressing from its foot so its top dips, then springs back, overshooting a hair, and settles. The leaf rides
+           the stem's top the whole way, so it never sinks into it. */
+        const FALL = 0.44, LAND = 1.72, DIP = 0.065, back = spring(0.34, 16); // lands once the i has finished rising
+        leaves.forEach((leaf, k) => {
+          const stem = stems[k]; if (!stem) return;
+          const h = stem.getBBox ? stem.getBBox().height : 68; // the stem's height, in the wordmark's units
+          const at = LAND + k * 0.09;
+          tl.from(leaf, { y: -95 * K, rotation: -28, transformOrigin: "25% 100%", duration: FALL, ease: "power2.in" }, at - FALL)
+            .to(stem, { scaleY: 1 - DIP, scaleX: 1 + DIP * 0.35, transformOrigin: "50% 100%", duration: 0.11, ease: "power2.out", overwrite: "auto" }, at)
+            .to(leaf, { y: h * DIP, duration: 0.11, ease: "power2.out" }, at)
+            .to(stem, { scaleY: 1, scaleX: 1, duration: 1.15, ease: back }, at + 0.11)
+            .to(leaf, { y: 0, duration: 1.15, ease: back }, at + 0.11);
+        });
+      } else {
+        tl.from(leaves, { y: -95 * K, rotation: -40, transformOrigin: "25% 100%", duration: 1.6, ease: drop, stagger: 0.09 }, 0.92)
+          .to(stems, { scaleY: 0.9, scaleX: 1.05, transformOrigin: "50% 100%", duration: 0.1, ease: "power2.out", stagger: 0.09 }, 1.24)
+          .to(stems, { scaleY: 1, scaleX: 1, duration: 1.1, ease: give, stagger: 0.09 }, 1.34);
+      }
+      tl
+        .to(word, { y: (HW ? 1.2 : 3.5) * K, duration: 0.1, ease: "power2.out" }, HW ? 1.72 : 1.24)
+        .to(word, { y: 0, duration: 1.2, ease: give }, HW ? 1.82 : 1.34)
         .from(acts, { y: 34, duration: 1.4, ease: soft, stagger: 0.08 }, 0.85)
         .from(acts, { opacity: 0, duration: 0.5, ease: "power1.out", stagger: 0.08 }, 0.85);
       if (corner) tl.from(corner, { opacity: 0, y: -12, duration: 1.2, ease: soft }, 0.2);
       /* However the entrance ends (finished, skipped, a tab left in the background), everything is left in its place and
          fully visible: nothing a person needs, least of all the way in, can be stranded part-way through a fade. */
-      const settle = () => { if (tl.isActive()) return; gsap.set(letters.concat(leaves, acts, corner ? [corner] : [], [word]), { clearProps: "transform,opacity" }); };
+      const settle = () => { if (tl.isActive()) return; gsap.set(letters.concat(leaves, acts, corner ? [corner] : [], [word]), { clearProps: "transform,opacity" }); const w = gate.querySelector(".wm"); if (w) w.classList.add("is-settled"); };
       tl.eventCallback("onComplete", settle); setTimeout(() => { if (tl.progress() < 1 && document.visibilityState === "visible" && !tl.isActive()) tl.progress(1); settle(); }, 5200);
       // Afterwards, point at the wordmark and a ripple runs through it from there.
       const ripple = (e) => {
