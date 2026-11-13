@@ -1875,9 +1875,9 @@ main[data-stage],.toolbar{min-width:0}
   .makeover .mkintro,.makeover .thread,.makeover .composer,.makeover .mkbar{animation:none}
 }
 @media (min-width:861px){
-  /* The wordmark fills the rail between its paddings, so its right margin matches its left (Luke). The file's edges are
-     the ink's edges, so the margins are exact. */
+  /* The wordmark sized from the rail's own width (90% of it, Luke: first full width, then a touch smaller). The file's edges
+     are the ink's edges, so it lines up exactly with the client chip and the nav below. */
   .gnav .bead.logo{align-self:stretch;width:auto;justify-content:flex-start}
-  .gnav .bead.logo .mark{width:100%;flex:1 1 auto}
+  .gnav .bead.logo .mark{width:90%;flex:0 0 90%} /* a touch smaller than the full rail (Luke), still aligned with everything below it */
 }
 
