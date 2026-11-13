@@ -1943,4 +1943,9 @@ main[data-stage],.toolbar{min-width:0}
   /* touch tablets with the desktop rail: four 44px buttons fit its footer; light/dark is in the account menu */
   .gfoot .themebtn{display:none}
 }
+/* Unscheduled stays in view beside the calendar and scrolls inside itself, its heading pinned, instead of
+   stretching the page */
+.callayout .caltray{position:sticky;top:24px;max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.callayout .caltray>h2{position:sticky;top:-16px;z-index:1;margin:-16px -16px 0;padding:16px 16px 8px;background:var(--hs-surface)}
+@media (max-width:860px){ .callayout .caltray{position:static;max-height:60vh} }
 

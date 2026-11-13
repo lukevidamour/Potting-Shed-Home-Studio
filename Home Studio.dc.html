@@ -12,6 +12,9 @@
 <script>try{if(localStorage.getItem("hs-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
 <link rel="preload" href="styles.css?v=20261113u" as="style">
 <link rel="preload" href="home-studio.css?v=20261113u" as="style">
+<link rel="preload" href="./support.js" as="script">
+<link rel="preload" href="home-studio.lib.js?v=20261113u" as="script">
+<link rel="preload" href="assets/brand/home-studio-wordmark.js?v=20261113u" as="script">
 <link rel="preload" href="assets/fonts/neue-montreal-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/quarto-medium-italic.woff2" as="font" type="font/woff2" crossorigin>
 <script>/* Landing on the plain address (typed, from a link or a new tab) always starts at the sign-in screen, so a demo gets the
@@ -20,7 +23,7 @@
 <script>(function(){try{var s=sessionStorage,c=s.getItem("hs-curtain"),seen=s.getItem("hs-in"),B=["#245FFF","#FF16A5","#FE1658","#FF840A","#12CDFF","#01FECD"];s.removeItem("hs-curtain");if(!c&&!seen)c=B[Math.floor(Math.random()*B.length)];if(c){document.documentElement.style.setProperty("--gate-c",c);document.documentElement.classList.add("gating");window.__gate={c:c,lift:!!seen};}}catch(e){}})();</script>
 <script>/* Template packs. TEKEX's is public and always loads; a private client pack (assets/hh) loads only on this machine.
    Each pack's markup goes where the pack slot element sits in the artwork. */
-(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};var run=function(js,name){if(!js)return;try{(0,eval)(js);}catch(e){console.warn("Template pack could not be read: "+name,e);}};
+(function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname)&&!/[?&]public\b/.test(location.search);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};var run=function(js,name){if(!js)return;try{(0,eval)(js);}catch(e){console.warn("Template pack could not be read: "+name,e);}};
 var markup="";
 var tkb=get("assets/tekex/bundle.js?v=20261113u");if(tkb){run(tkb,"tekex");if(window.HS_TEKEX)markup+=window.HS_TEKEX.markupHtml||"";}else{run(get("assets/tekex/pack.js?v=20261113u"),"tekex");if(window.HS_TEKEX){(window.HS_TEKEX.parts||[]).forEach(function(p){run(get("assets/tekex/t-"+p+".js?v=20261113u"),"tekex "+p);});run(get("assets/tekex/examples.js?v=20261113u"),"tekex examples");markup+=get("assets/tekex/templates.html?v=20261113u");try{window.HS_TEKEX.library=JSON.parse(get("assets/tekex/library/manifest.json")||"[]");}catch(e){window.HS_TEKEX.library=[];}}}
 if(local){var js=get("assets/hh/pack.js");if(js){run(js,"client");if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");markup+=window.HS_PACK.markup;}}}
@@ -36,9 +39,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="styles.css?v=20261113u">
-<link rel="preload" href="assets/fonts/neue-montreal-semibold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="home-studio.css?v=20261113u">
+<!-- the stylesheets are linked once, in the page head, so they apply from the first frame and download only once -->
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -1464,14 +1465,21 @@ class Component extends DCLogic {
     if (typeof ResizeObserver !== "undefined") { this._ro = new ResizeObserver(() => this.measure()); }
     // Inline partner logos as data URLs so the export never depends on a fetch mid-render.
     // TEKEX's templates measure their words in the TEKEX font: once it has loaded, draw again so every line break is right.
-    if (TKP && document.fonts && document.fonts.load) Promise.all([300, 500, 600].map(w => document.fonts.load(w + " 40px 'TK Neue'"))).then(() => this.setState(s => ({ fontTick: (s.fontTick || 0) + 1 }))).catch(() => {});
-    BRAND.partners.concat(PACK && WS_ID === PACK.id ? (PACK.preload || []).map(src => ({ src })) : []).concat(TKP && WS_ID === DEFAULT_WS ? (TKP.preload || []).map(src => ({ src })) : []).forEach(p => {
-      fetch(p.src).then(r => r.ok ? r.text() : "").then(svg => {
-        if (!svg) return;
-        const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg).replace(/[()'"]/g, ch => "%" + ch.charCodeAt(0).toString(16).toUpperCase());
-        this.setState(s => ({ logoData: Object.assign({}, s.logoData, { [p.src]: data }) }));
-      }).catch(() => {});
-    });
+    // (only once the first screen has painted: the first tiles are pictures, and this font is for drawing artwork)
+    const tkFont = () => { if (TKP && document.fonts && document.fonts.load) Promise.all([300, 500, 600].map(w => document.fonts.load(w + " 40px 'TK Neue'"))).then(() => this.setState(s => ({ fontTick: (s.fontTick || 0) + 1 }))).catch(() => {}); };
+    if (this.state.view === "editor") tkFont(); else setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(tkFont, { timeout: 2500 }) : tkFont()), 700);
+    // The artwork templates draw with (logos, marks, backgrounds) waits until the first screen has painted: fetched on the
+    // phone's first visit it competed with the first tiles and pushed them back by seconds. SVGs become data URLs (so an
+    // export never waits on a fetch) in one state update; photos are simply fetched into the cache.
+    const art = BRAND.partners.concat(PACK && WS_ID === PACK.id ? (PACK.preload || []).map(src => ({ src })) : []).concat(TKP && WS_ID === DEFAULT_WS ? (TKP.preload || []).map(src => ({ src })) : []);
+    const loadArt = () => {
+      const svgs = art.filter(p => /\.svg(\?|$)/i.test(p.src)), rest = art.filter(p => !/\.svg(\?|$)/i.test(p.src));
+      Promise.all(svgs.map(p => fetch(p.src).then(r => r.ok ? r.text() : "").then(svg => svg ? [p.src, "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg).replace(/[()'"]/g, ch => "%" + ch.charCodeAt(0).toString(16).toUpperCase())] : null).catch(() => null)))
+        .then(pairs => { const add = {}; pairs.forEach(x => { if (x) add[x[0]] = x[1]; }); if (Object.keys(add).length) this.setState(s => ({ logoData: Object.assign({}, s.logoData, add) })); });
+      rest.forEach(p => { const im = new Image(); im.decoding = "async"; im.src = p.src; });
+    };
+    const idle = (f) => (window.requestIdleCallback ? requestIdleCallback(f, { timeout: 3000 }) : setTimeout(f, 300));
+    setTimeout(() => idle(loadArt), 900);
     requestAnimationFrame(() => this.measure());
   }
   componentWillUnmount() {
@@ -3216,12 +3224,14 @@ class Component extends DCLogic {
     const realBoards = boards.length;
     if (!isEditor && !s.sched && view !== "templates" && view !== "size") {
       // Sizes that never appear as a card have no stored thumbnail; draw one off stage at a time so the backlog can capture it.
+      // Only missing ones: a ready-made example file is already the right picture (a design that changes is recaptured on save),
+      // and redrawing all 73 on a first visit cost a phone seconds of work and swapped every tile's image.
       // While a capture is running the same design stays on the node, otherwise the picture and its id could part company.
       // Only what this screen shows is drawn: a first visit on a phone should not fetch every photograph in every design.
       const shelfIds = new Set(); if (view === "projects") s.projects.forEach(p => { const mine = s.drafts.filter(x => x.projectId === p.id); mine.slice().sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 4).concat(mine.slice(0, 4)).forEach(x => shelfIds.add(x.id)); });
       const chatFams = new Set(s.chat.map(m => m.fam).filter(Boolean));
       const wanted = (x) => view === "designs" || view === "calendar" || (view === "project" && x.projectId === s.projectId) || (view === "projects" && (!x.projectId || shelfIds.has(x.id) || !!x.scheduledAt)) || chatFams.has(x.familyId) || chatFams.has(x.setId);
-      const miss = (this._thumbBusyId && s.drafts.find(x => x.id === this._thumbBusyId)) || s.drafts.find(x => (!s.thumbs[x.id] || (!realThumb(s.thumbs[x.id]) && Date.now() > (this._quietAt || 0))) && wanted(x) && !(this._thumbTried && this._thumbTried.has(x.id)));
+      const miss = (this._thumbBusyId && s.drafts.find(x => x.id === this._thumbBusyId)) || s.drafts.find(x => !s.thumbs[x.id] && wanted(x) && !(this._thumbTried && this._thumbTried.has(x.id)));
       if (miss) boards.push(this.boardVals(miss, "card", { wrapClass: "card offcard", noThumb: true, open: null, keys: null, aria: "", title: "", desc: "", tab: -1, wrapRole: "presentation" }));
     }
 
