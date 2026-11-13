@@ -1826,4 +1826,41 @@ main[data-stage],.toolbar{min-width:0}
   .mkcomposing{-webkit-text-fill-color:var(--quiet)}
   .card .art>.thumbimg,.card .shelf,.weekcard .wart img{transform:none!important}
 }
+/* The Home Studio wordmark (tools/brand/wordmark.mjs) is the app's logo, top left everywhere: the rail, the phone header
+   and the assistant (Luke, 13 November 2026). It keeps the logo colour that changes on hover. */
+.bead.logo .mark{-webkit-mask-image:url(assets/brand/home-studio.svg);mask-image:url(assets/brand/home-studio.svg);-webkit-mask-position:left center;mask-position:left center;aspect-ratio:689.84/93.745;height:auto!important}
+.mkbrand{display:block;width:128px;aspect-ratio:689.84/93.745;background:var(--hs-ink);-webkit-mask:url(assets/brand/home-studio.svg) left center/contain no-repeat;mask:url(assets/brand/home-studio.svg) left center/contain no-repeat}
+.mkbar .mkwho{display:inline-flex;align-items:center;gap:8px;margin-left:14px;padding-left:14px;border-left:1px solid var(--key);color:var(--quiet)}
+.mkbar .mkwho .mkwho__mark{display:block;width:20px;height:20px;min-width:20px;border-radius:999px;flex:0 0 20px;margin:0}
+.mkwho__mark[data-icon="1"]{background-size:auto 68%}
+.mkwho>i:not(.mkwho__mark){display:none}
+@media (max-width:640px){
+  /* Phone header: the wordmark at a readable size, nothing drawn between it and the actions, and the light/dark switch
+     left to the account menu so everything fits on one line */
+  .gnav .bead.logo{flex:0 0 auto;padding:0 4px 0 6px}
+  .bead.logo .mark{width:104px;min-width:104px;flex:0 0 104px}
+  .gnav .wschip{flex:0 0 auto}
+  .gfoot{flex:1 1 auto;min-width:0;justify-content:flex-end;gap:2px}
+  .gfoot__gap{display:none}
+  .gfoot{border-top:0;padding-top:0}
+  .gfoot .themebtn{display:none}
+  .mkbrand{width:104px}
+  .mkbar .mkwho{margin-left:10px;padding-left:10px}
+}
+@media (max-width:640px){
+  /* The assistant's button docks into the right-hand end of the tab bar, so it never floats over the page (it used to
+     sit on the search field); the four tabs share the rest of the bar */
+  .gtabs{padding-right:60px}
+  .fab{right:8px;bottom:calc(6px + env(safe-area-inset-bottom));width:44px;height:44px;z-index:46}
+  .fab svg.spark{width:21px;height:21px}
+  /* "Going out this week" on one line, its count and link underneath */
+  .weekhead{flex-direction:column;align-items:flex-start;gap:2px}
+  .weekhead h3{white-space:nowrap}
+}
+@media (max-width:360px){
+  /* the smallest phones: the docked assistant and four tabs still fit, none clipped */
+  .gtabs{padding-left:4px;padding-right:52px;gap:0}
+  .gtab{font-size:11.5px;padding:0;letter-spacing:-.015em}
+  .fab{right:5px;width:42px;height:42px}
+}
 
