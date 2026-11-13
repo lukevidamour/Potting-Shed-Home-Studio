@@ -16,20 +16,20 @@
    Each pack's markup goes where the pack slot element sits in the artwork. */
 (function(){var local=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);var get=function(u){try{var x=new XMLHttpRequest();x.open("GET",u,false);x.send();return x.status===200?x.responseText:"";}catch(e){return "";}};var run=function(js,name){if(!js)return;try{(0,eval)(js);}catch(e){console.warn("Template pack could not be read: "+name,e);}};
 var markup="";
-run(get("assets/tekex/pack.js?v=20261113m"),"tekex");if(window.HS_TEKEX){(window.HS_TEKEX.parts||[]).forEach(function(p){run(get("assets/tekex/t-"+p+".js?v=20261113m"),"tekex "+p);});run(get("assets/tekex/examples.js?v=20261113m"),"tekex examples");markup+=get("assets/tekex/templates.html?v=20261113m");try{window.HS_TEKEX.library=JSON.parse(get("assets/tekex/library/manifest.json")||"[]");}catch(e){window.HS_TEKEX.library=[];}}
+run(get("assets/tekex/pack.js?v=20261113n"),"tekex");if(window.HS_TEKEX){(window.HS_TEKEX.parts||[]).forEach(function(p){run(get("assets/tekex/t-"+p+".js?v=20261113n"),"tekex "+p);});run(get("assets/tekex/examples.js?v=20261113n"),"tekex examples");markup+=get("assets/tekex/templates.html?v=20261113n");try{window.HS_TEKEX.library=JSON.parse(get("assets/tekex/library/manifest.json")||"[]");}catch(e){window.HS_TEKEX.library=[];}}
 if(local){var js=get("assets/hh/pack.js");if(js){run(js,"client");if(window.HS_PACK){try{window.HS_PACK.library=JSON.parse(get("assets/hh/manifest.json")||"[]");}catch(e){window.HS_PACK.library=[];}window.HS_PACK.markup=get("assets/hh/templates.html");markup+=window.HS_PACK.markup;}}}
 window.HS_MARKUP=markup;if(markup){var of=window.fetch;window.fetch=function(u){var p=of.apply(this,arguments);try{if(String(u)===location.href)return p.then(function(res){return res.text().then(function(t){return new Response(t.replace("<hs-pack-"+"slot></hs-pack-"+"slot>",function(){return window.HS_MARKUP;}),{status:res.status,headers:{"Content-Type":"text/html"}});});});}catch(e){}return p;};}
 document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_MARKUP)slot.outerHTML=window.HS_MARKUP;else slot.remove();});})();
 </script>
 <script src="./support.js"></script>
-<script src="home-studio.lib.js?v=20261113m"></script>
+<script src="home-studio.lib.js?v=20261113n"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="styles.css?v=20261113m">
+<link rel="stylesheet" href="styles.css?v=20261113n">
 <link rel="preload" href="assets/fonts/neue-montreal-semibold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="home-studio.css?v=20261113m">
+<link rel="stylesheet" href="home-studio.css?v=20261113n">
 </helmet>
 
 <div class="app {{ viewClass }}" style="{{ appStyle }}">
@@ -1839,10 +1839,10 @@ class Component extends DCLogic {
       clientDialogOpen: !!s.clientDialog, clName: c.name || "", clUrl: c.url || "", clPrimary: c.primary || "#245fff", clSecondary: c.secondary || "#f2f2f2", clError: c.error || "", clErrClass: c.error ? "err" : "", clInvalid: c.error ? "true" : "false",
       clSetName: setC("name"), clSetUrl: setC("url"), clSetPrimary: setC("primary"), clSetSecondary: setC("secondary"),
       closeClient: () => this.setState({ clientDialog: null }), saveClient: this.saveClient,
-      gateOpen: !!s.gate, gateClass: s.gate === "open" ? "is-intro" : "is-down", gateStyle: { "--gate-c": s.gateColor },
+      gateOpen: !!s.gate, gateClass: (s.gate === "open" ? "is-intro" : "is-down") + (s.gateLifting ? " is-lifting" : ""), gateStyle: { "--gate-c": s.gateColor },
       enterApp: this.enterApp,
       userMenuOpen: s.userMenuOpen, toggleUserMenu: this.toggleUserMenu, signOut: this.signOut, canRestoreExamples: WS_ID === DEFAULT_WS || !!(PACK && WS_ID === PACK.id && PACK.seed), restoreExamples: this.restoreExamples, logoTap: this.logoTap,
-      isMake: s.makeOpen, goMake: this.goMake, closeMake: this.closeMake, makeEmpty: s.chat.length === 0, fabShow: view !== "editor" && !s.makeOpen && !s.gate,
+      isMake: s.makeOpen, goMake: this.goMake, closeMake: this.closeMake, makeEmpty: s.chat.length === 0, fabShow: view !== "editor" && !s.makeOpen && (!s.gate || s.gateLifting), // under a lifting curtain it is already in place
       makeText: s.makeText, makeSetText: (e) => { this.growComposer(e.target); this.setState({ makeText: e.target.value }); }, makeSubmit: (e) => { e.preventDefault(); this.makeSend(); },
       makeKeys: (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); this.makeSend(); } },
       makeBlank: !s.makeText.trim() || s.makePending, makePending: s.makePending, makeStateClass: s.chat.length === 0 && !s.makePending ? "is-empty" : "is-talking",
@@ -2185,10 +2185,18 @@ class Component extends DCLogic {
   liftCurtain() {
     const gate = document.querySelector(".gate");
     if (this._lifting) return;
-    const done = () => { this._lifting = false; document.documentElement.classList.remove("gating"); this.setState({ gate: null }); setTimeout(() => this.setState({ arriving: false }), 1800); };
-    this.setState({ arriving: true });
+    // The curtain uncovers a page that is already finished: everything is laid out and its pictures decoded underneath
+    // before the lift starts, and the page settles into place with the same easing as the curtain, ending together.
+    const under = () => [...document.querySelectorAll(".app > :not(.gate):not(.fab):not(script)")];
+    const done = () => { this._lifting = false; under().forEach(el => { el.style.transform = ""; el.style.willChange = ""; }); document.documentElement.classList.remove("gating"); this.setState({ gate: null, gateLifting: false }); setTimeout(() => this.setState({ arriving: false }), 400); };
+    this.setState({ arriving: true, gateLifting: true });
     if (!gate) return done();
     this._lifting = true;
+    const pics = [...document.querySelectorAll(".app img")].filter(im => { const r = im.getBoundingClientRect(); return r.bottom > 0 && r.top < window.innerHeight && r.width > 0; }).slice(0, 24);
+    Promise.race([Promise.all(pics.map(im => (im.decode ? im.decode() : Promise.resolve()).catch(() => {}))), new Promise(res => setTimeout(res, 500))]).then(() => this.runCurtain(gate, done, under));
+  }
+  runCurtain(gate, done, under) {
+    const fab = document.querySelector(".fab"); if (fab) fab.style.animation = "none"; // revealed with the page, never bouncing in after it
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { gate.style.transition = "opacity .4s"; gate.style.opacity = "0"; return setTimeout(done, 420); }
     const NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg"), cp = document.createElementNS(NS, "clipPath"), edge = document.createElementNS(NS, "path");
     svg.setAttribute("width", "0"); svg.setAttribute("height", "0"); svg.style.position = "absolute";
@@ -2197,6 +2205,7 @@ class Component extends DCLogic {
     gate.style.clipPath = "url(#hs-curtain-shape)"; gate.style.pointerEvents = "none"; gate.classList.add("is-lifting");
     document.documentElement.classList.remove("gating");
     const top = gate.querySelector(".gate__top"), act = gate.querySelector(".gate__act"), wm = gate.querySelector(".gate__wm");
+    const kids = under(); kids.forEach(el => { el.style.willChange = "transform"; el.style.transform = "translateY(32px)"; });
     const D = 1.1, lift = (t) => (t < 0.5 ? 8 * Math.pow(t, 4) : 1 - Math.pow(2 - 2 * t, 4) / 2), speed = (t) => (t < 0.5 ? 32 * Math.pow(t, 3) : 4 * Math.pow(2 - 2 * t, 3)) / D;
     let t0 = null, last = null, give = 0, sag = 0;
     const frame = (now) => {
@@ -2209,6 +2218,7 @@ class Component extends DCLogic {
       if (top) top.style.transform = "translateY(" + (-up * h).toFixed(1) + "px)";
       if (act) act.style.transform = "translateY(" + (-up * h).toFixed(1) + "px)";
       if (wm) wm.style.transform = "translateY(" + ((-0.86 * up + 0.6 * sag) * h).toFixed(1) + "px)";
+      const settle = ((1 - up) * 32).toFixed(1); kids.forEach(el => { el.style.transform = "translateY(" + settle + "px)"; });
       if (t < 1) requestAnimationFrame(frame); else { svg.remove(); done(); }
     };
     requestAnimationFrame(frame);

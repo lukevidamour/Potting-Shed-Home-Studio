@@ -1426,7 +1426,7 @@ body:has(.makeover),body:has(.cmdk){overflow:hidden}
 }
 /* While the sign-in screen is fully up, the app behind it is not there for anyone: not to the eye, a keyboard or a screen reader.
    It comes back the moment the curtain starts to lift. */
-body:has(.gate.is-intro) .app>:not(.gate),body:has(.gate.is-intro) .fab{visibility:hidden}
+body:has(.gate.is-intro:not(.is-lifting)) .app>:not(.gate),body:has(.gate.is-intro:not(.is-lifting)) .fab{visibility:hidden}
 /* The partner remove button is simply 40px, with no invisible extension hanging outside its box. */
 .ptile .prow .btn.icon{width:40px;height:40px;flex:0 0 40px}
 .ptile .prow .btn.icon::after{content:none}
@@ -1777,4 +1777,7 @@ main[data-stage],.toolbar{min-width:0}
 @keyframes calpop-in{from{opacity:0;translate:0 -4px;scale:.98}to{opacity:1;translate:0 0;scale:1}}
 @media (prefers-reduced-motion:reduce){.calpop{animation:none}}
 :root[data-theme="dark"] .calpop{box-shadow:0 0 0 1px var(--hs-rule),0 12px 32px rgba(0,0,0,.5)}
+/* Arrival: the curtain reveals a finished page. Nothing underneath runs its own entrance (that read as a pop after the
+   curtain had gone); the page only settles a few pixels, in step with the curtain (liftCurtain). */
+.is-arriving .gnav,.is-arriving .gnav>*,.is-arriving h1.welcome,.is-arriving .toolrow,.is-arriving .pagehead>div:last-child,.is-arriving .grid>.card:not(.offcard),.is-arriving .page>*,.is-arriving .pagehead>*,.is-arriving .welcome-wrap>*,.is-arriving .weekstrip>.weekcard,.is-arriving .bb .bbsec,.is-arriving .boards.bbpreview,.is-arriving .bbprevtabs,.is-arriving~.fab,.app.is-arriving .fab,body:has(.app.is-arriving) .fab{animation:none!important}
 
