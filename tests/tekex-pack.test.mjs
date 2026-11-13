@@ -79,3 +79,8 @@ test("the example designs use real templates, layouts, pictures and formats, and
   const used = new Set(ex.drafts.map(d => d.tpl));
   T.templates.forEach(t => assert.ok(used.has(t.key), "an example of " + t.key));
 });
+
+test("the bundled pack (assets/tekex/bundle.js) is up to date with its sources", async () => {
+  const { bundle } = await import(root + "tools/build-tekex.mjs");
+  assert.equal(readFileSync(root + "assets/tekex/bundle.js", "utf8"), bundle(), "run: node tools/build-tekex.mjs");
+});
