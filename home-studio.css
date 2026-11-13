@@ -1780,4 +1780,50 @@ main[data-stage],.toolbar{min-width:0}
 /* Arrival: the curtain reveals a finished page. Nothing underneath runs its own entrance (that read as a pop after the
    curtain had gone); the page only settles a few pixels, in step with the curtain (liftCurtain). */
 .is-arriving .gnav,.is-arriving .gnav>*,.is-arriving h1.welcome,.is-arriving .toolrow,.is-arriving .pagehead>div:last-child,.is-arriving .grid>.card:not(.offcard),.is-arriving .page>*,.is-arriving .pagehead>*,.is-arriving .welcome-wrap>*,.is-arriving .weekstrip>.weekcard,.is-arriving .bb .bbsec,.is-arriving .boards.bbpreview,.is-arriving .bbprevtabs,.is-arriving~.fab,.app.is-arriving .fab,body:has(.app.is-arriving) .fab{animation:none!important}
+/* ---------- Joy: small moments, each tied to something real (all quiet under reduced motion) ---------- */
+/* The assistant composing: its sparkle breathes and the small star twinkles, beside a quiet word */
+.msg.pending,.msg.hs.pending{display:flex;flex-direction:row;align-items:center;gap:10px}
+.mkspark{width:22px;height:22px;display:block;color:var(--hs-ink)}
+.mkspark svg{width:100%;height:100%;display:block;fill:currentColor;overflow:visible}
+.mkspark path{transform-box:fill-box;transform-origin:center}
+.mkspark .s1{animation:spark-breathe 1.4s cubic-bezier(.45,0,.55,1) infinite}
+.mkspark .s2{animation:spark-twinkle 1.4s cubic-bezier(.45,0,.55,1) .35s infinite}
+.mkcomposing{font-size:15px;line-height:22px;color:var(--quiet);background:linear-gradient(90deg,var(--quiet) 0%,var(--hs-ink) 50%,var(--quiet) 100%) 0 0/200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:spark-shimmer 1.6s linear infinite}
+@keyframes spark-breathe{0%,100%{scale:.82;rotate:0deg}50%{scale:1;rotate:12deg}}
+@keyframes spark-twinkle{0%,100%{scale:.5;opacity:.5;rotate:0deg}50%{scale:1.15;opacity:1;rotate:45deg}}
+@keyframes spark-shimmer{from{background-position:100% 0}to{background-position:-100% 0}}
+/* New designs from the assistant develop in, like a print: out of a soft blur into focus, with light passing over once */
+.msg.is-new .mktile{animation:mk-develop 900ms cubic-bezier(.2,.8,.2,1) backwards}
+.msg.is-new .mktile:nth-child(2){animation-delay:110ms}.msg.is-new .mktile:nth-child(3){animation-delay:220ms}.msg.is-new .mktile:nth-child(4){animation-delay:330ms}.msg.is-new .mktile:nth-child(5){animation-delay:440ms}.msg.is-new .mktile:nth-child(6){animation-delay:550ms}.msg.is-new .mktile:nth-child(7){animation-delay:660ms}.msg.is-new .mktile:nth-child(n+8){animation-delay:770ms}
+.msg.is-new .mktile::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.5) 50%,transparent 70%);translate:-130% 0;animation:mk-sweep 1100ms cubic-bezier(.4,0,.2,1) 300ms forwards}
+.msg.is-new .mktile:nth-child(2)::after{animation-delay:410ms}.msg.is-new .mktile:nth-child(3)::after{animation-delay:520ms}.msg.is-new .mktile:nth-child(4)::after{animation-delay:630ms}.msg.is-new .mktile:nth-child(n+5)::after{animation-delay:740ms}
+@keyframes mk-develop{from{opacity:0;filter:blur(14px) saturate(.35) brightness(1.12);scale:.965}60%{opacity:1}to{opacity:1;filter:none;scale:1}}
+@keyframes mk-sweep{to{translate:130% 0}}
+/* Artwork on a tile leans towards the pointer, a few degrees, settling smoothly */
+.card:not(.offcard) .art,.weekcard .wart{perspective:900px}
+.card .art>.thumbimg,.card .shelf,.weekcard .wart img{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:scale 240ms var(--out),transform 650ms cubic-bezier(.2,.8,.2,1)}
+.is-tilting>.thumbimg,.is-tilting .shelf,.weekcard .wart.is-tilting img{will-change:transform}
+/* The brand book cover's graphic floats, and leans away from the pointer */
+.bbcover__art{translate:calc(var(--px,0) * -16px) calc(-50% + var(--py,0) * -12px);transition:translate 900ms cubic-bezier(.2,.8,.2,1);animation:cover-float 7s ease-in-out infinite alternate}
+@keyframes cover-float{from{transform:translateY(-6px) rotate(-1.5deg)}to{transform:translateY(6px) rotate(1.5deg)}}
+/* A design dropped on a day lands with a ring of light */
+.calcell.landed{animation:day-land 900ms cubic-bezier(.2,.8,.2,1)}
+.calcell.landed .calmore{animation:count-pop 520ms cubic-bezier(.34,1.56,.64,1)}
+@keyframes day-land{0%{box-shadow:inset 0 0 0 0 var(--accent)}25%{box-shadow:inset 0 0 0 3px var(--accent)}100%{box-shadow:inset 0 0 0 0 transparent}}
+@keyframes count-pop{0%{scale:1}40%{scale:1.35}100%{scale:1}}
+/* The download's reward: sparkles from the tick */
+.joyspark{position:fixed;z-index:3000;pointer-events:none;color:var(--accent)}
+.joyspark svg{width:100%;height:100%;display:block;fill:currentColor}
+/* The artwork morphs between colourways and layouts */
+:root.is-morphing::view-transition-group(hs-art){animation-duration:420ms}
+:root.is-morphing::view-transition-old(hs-art){animation:morph-out 380ms cubic-bezier(.4,0,.2,1) both}
+:root.is-morphing::view-transition-new(hs-art){animation:morph-in 420ms cubic-bezier(.2,.8,.2,1) both}
+@keyframes morph-out{to{opacity:0;filter:blur(6px)}}
+@keyframes morph-in{from{opacity:0;filter:blur(6px)}}
+.countup{font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){
+  .mkspark .s1,.mkspark .s2,.mkcomposing,.msg.is-new .mktile,.msg.is-new .mktile::after,.bbcover__art,.calcell.landed,.calcell.landed .calmore{animation:none!important}
+  .mkcomposing{-webkit-text-fill-color:var(--quiet)}
+  .card .art>.thumbimg,.card .shelf,.weekcard .wart img{transform:none!important}
+}
 

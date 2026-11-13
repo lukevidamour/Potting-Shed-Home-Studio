@@ -22,8 +22,8 @@ window.HS_MARKUP=markup;if(markup){var of=window.fetch;window.fetch=function(u){
 document.addEventListener("DOMContentLoaded",function(){var slot=document.querySelector("hs-pack-slot");if(!slot)return;if(window.HS_MARKUP)slot.outerHTML=window.HS_MARKUP;else slot.remove();});})();
 </script>
 <script src="./support.js"></script>
-<script src="assets/brand/home-studio-wordmark.js?v=20261113p"></script>
-<script src="home-studio.lib.js?v=20261113p"></script>
+<script src="assets/brand/home-studio-wordmark.js?v=20261113q"></script>
+<script src="home-studio.lib.js?v=20261113q"></script>
 </head>
 <body>
 <x-dc>
@@ -284,7 +284,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
           </div>
           <sc-if value="{{ hasWeek }}">
             <section class="week" aria-labelledby="wk-title">
-              <div class="weekhead"><h3 class="section" id="wk-title">Going out <em>this week</em></h3><span class="meta">{{ weekCount }} scheduled · <button class="link" style="font-size:13px" onClick="{{ goCalendar }}">open the calendar</button></span></div>
+              <div class="weekhead"><h3 class="section" id="wk-title">Going out <em>this week</em></h3><span class="meta"><span class="countup" data-to="{{ weekCount }}">{{ weekCount }}</span> scheduled · <button class="link" style="font-size:13px" onClick="{{ goCalendar }}">open the calendar</button></span></div>
               <div class="weekstrip">
                 <sc-for list="{{ weekItems }}" as="wi">
                   <button class="weekcard" onClick="{{ wi.open }}" aria-label="{{ wi.aria }}">
@@ -300,7 +300,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
           </sc-if>
           <div class="toolrow">
             <div class="pills" role="tablist" aria-label="Project status">
-              <button class="pill" role="tab" aria-selected="{{ pillActive }}" onClick="{{ pickActive }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Active <span class="n">{{ activeCount }}</span></button>
+              <button class="pill" role="tab" aria-selected="{{ pillActive }}" onClick="{{ pickActive }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Active <span class="n countup" data-to="{{ activeCount }}">{{ activeCount }}</span></button>
               <button class="pill" role="tab" aria-selected="{{ !pillActive }}" onClick="{{ pickArchived }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v3H3zM5 9v10h14V9M10 13h4"/></svg>Archived <span class="n">{{ archivedCount }}</span></button>
             </div>
             <div class="filters">
@@ -466,7 +466,7 @@ document.addEventListener("DOMContentLoaded",function(){var slot=document.queryS
                     </sc-if>
                   </div>
                 </sc-for>
-                <sc-if value="{{ makePending }}"><div class="msg hs pending" aria-label="Working on it"><span class="mkdots" aria-hidden="true"><i></i><i></i><i></i></span></div></sc-if>
+                <sc-if value="{{ makePending }}"><div class="msg hs pending" aria-label="Working on it"><span class="mkspark" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="s1" d="M10 4.5Q12 11 18.5 13 12 15 10 21.5 8 15 1.5 13 8 11 10 4.5Z"/><path class="s2" d="M18.5 2Q19.3 4.7 22 5.5 19.3 6.3 18.5 9 17.7 6.3 15 5.5 17.7 4.7 18.5 2Z"/></svg></span><span class="mkcomposing">Composing</span></div></sc-if>
               </div>
             </div>
           </div>
@@ -1239,6 +1239,7 @@ class Component extends DCLogic {
   }
   setTheme(t) { this.applyTheme(t); try { localStorage.setItem("hs-theme", t); } catch (e) {} this.setState({ theme: t }); this.say(t === "dark" ? "Dark mode" : "Light mode"); }
   componentDidMount() {
+    this.joy();
     // Another tab saving its list (perhaps an older version holding designs from the first six templates): read it, keep
     // only TEKEX's toolkit designs, and show that here too, so nothing removed can come back.
     window.addEventListener("storage", (e) => {
@@ -1665,7 +1666,7 @@ class Component extends DCLogic {
     const id = (e.dataTransfer && e.dataTransfer.getData("text/plain")) || this.state.draggingId; if (!id) return;
     const d = this.state.drafts.find(x => x.id === id); if (!d) return;
     this.setSchedule(id, iso);
-    clearTimeout(this._movedT); this.setState({ movedId: id }); this._movedT = setTimeout(() => this.setState({ movedId: null }), 500);
+    clearTimeout(this._movedT); this.setState({ movedId: id, landedDay: iso || null }); this._movedT = setTimeout(() => this.setState({ movedId: null, landedDay: null }), 900);
     this.showToast(iso ? "“" + d.title + "” scheduled for " + fmtShort(iso) + "." : "“" + d.title + "” taken off the calendar.");
   }
   schedPlatform(d) { return d.platforms.indexOf(this.state.schedPlatformKey) >= 0 ? this.state.schedPlatformKey : d.platforms[0]; }
@@ -1860,7 +1861,7 @@ class Component extends DCLogic {
       makeIdeas: ((PACK && WS_ID === PACK.id && PACK.ideas) || [["A speaker card", "Dr Niraj Singh, Founder at Ketamine Therapies, is speaking Thu 26 Nov, 9am at the BDO Hub"], ["An event, square and story", "Announce the Founders Breakfast on 2 December, 8am at Wild Peak. As a square and a story."], ["A thank you to partners", "Thank our partners"], ["A line-up carousel", "A line-up carousel for IOM#3 on Thu 26 Nov, 17:30, Isle of Man: Carol Glover, Vice President, Chamber of Commerce; Lyle Wraxall, CEO, Digital Isle of Man; Steve Billinghurst, Chair, IoD; Guy Templer, Chair, Junior Achievement"]]).map(x => ({ label: x[0], full: x[1], go: () => this.makeSend(x[1]) })),
       makeMsgs: s.chat.map(m => {
         const fam = m.fam ? s.drafts.filter(x => x.familyId === m.fam || x.setId === m.fam).sort((a, b) => (SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)) || String(a.title).localeCompare(String(b.title))) : [];
-        return { cls: m.who === "me" ? "me" : "hs", text: m.text, hasArt: fam.length > 0,
+        return { cls: (m.who === "me" ? "me" : "hs") + (m.at && Date.now() - m.at < 2600 ? " is-new" : ""), text: m.text, hasArt: fam.length > 0,
           art: fam.map(x => { const Z = SIZES[x.size], th = BRAND.themes[x.theme] || BRAND.themes[0]; return { thumb: s.thumbs[x.id] || "", size: Z.label, style: { aspectRatio: Z.w + " / " + Z.h, background: th.ground, color: th.accent }, aria: "Open " + x.title, open: () => { this.setState({ makeOpen: false }); this.openDesign(x, false); } }; }),
           hasChips: !!(m.chips && m.chips.length) && m === s.chat[s.chat.length - 1],
           chips: (m.chips || []).map(c => ({ label: c, go: () => { if (c === "Open in the editor") { const x = fam[0]; if (x) { this.setState({ makeOpen: false }); this.openDesign(x, false); } } else this.makeSend(c); } })) };
@@ -1981,7 +1982,7 @@ class Component extends DCLogic {
       }
       const settle0 = () => requestAnimationFrame(() => { const sc = document.querySelector(".mkscroll"); if (sc) sc.scrollTo({ top: sc.scrollHeight, behavior: "smooth" }); const el = document.getElementById("mk-input"); if (el) { this.growComposer(el); el.focus({ preventScroll: true }); } });
       this.setState(st => ({ chat: st.chat.concat([{ who: "me", text }]), makeText: "", makePending: true }), settle0);
-      clearTimeout(this._makeT); this._makeT = setTimeout(() => this.setState(st => ({ chat: st.chat.concat([reply]), makePending: false }), settle0), 480);
+      clearTimeout(this._makeT); this._makeT = setTimeout(() => this.setState(st => ({ chat: st.chat.concat([Object.assign({ at: Date.now() }, reply)]), makePending: false }), settle0), 480);
       return;
     }
     let r = readBrief(text);
@@ -1995,7 +1996,7 @@ class Component extends DCLogic {
     const settle = () => requestAnimationFrame(() => { const sc = document.querySelector(".mkscroll"); if (sc) sc.scrollTo({ top: sc.scrollHeight, behavior: "smooth" }); const el = document.getElementById("mk-input"); if (el) { this.growComposer(el); el.focus({ preventScroll: true }); } });
     this.setState(st => ({ chat: st.chat.concat([{ who: "me", text }]), makeText: "", makeOpen: true, makePending: true }), settle);
     clearTimeout(this._makeT);
-    this._makeT = setTimeout(() => this.setState(st => ({ chat: st.chat.concat([reply]), makePending: false }), settle), matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 480);
+    this._makeT = setTimeout(() => this.setState(st => ({ chat: st.chat.concat([Object.assign({ at: Date.now() }, reply)]), makePending: false }), () => { settle(); clearTimeout(this._newT); this._newT = setTimeout(() => this.setState({ pickTick: (this.state.pickTick || 0) + 1 }), 2700); }), matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 480);
   };
   /* The composer grows with what is typed, up to a few lines, then scrolls. */
   growComposer(el) { if (!el) return; el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 176) + "px"; }
@@ -2420,7 +2421,68 @@ class Component extends DCLogic {
     Object.keys(now).forEach(k => { const cur = String(copy[k] || ""); if (!cur.trim() || (was && cur === String(was[k] || "")) || cur === String(EXAMPLE_COPY[k] || "")) copy[k] = now[k]; });
     return copy;
   }
-  setLayout(i) { const d = this.state.design; if (!d || (d.layout || 0) === i) return; this.commit(this.layoutPatch(d, i)); }
+  setLayout(i) { const d = this.state.design; if (!d || (d.layout || 0) === i) return; this.morph(() => this.commit(this.layoutPatch(d, i))); }
+  /* Small moments of delight, all tied to something real and all off with reduced motion:
+     - artwork on a tile tilts a few degrees towards the pointer, like a card in the hand;
+     - the brand book cover's graphic leans away from the pointer as it floats;
+     - numbers on Drafts count up the first time they're seen in a session. */
+  joy() {
+    if (this._joy) return; this._joy = true;
+    const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches, fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+    let raf = 0, last = null, tilted = null;
+    const untilt = () => { if (tilted) { tilted.style.removeProperty("--rx"); tilted.style.removeProperty("--ry"); tilted.classList.remove("is-tilting"); tilted = null; } };
+    if (fine) document.addEventListener("pointermove", (e) => {
+      last = e; if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0; if (calm() || !last) return untilt();
+        const t = last.target, art = t && t.closest ? t.closest(".card:not(.offcard) .art, .weekcard .wart") : null;
+        if (art !== tilted) untilt();
+        if (art) { const r = art.getBoundingClientRect(), x = (last.clientX - r.left) / r.width - 0.5, y = (last.clientY - r.top) / r.height - 0.5;
+          art.style.setProperty("--ry", (x * 7).toFixed(2) + "deg"); art.style.setProperty("--rx", (-y * 7).toFixed(2) + "deg"); art.classList.add("is-tilting"); tilted = art; }
+        const cover = t && t.closest ? t.closest(".bbcover") : null;
+        document.querySelectorAll(".bbcover").forEach(c => { if (c !== cover) { c.style.removeProperty("--px"); c.style.removeProperty("--py"); } });
+        if (cover) { const r = cover.getBoundingClientRect(); cover.style.setProperty("--px", ((last.clientX - r.left) / r.width - 0.5).toFixed(3)); cover.style.setProperty("--py", ((last.clientY - r.top) / r.height - 0.5).toFixed(3)); }
+      });
+    }, { passive: true });
+    document.addEventListener("pointerleave", untilt);
+    // count-ups: each number once a session, after the curtain, from zero on an ease-out
+    let seen = {}; try { seen = JSON.parse(sessionStorage.getItem("hs-counted") || "{}"); } catch (e) {}
+    const count = () => {
+      if (document.querySelector(".gate")) return setTimeout(count, 300);
+      document.querySelectorAll(".countup:not([data-counted])").forEach(el => {
+        el.setAttribute("data-counted", "1");
+        const to = parseInt(el.getAttribute("data-to"), 10), key = (el.closest(".pill") ? "active" : "week") + ":" + WS_ID;
+        if (!(to > 1) || seen[key] || calm()) return;
+        seen[key] = 1; try { sessionStorage.setItem("hs-counted", JSON.stringify(seen)); } catch (e) {}
+        const t0 = performance.now(), D = 700 + Math.min(500, to * 25);
+        const step = (now) => { const p = Math.min(1, (now - t0) / D), v = Math.round(to * (1 - Math.pow(1 - p, 3))); el.textContent = v; if (p < 1) requestAnimationFrame(step); else el.textContent = el.getAttribute("data-to"); };
+        el.textContent = "0"; requestAnimationFrame(step);
+      });
+    };
+    new MutationObserver(() => { clearTimeout(this._countT); this._countT = setTimeout(count, 60); }).observe(document.body, { childList: true, subtree: true });
+    count();
+  }
+  /* The reward for a finished download: a few small sparkles burst from the success tick and fade. */
+  burst(el) {
+    if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    for (let k = 0; k < 9; k++) {
+      const a = (k / 9) * Math.PI * 2 + Math.random() * 0.5, d = 26 + Math.random() * 22, sz = 6 + Math.random() * 6;
+      const sp = document.createElement("span"); sp.className = "joyspark";
+      sp.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 1Q13.6 10.4 23 12 13.6 13.6 12 23 10.4 13.6 1 12 10.4 10.4 12 1Z"/></svg>';
+      Object.assign(sp.style, { left: cx - sz / 2 + "px", top: cy - sz / 2 + "px", width: sz + "px", height: sz + "px" });
+      document.body.appendChild(sp);
+      sp.animate([{ transform: "translate(0,0) scale(.2) rotate(0deg)", opacity: 0 }, { transform: `translate(${Math.cos(a) * d * 0.55}px,${Math.sin(a) * d * 0.55}px) scale(1) rotate(45deg)`, opacity: 1, offset: 0.35 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px) scale(.4) rotate(90deg)`, opacity: 0 }], { duration: 760 + Math.random() * 200, easing: "cubic-bezier(.2,.8,.2,1)" }).onfinish = () => sp.remove();
+    }
+  }
+  /* A change to the artwork's look (colourway, layout) morphs from the old to the new instead of snapping: the artwork
+     crossfades in place through a view transition. Without support, or with reduced motion, it simply changes. */
+  morph(fn) {
+    if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) return fn();
+    document.documentElement.classList.add("is-morphing");
+    const vt = document.startViewTransition(() => new Promise(res => { fn(); setTimeout(res, 40); })); // not frames: they pause while the page is captured
+    vt.finished.finally(() => document.documentElement.classList.remove("is-morphing"));
+  }
   /* ---------- picture pickers: each template and layout is shown as this design would look in it ---------- */
   toggleTplPick = () => this.setState(s => ({ tplPickOpen: !s.tplPickOpen }));
   pickSig(v) {
@@ -2746,7 +2808,7 @@ class Component extends DCLogic {
     this.setState({ exporting: true, exportError: "", exportDone: false }); this.say("Preparing your image");
     try {
       const r = await this.exportDesign(s.design, node, s.format, s.fileName);
-      this.setState({ exporting: false, exportDone: true, exportDoneDetail: r.name + " · " + r.dims + " px · " + r.kb + " KB" }); this.say("Your download has started: " + r.name);
+      this.setState({ exporting: false, exportDone: true, exportDoneDetail: r.name + " · " + r.dims + " px · " + r.kb + " KB" }, () => setTimeout(() => this.burst(document.querySelector(".alert.done .tick")), 380)); this.say("Your download has started: " + r.name);
     } catch (e) {
       this.setState({ exporting: false, exportError: (e && e.message) ? "(" + e.message + ")" : "" });
     }
@@ -3153,7 +3215,7 @@ class Component extends DCLogic {
             moreAria: n + " posts on " + d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) + (open ? ". Close the list" : ". Show them all"),
             popTitle: n + " posts · " + d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }),
             toggleMore: (e) => { if (e) e.stopPropagation(); this.setState({ calOpenDay: open ? null : iso }); },
-            cls: (inMonth ? "" : "out ") + (iso === today ? "today " : "") + (s.dragOverDay === iso ? "over " : "") + (open ? "is-open" : ""),
+            cls: (inMonth ? "" : "out ") + (iso === today ? "today " : "") + (s.dragOverDay === iso ? "over " : "") + (open ? "is-open " : "") + (s.landedDay === iso ? "landed" : ""),
             aria: d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) + (items.length ? ", " + items.length + " scheduled" : ""),
             dragOver: (e) => { e.preventDefault(); if (s.dragOverDay !== iso) this.setState({ dragOverDay: iso }); }, dragLeave: () => { if (s.dragOverDay === iso) this.setState({ dragOverDay: null }); }, drop: (e) => this.dropOn(iso, e) });
         }
@@ -3303,7 +3365,7 @@ class Component extends DCLogic {
         overClass: s.slotOver === sl.id ? "over" : "",
         dragOver: (e) => { e.preventDefault(); if (s.slotOver !== sl.id) this.setState({ slotOver: sl.id }); }, dragLeave: () => this.setState({ slotOver: null }), drop: (e) => this.dropTo(sl.id, e)
       }; }),
-      themeTiles: BRAND.themes.map((t, i) => ({ name: t.name, on: d.theme === i, tab: d.theme === i ? 0 : -1, pick: () => this.commit({ theme: i }), miniStyle: { background: t.ground, color: t.accent }, barStyle: { background: t.accent } })),
+      themeTiles: BRAND.themes.map((t, i) => ({ name: t.name, on: d.theme === i, tab: d.theme === i ? 0 : -1, pick: () => this.morph(() => this.commit({ theme: i })), miniStyle: { background: t.ground, color: t.accent }, barStyle: { background: t.accent } })),
       themeKeys: (e) => this.radioKeys(e, BRAND.themes.map((_, i) => i), d.theme, (i) => this.commit({ theme: i })),
       lowContrast: ratio < 4.5, contrastRatio: ratio.toFixed(1),
       showBar: d.showBar, showPowered: d.showPowered, showHero: d.showHero, showPortraits: d.showPortraits,
