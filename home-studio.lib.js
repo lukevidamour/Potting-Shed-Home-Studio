@@ -176,11 +176,15 @@ const BRAND = {
     { id: "tk-motif-rings", name: "Motif — rings", src: "assets/graphics/motif-rings.svg", group: "Graphics" },
     { id: "tk-motif-square", name: "Motif — square", src: "assets/graphics/motif-square.svg", group: "Graphics" },
     { id: "lib-al-mitchell", name: "Al Mitchell — speaker portrait", src: "assets/speaker-al-mitchell.jpg", w: 675, h: 900, group: "Team" },
-    { id: "tk-ed", name: "Ed — portrait", src: "assets/photos/ed-profile.webp", group: "Team" },
-    { id: "tk-ed-bw", name: "Ed — portrait, mono", src: "assets/photos/ed-profile-bw.webp", group: "Team" },
-    { id: "tk-tom", name: "Tom — portrait", src: "assets/photos/tom-profile.webp", group: "Team" },
-    { id: "tk-tom-bw", name: "Tom — portrait, mono", src: "assets/photos/tom-profile-bw.webp", group: "Team" },
-    { id: "tk-louis", name: "Louis Pike — portrait", src: "assets/photos/louis-pike.webp", group: "Team" },
+    // The TEKEX team as tekex.co shows them: the official portraits, names and roles from the site's team section.
+    { id: "tk-ed", name: "Ed Prow — Founder", person: "Ed Prow", src: "assets/tekex/library/team/ed-prow.webp", w: 640, h: 800, group: "Team" },
+    { id: "tk-ed-bw", name: "Ed Prow — Founder, mono", person: "Ed Prow", src: "assets/tekex/library/team/ed-prow-mono.webp", w: 640, h: 800, group: "Team" },
+    { id: "tk-tom", name: "Tom Langford — Partner", person: "Tom Langford", src: "assets/tekex/library/team/tom-langford.webp", w: 640, h: 800, group: "Team" },
+    { id: "tk-tom-bw", name: "Tom Langford — Partner, mono", person: "Tom Langford", src: "assets/tekex/library/team/tom-langford-mono.webp", w: 640, h: 800, group: "Team" },
+    { id: "tk-louis", name: "Louis Pike — Guernsey Lead", person: "Louis Pike", src: "assets/tekex/library/team/louis-pike.webp", w: 640, h: 800, group: "Team" },
+    { id: "tk-louis-bw", name: "Louis Pike — Guernsey Lead, mono", person: "Louis Pike", src: "assets/tekex/library/team/louis-pike-mono.webp", w: 640, h: 800, group: "Team" },
+    { id: "tk-jenson", name: "Jenson Artus — Isle of Man Lead", person: "Jenson Artus", src: "assets/tekex/library/team/jenson-artus.webp", w: 640, h: 800, group: "Team" },
+    { id: "tk-jenson-bw", name: "Jenson Artus — Isle of Man Lead, mono", person: "Jenson Artus", src: "assets/tekex/library/team/jenson-artus-mono.webp", w: 640, h: 800, group: "Team" },
     { id: "tk-al-mitchell-portrait", name: "Al Mitchell — portrait", src: "assets/photos/al-mitchell-portrait.webp", group: "Team" }
   ]
 };
@@ -205,7 +209,7 @@ const FOCUS = {
   "tk-ian-rhodes": [50, 3], "tk-gabe-drogon": [50, 2], "tk-peter-o-brady": [50, 3], "tk-claire-trant": [49, 4], "tk-lisa-mccabe": [50, 4],
   "tk-hannah-mellor": [48, 3], "tk-jake-schofield": [50, 4], "tk-oliver-le-brun": [47, 5], "tk-austin-gibbs": [50, 4], "tk-dr-omar": [48, 4],
   "tk-serena-guthrie-cutout": [50, 3], "tk-serena-guthrie": [50, 3], "tk-tim-huelin-cutout": [45, 2], "lib-al-mitchell": [55, 6],
-  "tk-ed": [50, 8], "tk-ed-bw": [48, 8], "tk-tom": [48, 10], "tk-tom-bw": [48, 10], "tk-louis": [50, 3], "tk-al-mitchell-portrait": [42, 21]
+  "tk-ed": [50, 20], "tk-ed-bw": [50, 20], "tk-tom": [50, 18], "tk-tom-bw": [50, 18], "tk-louis": [50, 20], "tk-louis-bw": [50, 20], "tk-jenson": [50, 16], "tk-jenson-bw": [50, 16], "tk-al-mitchell-portrait": [42, 21]
 };
 Object.keys(FOCUS).forEach(id => { if (LIB[id]) { LIB[id].fx = FOCUS[id][0]; LIB[id].fy = FOCUS[id][1]; } });
 /* Cut-outs (a person on a transparent background) are never stretched to fill a frame: that blows the head up and

@@ -130,16 +130,6 @@
     "source": "figma GR5Bd2WU3HI3IYfwSe9ilP 12011:1368"
   },
   {
-    "id": "tkl-jenson-artus-portrait",
-    "name": "Jenson Artus, portrait (tekex.co team section)",
-    "src": "assets/tekex/library/speakers/jenson-artus-portrait.webp",
-    "group": "Speakers",
-    "w": 640,
-    "h": 800,
-    "cut": false,
-    "source": "https://www.tekex.co/about"
-  },
-  {
     "id": "tkl-lauren-perchard-rees-cutout",
     "name": "Lauren Perchard-Rees, TEKEX #35 speaker (cut-out)",
     "src": "assets/tekex/library/speakers/lauren-perchard-rees-cutout.webp",
@@ -168,16 +158,6 @@
     "h": 512,
     "cut": true,
     "source": "figma E7viRv163FwdwvSYYleNkD 15040:1938"
-  },
-  {
-    "id": "tkl-louis-pike-portrait",
-    "name": "Louis Pike, portrait (tekex.co team section)",
-    "src": "assets/tekex/library/speakers/louis-pike-portrait.webp",
-    "group": "Speakers",
-    "w": 640,
-    "h": 800,
-    "cut": false,
-    "source": "https://www.tekex.co/about"
   },
   {
     "id": "tkl-lyle-wraxall",
