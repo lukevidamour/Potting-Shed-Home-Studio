@@ -2442,7 +2442,7 @@ class Component extends DCLogic {
     if (!name) return this.setState({ projDialog: Object.assign({}, pd, { error: "Give the project a name to continue." }) });
     let projects, openId = pd.id;
     if (pd.id) projects = this.state.projects.map(pj => pj.id === pd.id ? Object.assign({}, pj, { name, brief: pd.brief.trim(), updatedAt: Date.now() }) : pj);
-    else { const pj = newProject(name, pd.brief.trim(), ""); openId = pj.id; projects = [pj].concat(this.state.projects); }
+    else { const pj = newProject(name, pd.brief.trim(), ""); openId = pj.id; this._madeProject = pj.id; projects = [pj].concat(this.state.projects); }
     try { this.persistProjects(projects); } catch (e) { return this.setState({ projDialog: Object.assign({}, pd, { error: "Couldn't save — this browser is out of storage." }) }); }
     if (pd.id) { this.setState({ projects, projDialog: null }); return; }
     if (pd.assign) { this.setState({ projects, projDialog: null }); this.assignProject(openId); return; }
@@ -2933,7 +2933,11 @@ class Component extends DCLogic {
     };
     const familyCards = (list, showProject) => this.familyGroups(list).sort((a, b) => list.indexOf(a.rep) - list.indexOf(b.rep)).map(g => designCard(g.rep, showProject, g));
     const sortBy = (arr, nameOf) => arr.slice().sort((a, b) => s.sortKey === "oldest" ? a.updatedAt - b.updatedAt : s.sortKey === "az" ? nameOf(a).localeCompare(nameOf(b)) : s.sortKey === "za" ? nameOf(b).localeCompare(nameOf(a)) : b.updatedAt - a.updatedAt);
-    const activeProjects = s.projects.filter(pj => !pj.archived), archivedProjects = s.projects.filter(pj => pj.archived);
+    // A project shows on Drafts once it has a design (Luke, 13 November 2026: empty "No designs yet" cards confused people).
+    // The project you are in, or just made, still shows while it is empty.
+    const hasWork = {}; s.drafts.forEach(d => { if (d.projectId) hasWork[d.projectId] = 1; });
+    const listed = s.projects.filter(pj => hasWork[pj.id] || pj.id === s.projectId || pj.id === this._madeProject);
+    const activeProjects = listed.filter(pj => !pj.archived), archivedProjects = listed.filter(pj => pj.archived);
     const shownProjects = sortBy(s.pill === "active" ? activeProjects : archivedProjects, x => x.name);
     const projDesigns = project ? sortBy(this.projectDesigns(project.id), x => x.title) : [];
 
